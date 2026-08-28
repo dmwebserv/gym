@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Session">
+<meta name="theme-color" content="#12161A">
+<title>Session</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --base:#12161A;
+    --surface:#1A2026;
+    --line:#2A333C;
+    --chalk:#EDE8DF;
+    --muted:#7C8894;
+    --d1:#F5C518;
+    --d2:#4C8DFF;
+    --d3:#F0575C;
+    --accent:var(--d1);
+    --pad:20px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    background:var(--base);
+    color:var(--chalk);
+    font-family:'Archivo',system-ui,sans-serif;
+    font-size:16px;
+    line-height:1.45;
+    padding:max(env(safe-area-inset-top),14px) var(--pad) calc(env(safe-area-inset-bottom) + 48px);
+    max-width:620px;
+    margin:0 auto;
+    overscroll-behavior-y:contain;
+  }
+
+  /* ---- day switcher ---- */
+  .switch{display:flex;gap:6px;margin-bottom:26px;}
+  .switch button{
+    flex:1;
+    background:transparent;
+    border:1px solid var(--line);
+    color:var(--muted);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    font-weight:500;
+    letter-spacing:.14em;
+    padding:11px 0 10px;
+    border-radius:3px;
+    cursor:pointer;
+    transition:color .15s,border-color .15s,background .15s;
+  }
+  .switch button[aria-pressed="true"]{
+    color:var(--base);
+    background:var(--accent);
+    border-color:var(--accent);
+    font-weight:600;
+  }
+  .switch button:focus-visible{outline:2px solid var(--chalk);outline-offset:2px;}
+
+  /* ---- header ---- */
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px;
+    letter-spacing:.2em;
+    color:var(--muted);
+    text-transform:uppercase;
+  }
+  .eyebrow .live{color:var(--accent);}
+  h1{
+    font-size:clamp(46px,15vw,64px);
+    font-weight:900;
+    line-height:.88;
+    letter-spacing:-.035em;
+    margin:10px 0 6px;
+    text-transform:uppercase;
+  }
+  h1 .idx{color:var(--accent);}
+  .focus{
+    font-size:17px;
+    font-weight:600;
+    color:var(--chalk);
+    letter-spacing:-.01em;
+  }
+  .stats{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    color:var(--muted);
+    margin-top:9px;
+    letter-spacing:.02em;
+  }
+  .restnote{
+    border:1px dashed var(--line);
+    border-radius:4px;
+    padding:13px 15px;
+    margin-top:18px;
+    font-size:14.5px;
+    color:var(--muted);
+    line-height:1.5;
+  }
+  .restnote b{color:var(--chalk);font-weight:600;}
+
+  /* ---- blocks ---- */
+  .block{
+    margin-top:26px;
+    border-top:1px solid var(--line);
+    padding-top:16px;
+  }
+  .block-label{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px;
+    letter-spacing:.2em;
+    color:var(--accent);
+    text-transform:uppercase;
+    margin-bottom:9px;
+  }
+  .block p{font-size:15.5px;color:var(--chalk);opacity:.9;}
+
+  /* ---- exercise rows ---- */
+  ol{list-style:none;margin-top:6px;}
+  li.ex{
+    display:grid;
+    grid-template-columns:34px 1fr auto;
+    column-gap:12px;
+    padding:15px 0 14px;
+    border-bottom:1px solid var(--line);
+    align-items:baseline;
+  }
+  li.ex:last-child{border-bottom:none;}
+  li.ex{cursor:pointer;transition:opacity .22s ease;}
+  li.ex:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:3px;}
+  li.ex:active{opacity:.6;}
+  .num{
+    grid-row:1/3;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:15px;
+    font-weight:600;
+    color:var(--accent);
+    opacity:.65;
+  }
+  .num .tk{display:none;}
+
+  /* completed */
+  li.ex.done{opacity:.34;}
+  li.ex.done .name{text-decoration:line-through;text-decoration-thickness:1.5px;font-weight:600;}
+  li.ex.done .num .n{display:none;}
+  li.ex.done .num .tk{display:inline;opacity:1;font-size:16px;}
+  li.ex.done .num{opacity:1;}
+
+  /* progress */
+  .progress{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-top:14px;
+  }
+  .bar{
+    flex:1;
+    height:3px;
+    background:var(--line);
+    border-radius:2px;
+    overflow:hidden;
+  }
+  .bar span{
+    display:block;
+    height:100%;
+    width:0;
+    background:var(--accent);
+    transition:width .3s cubic-bezier(.2,.7,.3,1);
+  }
+  .ptext{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px;
+    letter-spacing:.12em;
+    color:var(--muted);
+    white-space:nowrap;
+  }
+  .ptext.complete{color:var(--accent);}
+  .reset{
+    background:none;
+    border:1px solid var(--line);
+    color:var(--muted);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    padding:6px 10px;
+    border-radius:3px;
+    cursor:pointer;
+  }
+  .reset:focus-visible{outline:2px solid var(--chalk);outline-offset:2px;}
+  .taphint{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    letter-spacing:.1em;
+    color:var(--muted);
+    text-transform:uppercase;
+    margin-bottom:2px;
+  }
+  .name{
+    font-size:18.5px;
+    font-weight:700;
+    letter-spacing:-.015em;
+    line-height:1.2;
+  }
+  .prescribe{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:16px;
+    font-weight:600;
+    white-space:nowrap;
+    letter-spacing:-.01em;
+  }
+  .meta{
+    grid-column:2;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    color:var(--muted);
+    margin-top:5px;
+    letter-spacing:.03em;
+    text-transform:uppercase;
+  }
+  .meta .count{color:var(--chalk);font-weight:500;}
+  .meta .count.final{color:var(--accent);}
+  .meta .also{text-transform:none;letter-spacing:.01em;}
+  .rest{
+    grid-column:3;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px;
+    color:var(--muted);
+    margin-top:5px;
+    white-space:nowrap;
+    text-align:right;
+  }
+
+  /* ---- reference ---- */
+  details{
+    margin-top:14px;
+    border:1px solid var(--line);
+    border-radius:4px;
+    overflow:hidden;
+  }
+  summary{
+    list-style:none;
+    cursor:pointer;
+    padding:14px 15px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    color:var(--muted);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+  }
+  summary::-webkit-details-marker{display:none;}
+  summary::after{content:'+';font-size:17px;color:var(--accent);line-height:1;}
+  details[open] summary{color:var(--chalk);border-bottom:1px solid var(--line);}
+  details[open] summary::after{content:'–';}
+  .ref-body{padding:15px;font-size:15px;line-height:1.55;}
+  .ref-body p+p{margin-top:11px;}
+  .ref-body ul{margin:9px 0 0 17px;}
+  .ref-body li{margin-bottom:7px;}
+  .ref-body strong{font-weight:700;}
+  .ref-row{
+    display:flex;
+    gap:14px;
+    padding:10px 0;
+    border-bottom:1px solid var(--line);
+    font-size:14.5px;
+    align-items:baseline;
+  }
+  .ref-row:last-child{border-bottom:none;}
+  .ref-row .k{flex:1;color:var(--chalk);}
+  .ref-row .v{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13px;
+    color:var(--accent);
+    white-space:nowrap;
+    text-align:right;
+  }
+
+  footer{
+    margin-top:34px;
+    padding-top:16px;
+    border-top:1px solid var(--line);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    letter-spacing:.06em;
+    color:var(--muted);
+    line-height:1.7;
+  }
+
+  @keyframes rise{from{opacity:0;transform:translateY(7px);}to{opacity:1;transform:none;}}
+  .anim{animation:rise .4s cubic-bezier(.2,.7,.3,1) both;}
+  @media (prefers-reduced-motion:reduce){
+    .anim{animation:none;}
+    *{transition:none!important;}
+  }
+</style>
+</head>
+<body>
+
+<nav class="switch" id="switch" aria-label="Choose session"></nav>
+<main id="app" aria-live="polite"></main>
+
+<script>
+const REST = {
+  compound:'90–120s rest',
+  isolation:'45–75s rest',
+  core:'30–60s rest'
+};
+
+const DAYS = [
+  {
+    n:1, dow:1, label:'MON', title:'Strength Focus', accent:'--d1', mins:'60–75 min',
+    warmup:'3–5 minutes treadmill or bike, then light warm-up sets for your first exercise.',
+    finisher:'10 minutes incline treadmill at a brisk walking pace.',
+    ex:[
+      {name:'Leg Press',                 sets:'3 × 8–10',   muscle:'Quads',      c:[1,3], also:'glutes',            type:'compound'},
+      {name:'Dumbbell Bench Press',      sets:'3 × 8–10',   muscle:'Chest',      c:[1,3], also:'triceps, front delts', type:'compound'},
+      {name:'Lat Pulldown',              sets:'3 × 8–12',   muscle:'Lats',       c:[1,2], also:'biceps',            type:'compound'},
+      {name:'Romanian Deadlift',         sets:'3 × 8–10',   muscle:'Hamstrings', c:[1,3], also:'glutes, lower back',type:'compound'},
+      {name:'Lateral Raises',            sets:'3 × 12–15',  muscle:'Side delts', c:[1,2], also:'',                  type:'isolation'},
+      {name:'Cable Triceps Pushdown',    sets:'2 × 10–15',  muscle:'Triceps',    c:[1,2], also:'',                  type:'isolation'},
+      {name:'Dumbbell Biceps Curls',     sets:'2 × 10–15',  muscle:'Biceps',     c:[1,2], also:'',                  type:'isolation'}
+    ]
+  },
+  {
+    n:2, dow:3, label:'WED', title:'Full Body + Conditioning', accent:'--d2', mins:'60–75 min',
+    warmup:'3–5 minutes treadmill, bike or cross trainer, then light warm-up sets.',
+    finisher:'8–10 minutes bike or cross trainer: 1 minute moderate, 30 seconds harder.',
+    ex:[
+      {name:'Goblet Squat or Hack Squat',sets:'3 × 8–12',   muscle:'Quads',      c:[2,3], also:'glutes',            type:'compound'},
+      {name:'Incline Dumbbell Press',    sets:'3 × 8–12',   muscle:'Chest',      c:[2,3], also:'upper chest, triceps', type:'compound'},
+      {name:'Seated Cable Row',          sets:'3 × 8–12',   muscle:'Mid back',   c:[1,2], also:'biceps, rear delts',type:'compound'},
+      {name:'Hip Thrust',                sets:'3 × 8–12',   muscle:'Glutes',     c:[1,1], also:'hamstrings',        type:'compound'},
+      {name:'Shoulder Press',            sets:'2 × 8–12',   muscle:'Front delts',c:[1,1], also:'triceps',           type:'compound'},
+      {name:'Leg Curl',                  sets:'2 × 10–15',  muscle:'Hamstrings', c:[2,3], also:'',                  type:'isolation'},
+      {name:'Plank',                     sets:'2 × 30–45s', muscle:'Core',       c:[1,3], also:'',                  type:'core'},
+      {name:'Cable Crunch',              sets:'2 × 12–15',  muscle:'Core',       c:[2,3], also:'',                  type:'core'},
+      {name:'Dead Bug',                  sets:'2 × 8–10 ea',muscle:'Core',       c:[3,3], also:'',                  type:'core'}
+    ]
+  },
+  {
+    n:3, dow:5, label:'FRI', title:'Full Body + Higher Reps', accent:'--d3', mins:'60–75 min',
+    warmup:'3–5 minutes treadmill or bike, then light warm-up sets.',
+    finisher:'10–15 minutes incline treadmill or cross trainer at a steady challenging pace.',
+    ex:[
+      {name:'Squat or Leg Press',        sets:'3 × 10–12',  muscle:'Quads',      c:[3,3], also:'glutes',            type:'compound'},
+      {name:'Chest Press Machine',       sets:'3 × 8–12',   muscle:'Chest',      c:[3,3], also:'triceps',           type:'compound'},
+      {name:'Lat Pulldown or Assisted Pull-up', sets:'3 × 8–12', muscle:'Lats',  c:[2,2], also:'biceps',            type:'compound'},
+      {name:'Dumbbell Romanian Deadlift',sets:'3 × 10–12',  muscle:'Hamstrings', c:[3,3], also:'glutes',            type:'compound'},
+      {name:'Cable Row',                 sets:'2 × 10–12',  muscle:'Mid back',   c:[2,2], also:'biceps',            type:'compound'},
+      {name:'Lateral Raises',            sets:'2 × 12–15',  muscle:'Side delts', c:[2,2], also:'',                  type:'isolation'},
+      {name:'Biceps Curls',              sets:'2 × 12–15',  muscle:'Biceps',     c:[2,2], also:'',                  type:'isolation'},
+      {name:'Triceps Pushdowns',         sets:'2 × 12–15',  muscle:'Triceps',    c:[2,2], also:'',                  type:'isolation'}
+    ]
+  }
+];
+
+/* Progress is saved per day, per date, so Wednesday never opens with
+   Monday's ticks still on it. Tries the host's storage, then the
+   browser's, then falls back to memory for the current visit only. */
+const mem = {};
+const Store = {
+  async get(k){
+    try { if (window.storage) { const r = await window.storage.get(k); if (r) return r.value; } } catch(e){}
+    try { const v = localStorage.getItem(k); if (v !== null) return v; } catch(e){}
+    return k in mem ? mem[k] : null;
+  },
+  async set(k,v){
+    mem[k] = v;
+    try { if (window.storage) { await window.storage.set(k,v); return; } } catch(e){}
+    try { localStorage.setItem(k,v); } catch(e){}
+  }
+};
+
+const todayKey = () => new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD, local
+const keyFor = day => `session:${day.n}:${todayKey()}`;
+
+let done = new Set();
+let current = null;
+
+const esc = s => String(s).replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]));
+const setCount = d => d.ex.reduce((t,e) => t + parseInt(e.sets,10), 0);
+
+const REFERENCE = `
+<details>
+  <summary>How heavy should we lift?</summary>
+  <div class="ref-body">
+    <p>Don't use the heaviest weight you can possibly lift on every exercise. Pick a weight that makes the target reps challenging while your technique stays clean.</p>
+    <div style="margin-top:13px">
+      <div class="ref-row"><span class="k">You could easily do more than the target reps</span><span class="v">go heavier next time</span></div>
+      <div class="ref-row"><span class="k">You hit the target reps with good form and had 1–3 left in you</span><span class="v">this is the one</span></div>
+      <div class="ref-row"><span class="k">You can't reach the minimum reps with good form</span><span class="v">go lighter</span></div>
+      <div class="ref-row"><span class="k">Your technique breaks down</span><span class="v">stop the set, go lighter</span></div>
+    </div>
+  </div>
+</details>
+
+<details>
+  <summary>Training together</summary>
+  <div class="ref-body">
+    <ul>
+      <li>Person A does a set while Person B rests or sets up.</li>
+      <li>Person B then does their set while Person A rests.</li>
+      <li>Repeat until you've both finished all the sets, then move on.</li>
+      <li>You don't need the same weight. Match effort, not the number on the machine.</li>
+    </ul>
+  </div>
+</details>
+
+<details>
+  <summary>Rest periods &amp; progression</summary>
+  <div class="ref-body">
+    <div class="ref-row"><span class="k">Compound lifts — leg press, squat, bench, RDL, rows</span><span class="v">90–120s</span></div>
+    <div class="ref-row"><span class="k">Isolation — curls, raises, pushdowns</span><span class="v">45–75s</span></div>
+    <div class="ref-row"><span class="k">Core</span><span class="v">30–60s</span></div>
+    <p style="margin-top:14px">When you can hit the <strong>top</strong> of the rep range on <strong>every</strong> set with solid form and still have 1–3 reps in reserve, add the smallest increment available next session.</p>
+  </div>
+</details>
+
+<details>
+  <summary>Fat loss + muscle essentials</summary>
+  <div class="ref-body">
+    <ul>
+      <li>Train consistently, 3 times a week.</li>
+      <li>Strength training first, cardio after.</li>
+      <li>Moderate calorie deficit, not an extreme diet.</li>
+      <li>Plenty of protein to hold on to muscle.</li>
+      <li>Keep moving outside the gym — walking counts.</li>
+      <li>Sleep 7–9 hours whenever you can.</li>
+    </ul>
+  </div>
+</details>`;
+
+function render(day, isToday, todayDow){
+  document.documentElement.style.setProperty('--accent', `var(${day.accent})`);
+
+  const dateStr = new Date().toLocaleDateString('en-GB',
+    {weekday:'long', day:'numeric', month:'long'}).toUpperCase();
+
+  let eyebrow, rest = '';
+  if (isToday){
+    eyebrow = `<span class="live">● TODAY</span> &nbsp;${esc(dateStr)}`;
+  } else {
+    eyebrow = `${esc(day.label)}DAY SESSION`;
+    const scheduled = DAYS.some(d => d.dow === todayDow);
+    if (!scheduled){
+      const next = DAYS.find(d => d.dow > todayDow) || DAYS[0];
+      const gap = ((next.dow - todayDow) + 7) % 7;
+      rest = `<div class="restnote">No session today — it's a rest day. Next up is
+        <b>Day ${next.n}, ${next.title}</b>, ${gap === 1 ? 'tomorrow' : 'in ' + gap + ' days'}.
+        Get your steps in.</div>`;
+    }
+  }
+
+  const rows = day.ex.map((e,i) => {
+    const final = e.c[0] === e.c[1] && e.c[1] > 1;
+    return `<li class="ex" data-i="${i}" role="button" tabindex="0"
+        aria-pressed="false" aria-label="${esc(e.name)}, ${esc(e.sets)}. Tap when done.">
+      <span class="num"><span class="n">${String(i+1).padStart(2,'0')}</span><span class="tk">✓</span></span>
+      <span class="name">${esc(e.name)}</span>
+      <span class="prescribe">${esc(e.sets)}</span>
+      <span class="meta">${esc(e.muscle)}
+        <span class="count${final ? ' final' : ''}">${e.c[0]}/${e.c[1]}</span>${
+          e.also ? ` <span class="also">· also ${esc(e.also)}</span>` : ''}</span>
+      <span class="rest">${REST[e.type]}</span>
+    </li>`;
+  }).join('');
+
+  document.getElementById('app').innerHTML = `
+    <div class="anim">
+      <div class="eyebrow">${eyebrow}</div>
+      <h1>Day <span class="idx">${day.n}</span></h1>
+      <div class="focus">${esc(day.title)}</div>
+      <div class="stats">${day.ex.length} exercises &nbsp;·&nbsp; ${setCount(day)} working sets &nbsp;·&nbsp; ${day.mins}</div>
+      ${rest}
+
+      <div class="block">
+        <div class="block-label">Warm-up · 5–8 min</div>
+        <p>${esc(day.warmup)}</p>
+      </div>
+
+      <div class="block">
+        <div class="block-label">The session</div>
+        <div class="taphint">Tap an exercise when it's done</div>
+        <div class="progress">
+          <div class="bar"><span id="barfill"></span></div>
+          <div class="ptext" id="ptext">0/${day.ex.length}</div>
+          <button class="reset" id="reset" hidden>Reset</button>
+        </div>
+        <ol id="list">${rows}</ol>
+      </div>
+
+      <div class="block">
+        <div class="block-label">Finisher</div>
+        <p>${esc(day.finisher)}</p>
+      </div>
+
+      <div class="block">
+        <div class="block-label">Reference</div>
+        ${REFERENCE}
+      </div>
+
+      <footer>
+        The number beside each muscle is how many times you hit it this week —
+        LATS 1/2 means first of two. Highlighted means it's the last time this week.<br><br>
+        Ticks are saved on this phone and clear themselves the next day.<br><br>
+        General fitness plan for healthy adults. Swap exercises if the kit is taken,
+        something hurts, or an old injury says no.
+      </footer>
+    </div>`;
+
+  document.querySelectorAll('#switch button').forEach(b =>
+    b.setAttribute('aria-pressed', String(+b.dataset.n === day.n)));
+  window.scrollTo(0,0);
+
+  current = day;
+  done = new Set();
+  paint();
+  wire(day);
+
+  Store.get(keyFor(day)).then(raw => {
+    if (!raw || current !== day) return;
+    try { done = new Set(JSON.parse(raw)); paint(); } catch(e){}
+  });
+}
+
+function paint(){
+  const total = current.ex.length;
+  const n = done.size;
+  document.querySelectorAll('#list li.ex').forEach(li => {
+    const on = done.has(+li.dataset.i);
+    li.classList.toggle('done', on);
+    li.setAttribute('aria-pressed', String(on));
+  });
+  const fill = document.getElementById('barfill');
+  const txt  = document.getElementById('ptext');
+  const rst  = document.getElementById('reset');
+  if (!fill) return;
+  fill.style.width = (n / total * 100) + '%';
+  txt.textContent = n === total ? 'SESSION DONE' : `${n}/${total} DONE`;
+  txt.classList.toggle('complete', n === total);
+  rst.hidden = n === 0;
+}
+
+function toggle(i){
+  done.has(i) ? done.delete(i) : done.add(i);
+  paint();
+  Store.set(keyFor(current), JSON.stringify([...done]));
+}
+
+function wire(day){
+  const list = document.getElementById('list');
+  list.addEventListener('click', ev => {
+    const li = ev.target.closest('li.ex');
+    if (li) toggle(+li.dataset.i);
+  });
+  list.addEventListener('keydown', ev => {
+    if (ev.key !== 'Enter' && ev.key !== ' ') return;
+    const li = ev.target.closest('li.ex');
+    if (li){ ev.preventDefault(); toggle(+li.dataset.i); }
+  });
+  document.getElementById('reset').addEventListener('click', () => {
+    done = new Set();
+    paint();
+    Store.set(keyFor(day), '[]');
+  });
+}
+
+const todayDow = new Date().getDay();
+const todaysDay = DAYS.find(d => d.dow === todayDow);
+// On a rest day, show the next session that's coming up.
+const opening = todaysDay || DAYS.find(d => d.dow > todayDow) || DAYS[0];
+
+document.getElementById('switch').innerHTML = DAYS.map(d =>
+  `<button data-n="${d.n}" aria-pressed="false">${d.label}</button>`).join('');
+
+document.getElementById('switch').addEventListener('click', ev => {
+  const b = ev.target.closest('button');
+  if (!b) return;
+  const d = DAYS.find(x => x.n === +b.dataset.n);
+  render(d, d.dow === todayDow, todayDow);
+});
+
+render(opening, !!todaysDay, todayDow);
+</script>
+</body>
+</html>
