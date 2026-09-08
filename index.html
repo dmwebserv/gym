@@ -2,7 +2,7 @@
 <html lang="en-GB">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Session">
@@ -20,15 +20,17 @@
     --line:#2A333C;
     --chalk:#EDE8DF;
     --muted:#7C8894;
-    --d1:#F5C518;   /* Danny  */
-    --d2:#4C8DFF;   /* Kieran */
-    --d3:#F0575C;
+    --d1:#F5C518;   /* day accent: Monday   */
+    --d2:#4C8DFF;   /* day accent: Wednesday */
+    --d3:#F0575C;   /* day accent: Friday    */
+    --p1:#AABA99;   /* Danny   */
+    --p2:#2b7b78;   /* Kieran  */
     --accent:var(--d1);
     --pad:20px;
     --tabh:64px;
   }
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-  html{-webkit-text-size-adjust:100%;}
+  html{-webkit-text-size-adjust:100%;touch-action:manipulation;}
   body{
     background:var(--base);
     color:var(--chalk);
@@ -63,8 +65,8 @@
     transition:color .15s,border-color .15s,background .15s,box-shadow .15s;
   }
   .person .dot{width:8px;height:8px;border-radius:50%;background:transparent;flex:none;}
-  .person[data-a="0"] .dot{background:var(--d1);}
-  .person[data-a="1"] .dot{background:var(--d2);}
+  .person[data-a="0"] .dot{background:var(--p1);}
+  .person[data-a="1"] .dot{background:var(--p2);}
   .person[aria-pressed="true"]{
     border-color:var(--pc,var(--line));
     color:var(--chalk);
@@ -571,8 +573,8 @@
   .onb-card:active{transform:scale(.97);}
   .onb-card:focus-visible{outline:2px solid var(--chalk);outline-offset:2px;}
   .onb-card .ava{width:54px;height:54px;border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:900;color:var(--base);}
-  .onb-card .nm{font-size:16px;font-weight:700;}
-  .onb-card .who{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase;margin-top:4px;}
+  .onb-card .nm{display:block;font-size:16px;font-weight:700;}
+  .onb-card .who{display:block;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase;margin-top:4px;}
 
   footer{
     margin-top:34px;padding-top:16px;border-top:1px solid var(--line);
@@ -637,8 +639,8 @@ const REST = {
 const REST_MIN = { compound:105, isolation:60, core:45 }; // timer defaults (s)
 
 const PEOPLE_DEF = [
-  { id:'danny',  name:'Danny',  color:'--d1', initial:'D' },
-  { id:'kieran', name:'Kieran', color:'--d2', initial:'K' }
+  { id:'danny',  name:'Danny',  color:'--p1', initial:'D' },
+  { id:'kieran', name:'Kieran', color:'--p2', initial:'K' }
 ];
 
 const UNIT = 'kg';
@@ -899,6 +901,11 @@ async function loadSettings(){
   if (raw){ try { S = Object.assign(settingsDefault(), JSON.parse(raw)); } catch(e){ S = settingsDefault(); } }
   else S = settingsDefault();
   if (!S.people || !S.people.length) S.people = settingsDefault().people;
+  // person colours moved from the day accents to their own pair — remap older saves
+  if (S.people) S.people.forEach(pp => {
+    if (pp.color === '--d1') pp.color = '--p1';
+    else if (pp.color === '--d2') pp.color = '--p2';
+  });
   if (!S.people.find(p => p.id === S.sel)) S.sel = S.people[0].id;
   if (!S.people.find(p => p.id === S.owner)) S.owner = S.people[0].id;
 }
@@ -1175,7 +1182,8 @@ function renderSession(){
   if (isToday){
     eyebrow = `<span class="live">● TODAY</span> &nbsp;${esc(dateStr)}`;
   } else {
-    eyebrow = `${day.label}DAY SESSION`;
+    const FULL = { MON:'MONDAY', WED:'WEDNESDAY', FRI:'FRIDAY' };
+    eyebrow = `${FULL[day.label] || (day.label + 'DAY')} SESSION`;
     const scheduled = DAYS.some(d => d.dow === todayDow);
     if (!scheduled){
       const next = DAYS.find(d => d.dow > todayDow) || DAYS[0];
@@ -1388,7 +1396,7 @@ function openLogSheet(idx){
           : `<button class="cta primary" id="savebtn" style="--pc:${colorVar}">Log ${UNIT}<span class="sub">saves &amp; ticks it off</span></button>
              <button class="cta ghost" id="tickbtn">${doneNow ? 'Untick' : 'Done without a weight'}</button>`}
     </div>
-    <p style="text-align:center;margin-top:14px;font-size:12.5px;color:var(--muted);line-height:1.5">
+    <p id="note" style="text-align:center;margin-top:14px;font-size:12.5px;color:var(--muted);line-height:1.5">
       ${lift ? `Logged today at <b style="color:var(--chalk)">${wFmt(lift.weight)} ${UNIT}</b>${lift.reps ? ' · ' + lift.reps.join('/') + ' reps' : ''} — updating replaces it.`
         : doneNow ? 'This exercise is ticked today without a weight.' : 'Tap Log to record the weight, or Done to just tick it.'}
     </p>`;
@@ -1402,12 +1410,52 @@ function openLogSheet(idx){
   const root = document.getElementById('ov');
   root.style.setProperty('--pc', colorVar);
 
+  let curLift = lift, curLast = last, curPb = pb;
+  const autoVal = () => curLift ? wFmt(curLift.weight) : (curLast ? wFmt(curLast.weight) : '');
+  let autoRef = autoVal();
+
+  // Update the identity-dependent parts in place — no full sheet rebuild,
+  // so switching between e.g. Goblet Squat and Hack Squat is instant.
+  const refreshIdentity = () => {
+    const lr = document.getElementById('lastrow');
+    if (lr) lr.innerHTML = lastHintHTML(curLast, curPb, curLift, isBW);
+    const note = document.getElementById('note');
+    if (note){
+      note.innerHTML = curLift
+        ? `Logged today at <b style="color:var(--chalk)">${wFmt(curLift.weight)} ${UNIT}</b>${curLift.reps ? ' · ' + curLift.reps.join('/') + ' reps' : ''} — updating replaces it.`
+        : (doneNow ? 'This exercise is ticked today without a weight.' : 'Tap Log to record the weight, or Done to just tick it.');
+    }
+    const lb = root.querySelector('[data-last]');
+    if (lb && !isBW){
+      lb.dataset.has = curLast ? '1' : '';
+      lb.textContent = curLast ? `last ${wFmt(curLast.weight)}` : '';
+      lb.style.display = curLast ? '' : 'none';
+    }
+    if (!isBW) updateSaveBtn();
+  };
+
   if (slot.opts){
     root.querySelectorAll('[data-choices] button').forEach(b => b.addEventListener('click', () => {
       S.lastChoice[p.id] = S.lastChoice[p.id] || {};
       S.lastChoice[p.id][slotKey] = b.dataset.c;
       saveSettings();
-      openLogSheet(idx); // rebuild with the new exercise identity
+      const c = b.dataset.c;
+      root.querySelectorAll('[data-choices] button').forEach(x =>
+        x.setAttribute('aria-pressed', String(x.dataset.c === c)));
+      const wi = document.getElementById('winput');
+      if (wi && !isBW){
+        const typed = wi.value.trim();
+        // only overwrite the pre-fill if the user hasn't typed their own number
+        if (!typed || typed === autoRef) wi.value = '';
+      }
+      curLift = logOf(p.id).lifts['l:' + p.id + ':' + c + ':' + date] || null;
+      const st2 = personStats(p.id, c);
+      curLast = st2 ? st2.last : null;
+      curPb = st2 ? st2.pb : null;
+      autoRef = autoVal();
+      const wi2 = document.getElementById('winput');
+      if (wi2 && !isBW && !wi2.value.trim()) wi2.value = autoRef;
+      refreshIdentity();
     }));
   }
 
@@ -1421,7 +1469,7 @@ function openLogSheet(idx){
       updateSaveBtn();
     }));
     const lastBtn = root.querySelector('[data-last]');
-    if (lastBtn) lastBtn.addEventListener('click', () => { inp.value = wFmt(last.weight); updateSaveBtn(); });
+    if (lastBtn) lastBtn.addEventListener('click', () => { inp.value = curLast ? wFmt(curLast.weight) : ''; updateSaveBtn(); });
     document.getElementById('repstoggle').addEventListener('click', () => {
       const rows = document.querySelector('#repsblock .setrows');
       const showing = rows.style.display !== 'none';
@@ -1498,7 +1546,11 @@ function saveLogSheet(idx){
   const slot = day.ex[idx];
   const slotKey = slotKeyOf(day.n, idx);
   const date = todayKey();
-  const canon = chosenCanonFor(p.id, slotKey, slot);
+  let canon = chosenCanonFor(p.id, slotKey, slot);
+  if (slot.opts){
+    const pressed = document.querySelector('#ov [data-choices] button[aria-pressed="true"]');
+    if (pressed && slot.opts.some(o => o.id === pressed.dataset.c)) canon = pressed.dataset.c;
+  }
   const opt = slot.opts ? slot.opts.find(o => o.id === canon) : null;
   const label = opt ? opt.name : slot.name;
   const w = parseFloat(document.getElementById('winput').value);
@@ -1684,25 +1736,32 @@ function beep(){
     o.start(); o.stop(audioCtx.currentTime + .55);
   } catch(e){}
 }
+const timerLeft = () => Math.max(0, Math.round((Timer.end - now())/1000));
+const timerLabel = () => {
+  if (Timer.running) return 'Pause';
+  if (Timer.total > 0 && Timer.left < Timer.total) return 'Resume'; // paused mid-countdown
+  return 'Start';
+};
 function renderTimer(){
   setPersonAccent();
   const total = Timer.total, left = Math.max(0, Math.round(Timer.running ? (Timer.end - now())/1000 : Timer.left));
   const pct = total ? (1 - left/total)*100 : 0;
   const mm = String(Math.floor(left/60)).padStart(2,'0'), ss = String(left%60).padStart(2,'0');
+  const hasPreset = !!Timer.preset;
   document.getElementById('app').innerHTML = `
     <div class="anim">
       <div class="eyebrow">REST <span class="live">TIMER</span></div>
       <h1 class="small">Between <span class="idx">sets</span></h1>
       <div class="timer-card">
-        <div class="tring" id="tring"><span class="tdisp" id="tdisp">${mm}:${ss}<span class="unit">min</span></span></div>
+        <div class="tring" id="tring"><span class="tdisp" id="tdisp">${mm}:${ss}<span class="unit">sec</span></span></div>
         <div class="tctl">
-          <button class="cta ${Timer.running?'ghost':'primary'}" id="tstart">${Timer.running ? 'Pause' : (total ? 'Resume' : 'Start')}</button>
+          <button class="cta ${Timer.running?'ghost':'primary'}" id="tstart">${timerLabel()}</button>
           <button class="cta ghost" id="treset" ${total?'':'disabled'}>Reset</button>
         </div>
         <div class="tpresets" id="tpresets">
-          <button class="tpreset" data-s="105" data-l="Compound">Compound 1:45</button>
-          <button class="tpreset" data-s="60" data-l="Isolation">Isolation 1:00</button>
-          <button class="tpreset" data-s="45" data-l="Core">Core 0:45</button>
+          <button class="tpreset" data-s="105" aria-pressed="${hasPreset && Timer.preset===105}">Compound 1:45</button>
+          <button class="tpreset" data-s="60"  aria-pressed="${hasPreset && Timer.preset===60}">Isolation 1:00</button>
+          <button class="tpreset" data-s="45"  aria-pressed="${hasPreset && Timer.preset===45}">Core 0:45</button>
         </div>
         <div class="tend-note" id="tendnote"></div>
         <p style="margin-top:22px;font-size:13px;color:var(--muted);line-height:1.6">Presets match the plan: compounds 90–120s, isolation 45–75s, core 30–60s. The timer pings when it's time to lift again.</p>
@@ -1710,40 +1769,66 @@ function renderTimer(){
     </div>`;
   const ring = document.getElementById('tring');
   ring.style.background = `conic-gradient(var(--accent) ${pct*3.6}deg, var(--line) 0deg)`;
-  document.getElementById('tstart').addEventListener('click', () => {
-    if (Timer.running){ Timer.running = false; cancelAnimationFrame(Timer.raf); Timer.left = Math.max(0, Math.round((Timer.end - now())/1000)); renderTimer(); return; }
-    if (!Timer.total){
-      Timer.total = REST_MIN.compound; Timer.left = Timer.total;
-      // pick nearest preset for the visual
-    }
-    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
-    Timer.end = now() + Timer.left*1000;
-    Timer.running = true;
-    tickTimer();
-  });
+  document.getElementById('tstart').addEventListener('click', toggleTimer);
   document.getElementById('treset').addEventListener('click', () => {
     Timer.running = false; cancelAnimationFrame(Timer.raf);
-    Timer.total = 0; Timer.left = 0;
+    Timer.total = 0; Timer.left = 0; Timer.preset = null;
     renderTimer();
   });
   document.querySelectorAll('.tpreset').forEach(b => b.addEventListener('click', () => {
     const s = +b.dataset.s;
     Timer.running = false; cancelAnimationFrame(Timer.raf);
-    Timer.total = s; Timer.left = s;
+    Timer.total = s; Timer.left = s; Timer.preset = s;
     renderTimer();
     beep();
   }));
   document.getElementById('tendnote').innerHTML = '';
 }
+function toggleTimer(){
+  if (Timer.running){
+    // pause — in place, no screen rebuild
+    Timer.running = false;
+    cancelAnimationFrame(Timer.raf);
+    Timer.left = timerLeft();
+    const btn = document.getElementById('tstart');
+    if (btn) btn.textContent = 'Resume';
+    paintTimer();
+    return;
+  }
+  if (!Timer.total){
+    // Start with no preset picked → default to compound
+    Timer.total = REST_MIN.compound; Timer.left = Timer.total; Timer.preset = REST_MIN.compound;
+    renderTimer();
+    return;
+  }
+  if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+  Timer.end = now() + Timer.left*1000;
+  Timer.running = true;
+  const btn = document.getElementById('tstart');
+  if (btn) btn.textContent = 'Pause';
+  tickTimer();
+}
+function paintTimer(){
+  const left = Math.max(0, Math.round(Timer.running ? (Timer.end - now())/1000 : Timer.left));
+  const d = document.getElementById('tdisp');
+  const ring = document.getElementById('tring');
+  if (!d) return;
+  const mm = String(Math.floor(left/60)).padStart(2,'0'), ss = String(left%60).padStart(2,'0');
+  d.innerHTML = `${mm}:${ss}<span class="unit">sec</span>`;
+  if (ring){
+    const pct = Timer.total ? (1 - left/Timer.total)*100 : 0;
+    ring.style.background = `conic-gradient(var(--accent) ${pct*3.6}deg, var(--line) 0deg)`;
+  }
+}
 function tickTimer(){
   if (!Timer.running) return;
-  const left = Math.max(0, Math.round((Timer.end - now())/1000));
+  const left = timerLeft();
   Timer.left = left;
-  const mm = String(Math.floor(left/60)).padStart(2,'0'), ss = String(left%60).padStart(2,'0');
   const d = document.getElementById('tdisp');
   const ring = document.getElementById('tring');
   if (d && ring){
-    d.innerHTML = `${mm}:${ss}<span class="unit">min</span>`;
+    const mm = String(Math.floor(left/60)).padStart(2,'0'), ss = String(left%60).padStart(2,'0');
+    d.innerHTML = `${mm}:${ss}<span class="unit">sec</span>`;
     const pct = Timer.total ? (1 - left/Timer.total)*100 : 0;
     ring.style.background = `conic-gradient(var(--accent) ${pct*3.6}deg, var(--line) 0deg)`;
   }
@@ -1753,7 +1838,10 @@ function tickTimer(){
     try{ navigator.vibrate && navigator.vibrate([200,100,200]); }catch(e){}
     const n = document.getElementById('tendnote');
     if (n) n.innerHTML = `<b>Time's up</b> — rest over, next set when you're ready.`;
-    if (d) d.innerHTML = `00:00<span class="unit">min</span>`;
+    const b = document.getElementById('tstart');
+    if (b) b.textContent = 'Start';
+    if (d) d.innerHTML = `00:00<span class="unit">sec</span>`;
+    Timer.left = Timer.total; // pressing Start runs a fresh full rest
     return;
   }
   Timer.raf = requestAnimationFrame(tickTimer);
@@ -1788,6 +1876,7 @@ function openSettings(){
   } else {
     const st = S.sync.lastSync ? new Date(S.sync.lastSync).toLocaleString('en-GB') : 'never';
     const err = S.sync.lastErr ? `<div class="sv" style="color:var(--d3);margin-top:6px">${esc(S.sync.lastErr)}</div>` : '';
+    const neverConnected = !S.sync.lastSync;
     syncHTML = `
       <div class="set-row">
         <span class="sk">Phone-to-phone sync</span>
@@ -1797,7 +1886,7 @@ function openSettings(){
         </div>
         ${err}
         <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
-          <button class="mini-btn accent" data-act="syncnow">Sync now</button>
+          ${neverConnected ? `<button class="mini-btn accent" data-act="reconnect">Reconnect (enter the shared PIN)</button>` : `<button class="mini-btn accent" data-act="syncnow">Sync now</button>`}
           <button class="mini-btn" data-act="unsync">Disconnect this phone</button>
         </div>
         <div class="sv" style="margin-top:12px;font-size:12.5px;line-height:1.6">Both phones use the same PIN. If you forget it, each phone keeps its own copy — use Export below as a backup.</div>
@@ -1882,6 +1971,11 @@ function openSettings(){
   root.querySelectorAll('[data-act]').forEach(b => b.addEventListener('click', () => {
     const a = b.dataset.act;
     if (a === 'connect') openSyncSetup();
+    else if (a === 'reconnect'){
+      S.sync.pin = ''; S.sync.room = ''; S.sync.lastErr = '';
+      saveSettings();
+      openSyncSetup();
+    }
     else if (a === 'syncnow') doSync(true);
     else if (a === 'unsync'){
       if (!confirm('Disconnect this phone from sync? Its local data stays.')) return;
@@ -1929,7 +2023,7 @@ function openSyncSetup(){
     msg.style.display = 'none';
     const secret = sha256('gym-pin:' + v.toLowerCase());
     S.sync.pin = v;
-    S.sync.room = secret.slice(0,16);
+    S.sync.room = wireSecret(secret).slice(0,16);
     await saveSettings();
     const res = await doSync(true, secret);
     if (res && res.ok){
@@ -2030,6 +2124,9 @@ function scheduleSync(){
   if (!syncConfigured()) return;
   syncTimer = setTimeout(() => doSync(false), 2500);
 }
+/* the 64-char value sent to the database: derived from the PIN entirely
+   in the browser so the store never needs a server-side hash function */
+const wireSecret = secret => sha256('gym-store:' + secret);
 async function doSync(manual, secretOverride){
   if (!syncConfigured()) return { ok:false, msg:'Sync not configured (see SETUP.md)' };
   if (syncInFlight) return { ok:true, silent:true };
@@ -2044,7 +2141,7 @@ async function doSync(manual, secretOverride){
   saveSettings();
   try {
     const secret = secretOverride || sha256('gym-pin:' + S.sync.pin.toLowerCase());
-    const room = secret.slice(0,16);
+    const room = wireSecret(secret);
     // build payload: every local lift + tick across both people
     const rows = [];
     for (const p of S.people){

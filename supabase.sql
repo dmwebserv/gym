@@ -1,32 +1,33 @@
 -- ============================================================
 -- Session app — shared sync store (Supabase)
 -- ------------------------------------------------------------
--- How to use:
---   1. Create a free project at https://supabase.com
---   2. Open it → SQL Editor → New query
---   3. Paste this WHOLE file in and click Run.
---   4. Copy your Project URL + anon key:
---        Project Settings → API
---   5. Put those two values into index.html where it says
---        const SUPABASE = { url: '', anonKey: '' };
---      and flip SUPABASE_TABLE_SQL_OK to true. Save + push.
+-- v2 — no pgcrypto dependency.
 --
--- Security model: every read/write goes through the
--- sync_state() function below, which checks the shared secret
--- that both phones derive from the same PIN. The underlying
--- tables are locked to everyone — nobody can read or write
--- them directly, not even with the public anon key.
+-- The phone hashes the shared PIN with SHA-256 *in the browser*
+-- and sends the finished 64-character hex here, so the database
+-- never needs the pgcrypto extension (whose digest() function is
+-- not always available, which broke v1 with "digest(text, unknown)").
+--
+-- How to use:
+--   1. Go to your Supabase project → SQL Editor → New query.
+--   2. Paste this WHOLE file in and click Run. (Re-running it is
+--      safe — it replaces the old function definition.)
+--   3. Done. Re-connect the phones from Settings → Sync with the
+--      same shared PIN on both.
+--
+-- Security model: every read/write goes through sync_state(),
+-- which checks the 64-char secret that only people who know the
+-- shared PIN can produce. The tables are locked to everyone —
+-- nobody can read or write them directly, even with the public key.
 -- ============================================================
 
-create extension if not exists pgcrypto;
-
 create table if not exists public.rooms (
-  hash text primary key,
+  hash text primary key,        -- client's full sha-256 hex of the secret
   room text not null unique
 );
 
 create table if not exists public.lifts (
-  id text primary key,        -- composite: room-prefixed, set by the function
+  id text primary key,          -- composite: room-prefixed, set by the function
   room text not null,
   pid text not null,
   data jsonb not null,
@@ -47,21 +48,20 @@ security definer
 set search_path = public
 as $$
 declare
-  v_hash text := encode(digest('gym-store:' || p_secret, 'sha256'), 'hex');
   v_room text := 'r' || substr(p_secret, 1, 16);
   r jsonb;
 begin
-  if p_secret is null or length(p_secret) < 20 then
+  if p_secret is null or length(p_secret) <> 64 then
     raise exception 'invalid secret';
   end if;
 
   -- register this room the first time we ever see it
   insert into public.rooms(hash, room)
-  values (v_hash, v_room)
+  values (p_secret, v_room)
   on conflict (hash) do nothing;
 
   -- two different secrets can never share a room
-  if not exists (select 1 from public.rooms where hash = v_hash and room = v_room) then
+  if not exists (select 1 from public.rooms where hash = p_secret and room = v_room) then
     raise exception 'secret does not match this room';
   end if;
 
