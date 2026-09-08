@@ -617,17 +617,16 @@
 <script>
 /* ============================================================
    SYNC CONFIG — where the app connects the two phones.
-   To switch on syncing you need a free Supabase project:
-   see SETUP.md in this repository for the 3-minute walkthrough.
-   Paste your two public keys between the quotes below, save,
-   and push — the site redeploys itself. Until then the app
-   runs fully offline, saving to each phone only.
+   The shared store is a free Supabase project. The keys below
+   are public-by-design (publishable key — the modern anon key).
+   Both phones derive a room from the same shared PIN, and the
+   SQL in supabase.sql locks everything else down.
    ============================================================ */
 const SUPABASE = {
-  url: '',        // e.g. 'https://abcdefghijklm.supabase.co'
-  anonKey: ''     // the public "anon" key from Project Settings → API
+  url: 'https://noyygwqcgfikqwrzgaoq.supabase.co',
+  anonKey: 'sb_publishable_ndn3cYDZNKztbf61BxPCtg_PPMEUnck'
 };
-const SUPABASE_TABLE_SQL_OK = false; // flipped to true once you've run supabase.sql
+const SUPABASE_TABLE_SQL_OK = true; // false until supabase.sql has been run once
 /* ============================================================ */
 
 const REST = {
@@ -2063,7 +2062,15 @@ async function doSync(manual, secretOverride){
     });
     if (!res.ok){
       let msg = 'Sync failed (' + res.status + ')';
-      try { const j = await res.json(); msg = (j.message || j.msg || msg); } catch(e){}
+      try {
+        const j = await res.json();
+        msg = (j.message || j.msg || msg);
+        if (j.code === 'PGRST202' || /could not find the function/i.test(msg)){
+          msg = 'Database setup isn\u2019t finished yet — open Supabase → SQL Editor and run supabase.sql once.';
+        } else if (res.status === 401 || res.status === 403){
+          msg = 'Sync store rejected the app key — check the URL/key in the SYNC CONFIG block.';
+        }
+      } catch(e){}
       throw new Error(msg);
     }
     const remote = await res.json();
