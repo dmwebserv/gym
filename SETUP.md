@@ -17,12 +17,20 @@ If you're setting this up again from scratch (e.g. a new project), re-create
 it with the two steps below — otherwise jump straight to **Connect the
 phones**.
 
-## 1. One-time database setup (2 minutes, only if not done yet)
+## 1. One-time database setup (2 minutes)
 
 1. Go to <https://supabase.com> → your project.
 2. Click **SQL Editor** → **New query**.
 3. Paste the *whole* contents of this repo's **`supabase.sql`** in and click **Run**.
    You should see `Success. No rows returned`.
+
+> **If you previously ran an older copy of `supabase.sql` and got a
+> `digest(text, unknown)` error when connecting:** that version needed a
+> database extension that wasn't available. Just re-run the *current*
+> `supabase.sql` (it replaces the function, no pgcrypto needed), then in the
+> app go **Settings → Sync → Reconnect (enter the shared PIN)** and enter the
+> same PIN on both phones.
+
 4. If you ever need new keys: **Project Settings** (gear icon) → **API**.
    Copy the **Project URL** (`https://xxxx.supabase.co`) and the
    **publishable** key (starts with `sb_publishable_...` — this is the modern
