@@ -20,11 +20,12 @@
     --line:#2A333C;
     --chalk:#EDE8DF;
     --muted:#7C8894;
-    --d1:#F5C518;
-    --d2:#4C8DFF;
+    --d1:#F5C518;   /* Danny  */
+    --d2:#4C8DFF;   /* Kieran */
     --d3:#F0575C;
     --accent:var(--d1);
     --pad:20px;
+    --tabh:64px;
   }
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
   html{-webkit-text-size-adjust:100%;}
@@ -34,11 +35,52 @@
     font-family:'Archivo',system-ui,sans-serif;
     font-size:16px;
     line-height:1.45;
-    padding:max(env(safe-area-inset-top),14px) var(--pad) calc(env(safe-area-inset-bottom) + 48px);
+    padding:max(env(safe-area-inset-top),14px) var(--pad) calc(env(safe-area-inset-bottom) + var(--tabh) + 34px);
     max-width:620px;
     margin:0 auto;
     overscroll-behavior-y:contain;
+    min-height:100vh;
   }
+
+  button{font-family:inherit;}
+
+  /* ---- person switcher ---- */
+  .persons{display:flex;gap:6px;margin-bottom:12px;}
+  .person{
+    flex:1;
+    display:flex;align-items:center;justify-content:center;gap:8px;
+    background:transparent;
+    border:1px solid var(--line);
+    color:var(--muted);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    font-weight:500;
+    letter-spacing:.1em;
+    padding:9px 0 8px;
+    border-radius:3px;
+    cursor:pointer;
+    text-transform:uppercase;
+    transition:color .15s,border-color .15s,background .15s,box-shadow .15s;
+  }
+  .person .dot{width:8px;height:8px;border-radius:50%;background:transparent;flex:none;}
+  .person[data-a="0"] .dot{background:var(--d1);}
+  .person[data-a="1"] .dot{background:var(--d2);}
+  .person[aria-pressed="true"]{
+    border-color:var(--pc,var(--line));
+    color:var(--chalk);
+    box-shadow:inset 0 0 0 1px var(--pc,var(--line));
+  }
+  .person:focus-visible{outline:2px solid var(--chalk);outline-offset:2px;}
+  .gear{
+    flex:none;width:46px;
+    border:1px solid var(--line);border-radius:3px;background:transparent;
+    color:var(--muted);font-size:20px;line-height:1;cursor:pointer;
+    transition:color .15s,border-color .15s;
+  }
+  .gear:hover{color:var(--chalk);border-color:var(--chalk);}
+  .gear:focus-visible{outline:2px solid var(--chalk);outline-offset:2px;}
+  .toprow{display:flex;gap:8px;align-items:stretch;margin-bottom:12px;}
+  .toprow .persons{flex:1;margin-bottom:0;}
 
   /* ---- day switcher ---- */
   .switch{display:flex;gap:6px;margin-bottom:26px;}
@@ -73,6 +115,7 @@
     text-transform:uppercase;
   }
   .eyebrow .live{color:var(--accent);}
+  .eyebrow .who{color:var(--pc,#fff);font-weight:600;}
   h1{
     font-size:clamp(46px,15vw,64px);
     font-weight:900;
@@ -82,19 +125,9 @@
     text-transform:uppercase;
   }
   h1 .idx{color:var(--accent);}
-  .focus{
-    font-size:17px;
-    font-weight:600;
-    color:var(--chalk);
-    letter-spacing:-.01em;
-  }
-  .stats{
-    font-family:'IBM Plex Mono',monospace;
-    font-size:12px;
-    color:var(--muted);
-    margin-top:9px;
-    letter-spacing:.02em;
-  }
+  h1.small{font-size:clamp(34px,10vw,44px);line-height:.95;}
+  .focus{font-size:17px;font-weight:600;color:var(--chalk);letter-spacing:-.01em;}
+  .stats{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted);margin-top:9px;letter-spacing:.02em;}
   .restnote{
     border:1px dashed var(--line);
     border-radius:4px;
@@ -107,11 +140,7 @@
   .restnote b{color:var(--chalk);font-weight:600;}
 
   /* ---- blocks ---- */
-  .block{
-    margin-top:26px;
-    border-top:1px solid var(--line);
-    padding-top:16px;
-  }
+  .block{margin-top:26px;border-top:1px solid var(--line);padding-top:16px;}
   .block-label{
     font-family:'IBM Plex Mono',monospace;
     font-size:11.5px;
@@ -126,137 +155,127 @@
   ol{list-style:none;margin-top:6px;}
   li.ex{
     display:grid;
-    grid-template-columns:34px 1fr auto;
+    grid-template-columns:36px 1fr auto;
     column-gap:12px;
     padding:15px 0 14px;
     border-bottom:1px solid var(--line);
-    align-items:baseline;
+    align-items:start;
   }
   li.ex:last-child{border-bottom:none;}
   li.ex{cursor:pointer;transition:opacity .22s ease;}
   li.ex:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:3px;}
-  li.ex:active{opacity:.6;}
+  li.ex:active{opacity:.75;}
   .num{
-    grid-row:1/3;
     font-family:'IBM Plex Mono',monospace;
     font-size:15px;
     font-weight:600;
     color:var(--accent);
     opacity:.65;
+    line-height:1.3;
   }
   .num .tk{display:none;}
 
+  .mid{min-width:0;}
+  .side{text-align:right;min-width:118px;display:flex;flex-direction:column;align-items:flex-end;gap:6px;}
+
+  .name{font-size:18.5px;font-weight:700;letter-spacing:-.015em;line-height:1.2;display:block;}
+  .meta{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px;
+    color:var(--muted);
+    margin-top:5px;
+    letter-spacing:.03em;
+    text-transform:uppercase;
+    display:block;
+    line-height:1.5;
+  }
+  .meta .count{color:var(--chalk);font-weight:500;}
+  .meta .count.final{color:var(--accent);}
+  .meta .also{text-transform:none;letter-spacing:.01em;}
+  .meta .choice{color:var(--pc,var(--chalk));}
+  .restline{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    color:var(--muted);
+    margin-top:3px;
+    letter-spacing:.04em;
+    opacity:.8;
+    display:block;
+  }
+
+  .prescribe{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13px;
+    font-weight:600;
+    color:var(--muted);
+    white-space:nowrap;
+    letter-spacing:-.01em;
+    line-height:1.4;
+  }
+  .pill{
+    min-width:96px;
+    height:42px;
+    padding:0 14px;
+    display:inline-flex;align-items:center;justify-content:center;gap:7px;
+    border:1px solid var(--line);
+    border-radius:3px;
+    background:transparent;
+    color:var(--chalk);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:17px;
+    font-weight:600;
+    letter-spacing:-.01em;
+    cursor:pointer;
+    transition:border-color .15s,background .15s,color .15s,box-shadow .15s;
+    white-space:nowrap;
+  }
+  .pill .u{font-size:10px;color:var(--muted);font-weight:500;letter-spacing:.05em;}
+  .pill.has{color:var(--pc,var(--accent));border-color:rgba(255,255,255,.14);box-shadow:inset 0 0 0 1px var(--pc,var(--accent));}
+  .pill.logged{background:var(--pc,var(--accent));border-color:var(--pc,var(--accent));color:var(--base);}
+  .pill.logged .u{color:inherit;opacity:.65;}
+  .pill:focus-visible{outline:2px solid var(--chalk);outline-offset:2px;}
+  .pbline{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    letter-spacing:.03em;
+    color:var(--muted);
+    line-height:1.45;
+    text-align:right;
+    white-space:nowrap;
+  }
+  .pbline b{color:var(--pc,var(--accent));font-weight:600;}
+  .pbline.blank{opacity:.55;}
+
   /* completed */
-  li.ex.done{opacity:.34;}
+  li.ex.done{opacity:.4;}
   li.ex.done .name{text-decoration:line-through;text-decoration-thickness:1.5px;font-weight:600;}
   li.ex.done .num .n{display:none;}
   li.ex.done .num .tk{display:inline;opacity:1;font-size:16px;}
   li.ex.done .num{opacity:1;}
 
-  /* progress */
-  .progress{
-    display:flex;
-    align-items:center;
-    gap:12px;
-    margin-top:14px;
-  }
-  .bar{
-    flex:1;
-    height:3px;
-    background:var(--line);
-    border-radius:2px;
-    overflow:hidden;
-  }
-  .bar span{
-    display:block;
-    height:100%;
-    width:0;
-    background:var(--accent);
-    transition:width .3s cubic-bezier(.2,.7,.3,1);
-  }
-  .ptext{
-    font-family:'IBM Plex Mono',monospace;
-    font-size:11.5px;
-    letter-spacing:.12em;
-    color:var(--muted);
-    white-space:nowrap;
-  }
+  /* progress bar */
+  .progress{display:flex;align-items:center;gap:12px;margin-top:14px;}
+  .bar{flex:1;height:3px;background:var(--line);border-radius:2px;overflow:hidden;}
+  .bar span{display:block;height:100%;width:0;background:var(--accent);transition:width .3s cubic-bezier(.2,.7,.3,1);}
+  .ptext{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.12em;color:var(--muted);white-space:nowrap;}
   .ptext.complete{color:var(--accent);}
   .reset{
-    background:none;
-    border:1px solid var(--line);
-    color:var(--muted);
-    font-family:'IBM Plex Mono',monospace;
-    font-size:10.5px;
-    letter-spacing:.12em;
-    text-transform:uppercase;
-    padding:6px 10px;
-    border-radius:3px;
-    cursor:pointer;
+    background:none;border:1px solid var(--line);color:var(--muted);
+    font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.12em;
+    text-transform:uppercase;padding:6px 10px;border-radius:3px;cursor:pointer;
   }
   .reset:focus-visible{outline:2px solid var(--chalk);outline-offset:2px;}
   .taphint{
-    font-family:'IBM Plex Mono',monospace;
-    font-size:11px;
-    letter-spacing:.1em;
-    color:var(--muted);
-    text-transform:uppercase;
-    margin-bottom:2px;
-  }
-  .name{
-    font-size:18.5px;
-    font-weight:700;
-    letter-spacing:-.015em;
-    line-height:1.2;
-  }
-  .prescribe{
-    font-family:'IBM Plex Mono',monospace;
-    font-size:16px;
-    font-weight:600;
-    white-space:nowrap;
-    letter-spacing:-.01em;
-  }
-  .meta{
-    grid-column:2;
-    font-family:'IBM Plex Mono',monospace;
-    font-size:12px;
-    color:var(--muted);
-    margin-top:5px;
-    letter-spacing:.03em;
-    text-transform:uppercase;
-  }
-  .meta .count{color:var(--chalk);font-weight:500;}
-  .meta .count.final{color:var(--accent);}
-  .meta .also{text-transform:none;letter-spacing:.01em;}
-  .rest{
-    grid-column:3;
-    font-family:'IBM Plex Mono',monospace;
-    font-size:11.5px;
-    color:var(--muted);
-    margin-top:5px;
-    white-space:nowrap;
-    text-align:right;
+    font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;
+    color:var(--muted);text-transform:uppercase;margin-bottom:2px;
   }
 
   /* ---- reference ---- */
-  details{
-    margin-top:14px;
-    border:1px solid var(--line);
-    border-radius:4px;
-    overflow:hidden;
-  }
+  details{margin-top:14px;border:1px solid var(--line);border-radius:4px;overflow:hidden;}
   summary{
-    list-style:none;
-    cursor:pointer;
-    padding:14px 15px;
-    font-family:'IBM Plex Mono',monospace;
-    font-size:12px;
-    letter-spacing:.16em;
-    text-transform:uppercase;
-    color:var(--muted);
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
+    list-style:none;cursor:pointer;padding:14px 15px;
+    font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--muted);display:flex;justify-content:space-between;align-items:center;
   }
   summary::-webkit-details-marker{display:none;}
   summary::after{content:'+';font-size:17px;color:var(--accent);line-height:1;}
@@ -267,54 +286,364 @@
   .ref-body ul{margin:9px 0 0 17px;}
   .ref-body li{margin-bottom:7px;}
   .ref-body strong{font-weight:700;}
-  .ref-row{
-    display:flex;
-    gap:14px;
-    padding:10px 0;
-    border-bottom:1px solid var(--line);
-    font-size:14.5px;
-    align-items:baseline;
-  }
+  .ref-row{display:flex;gap:14px;padding:10px 0;border-bottom:1px solid var(--line);font-size:14.5px;align-items:baseline;}
   .ref-row:last-child{border-bottom:none;}
   .ref-row .k{flex:1;color:var(--chalk);}
-  .ref-row .v{
-    font-family:'IBM Plex Mono',monospace;
-    font-size:13px;
-    color:var(--accent);
-    white-space:nowrap;
-    text-align:right;
+  .ref-row .v{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--accent);white-space:nowrap;text-align:right;}
+
+  /* ---- bottom tabs ---- */
+  .tabbar{
+    position:fixed;left:0;right:0;bottom:0;z-index:40;
+    display:flex;justify-content:center;gap:6px;
+    padding:8px var(--pad) calc(env(safe-area-inset-bottom) + 8px);
+    background:rgba(18,22,26,.92);
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    border-top:1px solid var(--line);
+    pointer-events:none;
   }
+  .tabbar nav{
+    pointer-events:auto;
+    width:100%;max-width:520px;
+    display:flex;gap:6px;
+  }
+  .tabbar button{
+    flex:1;
+    display:flex;flex-direction:column;align-items:center;gap:3px;
+    background:transparent;border:none;border-radius:6px;
+    color:var(--muted);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;
+    padding:7px 0 5px;cursor:pointer;
+    transition:color .15s,background .15s;
+  }
+  .tabbar button svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+  .tabbar button[aria-pressed="true"]{color:var(--accent);background:rgba(255,255,255,.04);}
+  .tabbar button:focus-visible{outline:2px solid var(--chalk);outline-offset:2px;}
+
+  /* ---- modal shell ---- */
+  .overlay{
+    position:fixed;inset:0;z-index:60;
+    display:flex;align-items:flex-end;justify-content:center;
+    background:rgba(8,10,12,.62);
+    animation:fade .2s ease both;
+  }
+  .sheet{
+    width:100%;max-width:620px;max-height:min(88vh,860px);
+    overflow-y:auto;
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-bottom:none;
+    border-radius:14px 14px 0 0;
+    padding:20px var(--pad) calc(env(safe-area-inset-bottom) + 20px);
+    animation:rise .3s cubic-bezier(.2,.7,.3,1) both;
+  }
+  .sheet.full{
+    border-radius:0;max-height:none;height:100%;max-width:620px;margin:0 auto;
+    padding-top:calc(env(safe-area-inset-top) + 16px);
+    animation:fade .2s ease both;
+  }
+  .overlay.center{align-items:center;}
+  .overlay.center .sheet{border-radius:14px;border-bottom:1px solid var(--line);max-height:90vh;}
+  .grab{width:44px;height:4px;border-radius:2px;background:var(--line);margin:0 auto 16px;flex:none;}
+  .modal-title{
+    font-size:21px;font-weight:700;letter-spacing:-.015em;line-height:1.2;
+    display:flex;align-items:baseline;gap:10px;justify-content:space-between;
+  }
+  .modal-sub{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase;margin-top:7px;}
+  .close-x{
+    background:none;border:1px solid var(--line);color:var(--muted);
+    width:34px;height:34px;border-radius:50%;font-size:16px;line-height:1;cursor:pointer;flex:none;
+  }
+  .close-x:focus-visible{outline:2px solid var(--chalk);outline-offset:2px;}
+  .modal-sec{margin-top:22px;}
+  .modal-sec > .lbl{
+    font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.18em;
+    color:var(--muted);text-transform:uppercase;margin-bottom:9px;display:block;
+  }
+
+  /* log sheet */
+  .presc-line{
+    display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:14px;
+    font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--muted);letter-spacing:.02em;
+  }
+  .presc-line b{color:var(--chalk);font-weight:600;}
+  .choicechips{display:flex;gap:8px;margin-top:4px;}
+  .choicechips button{
+    flex:1;border:1px solid var(--line);background:transparent;color:var(--muted);
+    font-size:14.5px;font-weight:600;padding:11px 8px;border-radius:3px;cursor:pointer;
+    transition:all .15s;
+  }
+  .choicechips button[aria-pressed="true"]{border-color:var(--pc,var(--accent));color:var(--base);background:var(--pc,var(--accent));}
+  .choicechips button:focus-visible{outline:2px solid var(--chalk);outline-offset:2px;}
+  .hint-row{
+    margin-top:16px;border:1px dashed var(--line);border-radius:4px;
+    padding:12px 13px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;line-height:1.55;color:var(--muted);
+  }
+  .hint-row b{color:var(--accent);font-weight:600;}
+  .hint-row .pb{color:var(--chalk);}
+  .hint-row.pb-new{border-color:var(--accent);background:rgba(245,197,24,.06);}
+
+  .winput-wrap{margin-top:18px;text-align:center;}
+  .winput{
+    width:100%;max-width:260px;text-align:center;
+    background:transparent;border:none;border-bottom:2px solid var(--line);
+    color:var(--chalk);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:56px;font-weight:600;letter-spacing:-.02em;
+    padding:2px 0 8px;outline:none;caret-color:var(--accent);
+    -moz-appearance:textfield;
+  }
+  .winput::-webkit-outer-spin-button,.winput::-webkit-inner-spin-button{-webkit-appearance:none;}
+  .winput:focus{border-bottom-color:var(--accent);}
+  .wunit{font-family:'IBM Plex Mono',monospace;color:var(--muted);font-size:14px;letter-spacing:.1em;text-transform:uppercase;margin-top:6px;display:block;}
+  .quickchips{display:flex;gap:8px;justify-content:center;margin-top:16px;flex-wrap:wrap;}
+  .qchip{
+    border:1px solid var(--line);background:var(--base);color:var(--chalk);
+    font-family:'IBM Plex Mono',monospace;font-size:15px;font-weight:600;
+    min-width:64px;padding:11px 12px;border-radius:3px;cursor:pointer;
+    transition:border-color .15s,color .15s,background .15s;
+  }
+  .qchip.small{min-width:0;font-size:13px;padding:10px 13px;}
+  .qchip:hover{border-color:var(--accent);color:var(--accent);}
+  .qchip:focus-visible{outline:2px solid var(--chalk);outline-offset:2px;}
+
+  .reps-block{margin-top:22px;}
+  .reps-title{
+    display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;
+    font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.18em;
+    color:var(--muted);text-transform:uppercase;
+  }
+  .reps-title .toggle{color:var(--accent);text-transform:uppercase;font-size:10px;letter-spacing:.12em;border:none;background:none;cursor:pointer;font-family:inherit;}
+  .setrow{
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    padding:10px 0;border-bottom:1px solid var(--line);
+    font-family:'IBM Plex Mono',monospace;
+  }
+  .setrow:last-child{border-bottom:none;}
+  .setrow .s{color:var(--muted);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;}
+  .setstepper{display:flex;align-items:center;gap:0;}
+  .setstepper button{
+    width:42px;height:38px;border:1px solid var(--line);background:var(--base);
+    color:var(--chalk);font-size:18px;cursor:pointer;line-height:1;
+  }
+  .setstepper button:first-child{border-radius:3px 0 0 3px;}
+  .setstepper button:last-child{border-radius:0 3px 3px 0;}
+  .setstepper button:focus-visible{outline:2px solid var(--chalk);outline-offset:1px;}
+  .setstepper input{
+    width:52px;height:38px;border:1px solid var(--line);border-left:none;border-right:none;
+    background:var(--base);color:var(--chalk);text-align:center;
+    font-family:'IBM Plex Mono',monospace;font-size:15px;font-weight:600;outline:none;
+  }
+
+  .cta-row{display:flex;gap:10px;margin-top:26px;}
+  .cta{
+    flex:1;border:none;border-radius:4px;padding:16px 10px;
+    font-size:16px;font-weight:700;letter-spacing:-.01em;cursor:pointer;
+    font-family:inherit;
+    transition:transform .1s,opacity .15s;
+  }
+  .cta:active{transform:scale(.98);}
+  .cta.primary{background:var(--pc,var(--accent));color:var(--base);}
+  .cta.ghost{background:transparent;border:1px solid var(--line);color:var(--muted);font-weight:600;}
+  .cta.danger{background:transparent;border:1px solid var(--d3);color:var(--d3);}
+  .cta:disabled{opacity:.4;cursor:default;}
+  .cta:focus-visible{outline:2px solid var(--chalk);outline-offset:2px;}
+  .cta .sub{display:block;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;opacity:.6;margin-top:3px;}
+
+  /* toast */
+  .toast{
+    position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom) + var(--tabh) + 14px);
+    z-index:80;max-width:calc(100% - 40px);
+    background:var(--pc,var(--accent));color:var(--base);
+    font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;letter-spacing:.08em;
+    padding:12px 18px;border-radius:4px;text-align:center;
+    box-shadow:0 8px 30px rgba(0,0,0,.4);
+    animation:rise .25s cubic-bezier(.2,.7,.3,1) both;
+    display:none;
+  }
+  .toast.show{display:block;}
+
+  /* progress tab */
+  .sumline{
+    display:flex;gap:8px;margin-top:16px;flex-wrap:wrap;
+  }
+  .statcard{
+    flex:1;min-width:110px;border:1px solid var(--line);border-radius:4px;padding:12px 13px;
+  }
+  .statcard .v{font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:600;color:var(--pc,var(--accent));line-height:1;}
+  .statcard .k{font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase;margin-top:7px;display:block;line-height:1.5;}
+  .pr-group{margin-top:22px;}
+  .pr-group .glabel{
+    font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.2em;color:var(--muted);
+    text-transform:uppercase;margin-bottom:2px;display:flex;justify-content:space-between;
+  }
+  .pr-row{
+    display:flex;align-items:center;gap:12px;
+    padding:13px 0;border-bottom:1px solid var(--line);cursor:pointer;
+    transition:opacity .15s;
+  }
+  .pr-row:last-child{border-bottom:none;}
+  .pr-row:active{opacity:.6;}
+  .pr-row .rn{flex:1;min-width:0;}
+  .pr-row .rn .nm{font-size:16.5px;font-weight:700;letter-spacing:-.015em;line-height:1.25;display:block;}
+  .pr-row .rn .mus{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-top:3px;display:block;}
+  .pr-row .pbv{text-align:right;flex:none;}
+  .pr-row .pbv .w{font-family:'IBM Plex Mono',monospace;font-size:18px;font-weight:600;color:var(--pc,var(--accent));white-space:nowrap;}
+  .pr-row .pbv .d{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);white-space:nowrap;margin-top:2px;}
+  .spark{flex:none;width:74px;height:28px;}
+  .spark svg{width:100%;height:100%;display:block;}
+  .empty{padding:30px 6px;text-align:center;color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:12.5px;letter-spacing:.04em;line-height:1.8;}
+  .hist-item{padding:13px 0;border-bottom:1px solid var(--line);}
+  .hist-item:last-child{border-bottom:none;}
+  .hist-item .hrow{display:flex;align-items:baseline;justify-content:space-between;gap:10px;}
+  .hist-item .hdate{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;}
+  .hist-item .hw{font-family:'IBM Plex Mono',monospace;font-size:17px;font-weight:600;}
+  .hist-item .hw.pb-mark{color:var(--accent);}
+  .hist-item .hw .tag{font-size:9.5px;letter-spacing:.1em;color:var(--accent);vertical-align:middle;}
+  .hist-item .hreps{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted);margin-top:3px;}
+
+  /* timer */
+  .timer-card{margin-top:26px;text-align:center;}
+  .tring{
+    width:min(280px,72vw);height:min(280px,72vw);margin:6px auto 0;
+    border-radius:50%;position:relative;
+    background:conic-gradient(var(--accent) 0deg,var(--line) 0deg);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .tring::before{
+    content:'';position:absolute;inset:12px;border-radius:50%;background:var(--base);
+  }
+  .tdisp{position:relative;z-index:1;font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:52px;letter-spacing:-.02em;}
+  .tdisp .unit{font-size:14px;color:var(--muted);letter-spacing:.08em;margin-left:4px;}
+  .tctl{display:flex;gap:10px;justify-content:center;margin-top:22px;}
+  .tctl button{flex:none;min-width:112px;}
+  .tpresets{display:flex;gap:8px;margin-top:20px;flex-wrap:wrap;justify-content:center;}
+  .tpreset{
+    border:1px solid var(--line);background:var(--base);color:var(--muted);
+    font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;letter-spacing:.04em;
+    padding:10px 14px;border-radius:3px;cursor:pointer;
+  }
+  .tpreset[aria-pressed="true"]{border-color:var(--accent);color:var(--accent);}
+  .tend-note{margin-top:26px;border:1px dashed var(--line);border-radius:4px;padding:14px 15px;font-size:14px;color:var(--muted);line-height:1.55;text-align:left;}
+  .tend-note b{color:var(--chalk);}
+  .tend-note.show{display:block;}
+
+  /* settings */
+  .set-row{padding:14px 0;border-bottom:1px solid var(--line);}
+  .set-row:last-child{border-bottom:none;}
+  .set-row .sk{font-weight:700;font-size:15.5px;display:flex;align-items:center;gap:9px;letter-spacing:-.01em;}
+  .set-row .sk .dot{width:9px;height:9px;border-radius:50%;flex:none;}
+  .set-row .sv{font-size:13.5px;color:var(--muted);margin-top:4px;line-height:1.55;}
+  .set-row .sv b{color:var(--chalk);font-weight:600;}
+  .set-row .sv.ok{color:#6FC98F;}
+  .set-row .sv.warn{color:var(--d1);}
+  .name-edit{
+    display:flex;gap:8px;align-items:center;margin-top:8px;
+  }
+  .name-edit input{
+    flex:1;background:var(--base);border:1px solid var(--line);border-radius:3px;
+    color:var(--chalk);font-size:16px;font-weight:600;padding:10px 12px;outline:none;
+    font-family:inherit;
+  }
+  .name-edit input:focus{border-color:var(--accent);}
+  .mini-btn{
+    border:1px solid var(--line);background:var(--base);color:var(--muted);
+    font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;letter-spacing:.1em;
+    padding:9px 13px;border-radius:3px;cursor:pointer;text-transform:uppercase;
+  }
+  .mini-btn:hover{color:var(--chalk);border-color:var(--chalk);}
+  .mini-btn:focus-visible{outline:2px solid var(--chalk);outline-offset:2px;}
+  .mini-btn.accent{color:var(--accent);border-color:rgba(255,255,255,.18);}
+  .sync-status{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--muted);}
+  .dotlive{width:8px;height:8px;border-radius:50%;background:var(--muted);flex:none;}
+  .dotlive.ok{background:#6FC98F;}
+  .dotlive.busy{background:var(--d1);animation:pulse 1s infinite;}
+  .dotlive.err{background:var(--d3);}
+
+  /* onboard */
+  .onb-title{font-size:28px;font-weight:900;letter-spacing:-.03em;text-transform:uppercase;line-height:1;}
+  .onb-sub{color:var(--muted);font-size:15px;margin-top:10px;line-height:1.6;}
+  .onb-cards{display:flex;gap:10px;margin-top:22px;}
+  .onb-card{
+    flex:1;border:1px solid var(--line);border-radius:6px;background:var(--base);
+    padding:22px 10px;text-align:center;cursor:pointer;transition:all .15s;
+  }
+  .onb-card:active{transform:scale(.97);}
+  .onb-card:focus-visible{outline:2px solid var(--chalk);outline-offset:2px;}
+  .onb-card .ava{width:54px;height:54px;border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:900;color:var(--base);}
+  .onb-card .nm{font-size:16px;font-weight:700;}
+  .onb-card .who{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase;margin-top:4px;}
 
   footer{
-    margin-top:34px;
-    padding-top:16px;
-    border-top:1px solid var(--line);
-    font-family:'IBM Plex Mono',monospace;
-    font-size:11px;
-    letter-spacing:.06em;
-    color:var(--muted);
-    line-height:1.7;
+    margin-top:34px;padding-top:16px;border-top:1px solid var(--line);
+    font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.04em;
+    color:var(--muted);line-height:1.75;
   }
+  footer .sync-line{margin-top:8px;display:flex;align-items:center;gap:7px;}
+  footer .sync-line button{border:none;background:none;color:var(--accent);font-family:inherit;font-size:10px;letter-spacing:.04em;cursor:pointer;padding:0;text-decoration:underline;}
 
-  @keyframes rise{from{opacity:0;transform:translateY(7px);}to{opacity:1;transform:none;}}
+  @keyframes rise{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+  @keyframes fade{from{opacity:0;}to{opacity:1;}}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
   .anim{animation:rise .4s cubic-bezier(.2,.7,.3,1) both;}
   @media (prefers-reduced-motion:reduce){
-    .anim{animation:none;}
+    .anim,.sheet,.overlay{animation:none!important;}
     *{transition:none!important;}
+  }
+  @media (min-width:700px){
+    .overlay{align-items:center;padding:24px;}
+    .sheet{border-radius:14px;border-bottom:1px solid var(--line);max-height:90vh;}
   }
 </style>
 </head>
 <body>
 
-<nav class="switch" id="switch" aria-label="Choose session"></nav>
+<header id="topbar">
+  <div class="toprow">
+    <div class="persons" id="persons" aria-label="Who is training"></div>
+    <button class="gear" id="gearbtn" aria-label="Open settings">⚙︎</button>
+  </div>
+  <nav class="switch" id="switch" aria-label="Choose session"></nav>
+</header>
 <main id="app" aria-live="polite"></main>
 
+<div class="tabbar" aria-label="App sections">
+  <nav id="tabnav"></nav>
+</div>
+
+<div id="overlayroot"></div>
+<div class="toast" id="toast" role="status"></div>
+
 <script>
+/* ============================================================
+   SYNC CONFIG — where the app connects the two phones.
+   To switch on syncing you need a free Supabase project:
+   see SETUP.md in this repository for the 3-minute walkthrough.
+   Paste your two public keys between the quotes below, save,
+   and push — the site redeploys itself. Until then the app
+   runs fully offline, saving to each phone only.
+   ============================================================ */
+const SUPABASE = {
+  url: '',        // e.g. 'https://abcdefghijklm.supabase.co'
+  anonKey: ''     // the public "anon" key from Project Settings → API
+};
+const SUPABASE_TABLE_SQL_OK = false; // flipped to true once you've run supabase.sql
+/* ============================================================ */
+
 const REST = {
   compound:'90–120s rest',
   isolation:'45–75s rest',
   core:'30–60s rest'
 };
+const REST_MIN = { compound:105, isolation:60, core:45 }; // timer defaults (s)
+
+const PEOPLE_DEF = [
+  { id:'danny',  name:'Danny',  color:'--d1', initial:'D' },
+  { id:'kieran', name:'Kieran', color:'--d2', initial:'K' }
+];
+
+const UNIT = 'kg';
+const MAXW = 500;
 
 const DAYS = [
   {
@@ -322,13 +651,13 @@ const DAYS = [
     warmup:'3–5 minutes treadmill or bike, then light warm-up sets for your first exercise.',
     finisher:'10 minutes incline treadmill at a brisk walking pace.',
     ex:[
-      {name:'Leg Press',                 sets:'3 × 8–10',   muscle:'Quads',      c:[1,3], also:'glutes',            type:'compound'},
-      {name:'Dumbbell Bench Press',      sets:'3 × 8–10',   muscle:'Chest',      c:[1,3], also:'triceps, front delts', type:'compound'},
-      {name:'Lat Pulldown',              sets:'3 × 8–12',   muscle:'Lats',       c:[1,2], also:'biceps',            type:'compound'},
-      {name:'Romanian Deadlift',         sets:'3 × 8–10',   muscle:'Hamstrings', c:[1,3], also:'glutes, lower back',type:'compound'},
-      {name:'Lateral Raises',            sets:'3 × 12–15',  muscle:'Side delts', c:[1,2], also:'',                  type:'isolation'},
-      {name:'Cable Triceps Pushdown',    sets:'2 × 10–15',  muscle:'Triceps',    c:[1,2], also:'',                  type:'isolation'},
-      {name:'Dumbbell Biceps Curls',     sets:'2 × 10–15',  muscle:'Biceps',     c:[1,2], also:'',                  type:'isolation'}
+      {name:'Leg Press',                 sets:'3 × 8–10',   muscle:'Quads',      c:[1,3], also:'glutes',            type:'compound', canon:'leg-press'},
+      {name:'Dumbbell Bench Press',      sets:'3 × 8–10',   muscle:'Chest',      c:[1,3], also:'triceps, front delts', type:'compound', canon:'db-bench'},
+      {name:'Lat Pulldown',              sets:'3 × 8–12',   muscle:'Lats',       c:[1,2], also:'biceps',            type:'compound', canon:'lat-pulldown'},
+      {name:'Romanian Deadlift',         sets:'3 × 8–10',   muscle:'Hamstrings', c:[1,3], also:'glutes, lower back',type:'compound', canon:'rdl'},
+      {name:'Lateral Raises',            sets:'3 × 12–15',  muscle:'Side delts', c:[1,2], also:'',                  type:'isolation', canon:'lat-raise'},
+      {name:'Cable Triceps Pushdown',    sets:'2 × 10–15',  muscle:'Triceps',    c:[1,2], also:'',                  type:'isolation', canon:'tri-pushdown'},
+      {name:'Dumbbell Biceps Curls',     sets:'2 × 10–15',  muscle:'Biceps',     c:[1,2], also:'',                  type:'isolation', canon:'db-curl'}
     ]
   },
   {
@@ -336,15 +665,16 @@ const DAYS = [
     warmup:'3–5 minutes treadmill, bike or cross trainer, then light warm-up sets.',
     finisher:'8–10 minutes bike or cross trainer: 1 minute moderate, 30 seconds harder.',
     ex:[
-      {name:'Goblet Squat or Hack Squat',sets:'3 × 8–12',   muscle:'Quads',      c:[2,3], also:'glutes',            type:'compound'},
-      {name:'Incline Dumbbell Press',    sets:'3 × 8–12',   muscle:'Chest',      c:[2,3], also:'upper chest, triceps', type:'compound'},
-      {name:'Seated Cable Row',          sets:'3 × 8–12',   muscle:'Mid back',   c:[1,2], also:'biceps, rear delts',type:'compound'},
-      {name:'Hip Thrust',                sets:'3 × 8–12',   muscle:'Glutes',     c:[1,1], also:'hamstrings',        type:'compound'},
-      {name:'Shoulder Press',            sets:'2 × 8–12',   muscle:'Front delts',c:[1,1], also:'triceps',           type:'compound'},
-      {name:'Leg Curl',                  sets:'2 × 10–15',  muscle:'Hamstrings', c:[2,3], also:'',                  type:'isolation'},
-      {name:'Plank',                     sets:'2 × 30–45s', muscle:'Core',       c:[1,3], also:'',                  type:'core'},
-      {name:'Cable Crunch',              sets:'2 × 12–15',  muscle:'Core',       c:[2,3], also:'',                  type:'core'},
-      {name:'Dead Bug',                  sets:'2 × 8–10 ea',muscle:'Core',       c:[3,3], also:'',                  type:'core'}
+      {name:'Goblet Squat or Hack Squat',sets:'3 × 8–12',   muscle:'Quads',      c:[2,3], also:'glutes',            type:'compound', canon:'squat', opts:[
+        {id:'goblet-squat', name:'Goblet Squat'}, {id:'hack-squat', name:'Hack Squat'}]},
+      {name:'Incline Dumbbell Press',    sets:'3 × 8–12',   muscle:'Chest',      c:[2,3], also:'upper chest, triceps', type:'compound', canon:'incline-db-press'},
+      {name:'Seated Cable Row',          sets:'3 × 8–12',   muscle:'Mid back',   c:[1,2], also:'biceps, rear delts',type:'compound', canon:'cable-row'},
+      {name:'Hip Thrust',                sets:'3 × 8–12',   muscle:'Glutes',     c:[1,1], also:'hamstrings',        type:'compound', canon:'hip-thrust'},
+      {name:'Shoulder Press',            sets:'2 × 8–12',   muscle:'Front delts',c:[1,1], also:'triceps',           type:'compound', canon:'shoulder-press'},
+      {name:'Leg Curl',                  sets:'2 × 10–15',  muscle:'Hamstrings', c:[2,3], also:'',                  type:'isolation', canon:'leg-curl'},
+      {name:'Plank',                     sets:'2 × 30–45s', muscle:'Core',       c:[1,3], also:'',                  type:'core', canon:'plank', bw:true},
+      {name:'Cable Crunch',              sets:'2 × 12–15',  muscle:'Core',       c:[2,3], also:'',                  type:'core', canon:'cable-crunch'},
+      {name:'Dead Bug',                  sets:'2 × 8–10 ea',muscle:'Core',       c:[3,3], also:'',                  type:'core', canon:'dead-bug', bw:true}
     ]
   },
   {
@@ -352,21 +682,35 @@ const DAYS = [
     warmup:'3–5 minutes treadmill or bike, then light warm-up sets.',
     finisher:'10–15 minutes incline treadmill or cross trainer at a steady challenging pace.',
     ex:[
-      {name:'Squat or Leg Press',        sets:'3 × 10–12',  muscle:'Quads',      c:[3,3], also:'glutes',            type:'compound'},
-      {name:'Chest Press Machine',       sets:'3 × 8–12',   muscle:'Chest',      c:[3,3], also:'triceps',           type:'compound'},
-      {name:'Lat Pulldown or Assisted Pull-up', sets:'3 × 8–12', muscle:'Lats',  c:[2,2], also:'biceps',            type:'compound'},
-      {name:'Dumbbell Romanian Deadlift',sets:'3 × 10–12',  muscle:'Hamstrings', c:[3,3], also:'glutes',            type:'compound'},
-      {name:'Cable Row',                 sets:'2 × 10–12',  muscle:'Mid back',   c:[2,2], also:'biceps',            type:'compound'},
-      {name:'Lateral Raises',            sets:'2 × 12–15',  muscle:'Side delts', c:[2,2], also:'',                  type:'isolation'},
-      {name:'Biceps Curls',              sets:'2 × 12–15',  muscle:'Biceps',     c:[2,2], also:'',                  type:'isolation'},
-      {name:'Triceps Pushdowns',         sets:'2 × 12–15',  muscle:'Triceps',    c:[2,2], also:'',                  type:'isolation'}
+      {name:'Squat or Leg Press',        sets:'3 × 10–12',  muscle:'Quads',      c:[3,3], also:'glutes',            type:'compound', canon:'squat-or-leg-press', opts:[
+        {id:'squat', name:'Squat'}, {id:'leg-press', name:'Leg Press'}]},
+      {name:'Chest Press Machine',       sets:'3 × 8–12',   muscle:'Chest',      c:[3,3], also:'triceps',           type:'compound', canon:'chest-press-machine'},
+      {name:'Lat Pulldown or Assisted Pull-up', sets:'3 × 8–12', muscle:'Lats',  c:[2,2], also:'biceps',            type:'compound', canon:'lat-pulldown-or-pullup', opts:[
+        {id:'lat-pulldown', name:'Lat Pulldown'}, {id:'pullup', name:'Assisted Pull-up'}]},
+      {name:'Dumbbell Romanian Deadlift',sets:'3 × 10–12',  muscle:'Hamstrings', c:[3,3], also:'glutes',            type:'compound', canon:'db-rdl'},
+      {name:'Cable Row',                 sets:'2 × 10–12',  muscle:'Mid back',   c:[2,2], also:'biceps',            type:'compound', canon:'cable-row'},
+      {name:'Lateral Raises',            sets:'2 × 12–15',  muscle:'Side delts', c:[2,2], also:'',                  type:'isolation', canon:'lat-raise'},
+      {name:'Biceps Curls',              sets:'2 × 12–15',  muscle:'Biceps',     c:[2,2], also:'',                  type:'isolation', canon:'db-curl'},
+      {name:'Triceps Pushdowns',         sets:'2 × 12–15',  muscle:'Triceps',    c:[2,2], also:'',                  type:'isolation', canon:'tri-pushdown'}
     ]
   }
 ];
 
-/* Progress is saved per day, per date, so Wednesday never opens with
-   Monday's ticks still on it. Tries the host's storage, then the
-   browser's, then falls back to memory for the current visit only. */
+const CANON_LABEL = {
+  'leg-press':'Leg Press','squat':'Squat','goblet-squat':'Goblet Squat','hack-squat':'Hack Squat',
+  'db-bench':'Dumbbell Bench Press','incline-db-press':'Incline Dumbbell Press','lat-pulldown':'Lat Pulldown',
+  'pullup':'Assisted Pull-up','rdl':'Romanian Deadlift','db-rdl':'Dumbbell Romanian Deadlift',
+  'lat-raise':'Lateral Raise','tri-pushdown':'Triceps Pushdown','db-curl':'Biceps Curl',
+  'chest-press-machine':'Chest Press Machine','cable-row':'Cable Row','hip-thrust':'Hip Thrust',
+  'shoulder-press':'Shoulder Press','leg-curl':'Leg Curl','cable-crunch':'Cable Crunch',
+  'plank':'Plank','dead-bug':'Dead Bug','squat-or-leg-press':'Squat or Leg Press','lat-pulldown-or-pullup':'Lat Pulldown or Assisted Pull-up'
+};
+
+/* ============================================================
+   Storage. Tries the host's storage first (so nothing breaks if
+   the page runs inside a shell that injects window.storage),
+   then localStorage, then memory for the current visit only.
+   ============================================================ */
 const mem = {};
 const Store = {
   async get(k){
@@ -381,14 +725,330 @@ const Store = {
   }
 };
 
-const todayKey = () => new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD, local
-const keyFor = day => `session:${day.n}:${todayKey()}`;
-
-let done = new Set();
-let current = null;
-
-const esc = s => String(s).replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]));
+/* ============================================================
+   Tiny utilities
+   ============================================================ */
+const esc = s => String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const uid = p => p + '_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,8);
+const todayKey = () => new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD local
+const fmtGB = (d, withYear) => {
+  const dt = new Date(d + 'T00:00:00');
+  return dt.toLocaleDateString('en-GB', withYear ? {day:'numeric',month:'short',year:'numeric'} : {day:'numeric',month:'short'});
+};
+const pad = n => String(n).padStart(2,'0');
+const wFmt = w => { const x = Math.round(w*100)/100; return Number.isInteger(x) ? String(x) : String(x); };
 const setCount = d => d.ex.reduce((t,e) => t + parseInt(e.sets,10), 0);
+const now = () => Date.now();
+
+// deterministic sha-256 hex (compact, public-domain style implementation)
+const sha256 = (() => {
+  const K=[0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
+  const rotr=(x,n)=>(x>>>n)|(x<<(32-n));
+  const chr=(c)=>c.charCodeAt(0);
+  return function(str){
+    const bytes=unescape(encodeURIComponent(str));
+    const l=bytes.length;
+    let n=Math.ceil((l+1)/64)*64;
+    const msg=new Uint8Array(n+64);
+    for(let i=0;i<l;i++)msg[i]=bytes.charCodeAt(i);
+    msg[l]=0x80;
+    const bitLen=l*8;
+    const dv=new DataView(msg.buffer);
+    dv.setUint32(n,0);dv.setUint32(n+4,0);
+    dv.setUint32(n+8,Math.floor(bitLen/0x100000000));
+    dv.setUint32(n+12,bitLen>>>0);
+    const H=[0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19];
+    const w=new Int32Array(64);
+    for(let off=0;off<msg.length;off+=64){
+      for(let i=0;i<16;i++)w[i]=dv.getUint32(off+i*4);
+      for(let i=16;i<64;i++){
+        const s0=rotr(w[i-15],7)^rotr(w[i-15],18)^(w[i-15]>>>3);
+        const s1=rotr(w[i-2],17)^rotr(w[i-2],19)^(w[i-2]>>>10);
+        w[i]=(w[i-16]+s0+w[i-7]+s1)|0;
+      }
+      let a=H[0],b=H[1],c=H[2],d=H[3],e=H[4],f=H[5],g=H[6],h=H[7];
+      for(let i=0;i<64;i++){
+        const S1=rotr(e,6)^rotr(e,11)^rotr(e,25);
+        const ch=(e&f)^(~e&g);
+        const t1=(h+S1+ch+K[i]+w[i])|0;
+        const S0=rotr(a,2)^rotr(a,13)^rotr(a,22);
+        const maj=(a&b)^(a&c)^(b&c);
+        const t2=(S0+maj)|0;
+        h=g;g=f;f=e;e=(d+t1)|0;d=c;c=b;b=a;a=(t1+t2)|0;
+      }
+      H[0]=(H[0]+a)|0;H[1]=(H[1]+b)|0;H[2]=(H[2]+c)|0;H[3]=(H[3]+d)|0;
+      H[4]=(H[4]+e)|0;H[5]=(H[5]+f)|0;H[6]=(H[6]+g)|0;H[7]=(H[7]+h)|0;
+    }
+    return H.map(x=>(x>>>0).toString(16).padStart(8,'0')).join('');
+  };
+})();
+
+/* ============================================================
+   Parse prescription strings: "3 × 8–10" → {sets:3,min:8,max:10}
+   ============================================================ */
+function parsePresc(s){
+  const m = String(s).replace(/x/gi,'×').replace(/–/g,'-').replace(/—/g,'-').match(/^\s*(\d+)\s*×\s*(\d+)\s*[-–]\s*(\d+)(.*?)\s*$/);
+  if (!m) return null;
+  return { sets:+m[1], min:+m[2], max:+m[3], tail:m[4] };
+}
+
+/* ============================================================
+   State
+   ============================================================ */
+let S = null;                       // settings (see defaults)
+let view = 'session';
+let selDayN = null;                 // selected program day number
+let sessionKey = '';                // for scroll preservation within a view
+const logs = {};                    // pid → { lifts:{id:entry}, ticks:{'dow:date':{items:[],ts}} }
+let toastTimer = null;
+
+function settingsDefault(){
+  return {
+    v:3,
+    onboarded:false,
+    owner:PEOPLE_DEF[0].id,
+    sel:PEOPLE_DEF[0].id,
+    people: PEOPLE_DEF.map(p => ({id:p.id,name:p.name,color:p.color,initial:p.initial})),
+    legacyMigrated:false,
+    lastChoice:{},                  // pid → slotKey → optionId
+    sync:{ pin:'', room:'', lastSync:0, lastErr:'', busy:false }
+  };
+}
+const me = () => S.people.find(p => p.id === S.sel) || S.people[0];
+const pcVar = p => `var(${p.color})`;
+const personDotColor = pid => { const p = S.people.find(x=>x.id===pid); return p ? `var(${p.color})` : 'var(--accent)'; };
+
+function logOf(pid){
+  if (!logs[pid]) logs[pid] = { lifts:{}, ticks:{} };
+  return logs[pid];
+}
+function tickKey(dow, date){ return dow + ':' + date; }
+
+/* all lift entries for a person, newest first */
+function liftsOf(pid){
+  return Object.values(logOf(pid).lifts).sort((a,b) => b.ts - a.ts);
+}
+function liftsByCanon(pid, canon){
+  return liftsOf(pid).filter(e => e.ex === canon);
+}
+function ticksFor(pid, dow, date){
+  const k = tickKey(dow, date);
+  const t = logOf(pid).ticks[k];
+  return t ? t.items.slice() : [];
+}
+
+function personStats(pid, canon){
+  const list = liftsByCanon(pid, canon);
+  if (!list.length) return null;
+  let pb = null, last = null;
+  for (const e of list){                       // list is newest-first
+    if (!last) last = e;
+    if (!pb || e.weight > pb.weight || (e.weight === pb.weight && e.ts < pb.ts)) pb = e;
+  }
+  return { count:list.length, last, pb };
+}
+
+/* which canon ids this slot could refer to */
+function slotCanons(slot){
+  if (slot.opts && slot.opts.length) return slot.opts.map(o => o.id);
+  return [slot.canon];
+}
+function slotKeyOf(dayN, idx){ return dayN + ':' + idx; }
+function lastChoiceFor(pid, slotKey, slot){
+  const c = S.lastChoice[pid] && S.lastChoice[pid][slotKey];
+  if (c && slot.opts && slot.opts.some(o => o.id === c)) return c;
+  return slot.opts ? slot.opts[0].id : null;
+}
+/* the canon this person is actually doing for this slot:
+   last explicit pick, else the option they lifted most recently,
+   else the first option. Keeps "Squat or Leg Press" honest. */
+function chosenCanonFor(pid, slotKey, slot){
+  if (!slot.opts || !slot.opts.length) return slot.canon;
+  const canons = slotCanons(slot);
+  const stored = S.lastChoice[pid] && S.lastChoice[pid][slotKey];
+  if (stored && canons.includes(stored)) return stored; // an explicit pick wins
+  const recs = liftsOf(pid).filter(e => canons.includes(e.ex));
+  const latest = recs.length ? recs[0].ex : null;       // liftsOf is newest-first
+  return latest || slot.opts[0].id;
+}
+function slotLastLift(pid, slot, slotKey){
+  const canons = slotCanons(slot);
+  const ch = slot.opts ? lastChoiceFor(pid, slotKey, slot) : null;
+  const list = liftsOf(pid).filter(e => canons.includes(e.ex));
+  if (!list.length) return null;
+  return list.find(e => ch && e.ex === ch) || list[0];
+}
+
+/* ============================================================
+   Persistence
+   ============================================================ */
+const K = {
+  settings:'gym:settings',
+  log:p => 'gym:log:' + p
+};
+let saveLogTimer = {};
+async function saveSettings(){ await Store.set(K.settings, JSON.stringify(S)); }
+function saveLog(pid, immediate){
+  clearTimeout(saveLogTimer[pid]);
+  saveLogTimer[pid] = setTimeout(() => {
+    Store.set(K.log(pid), JSON.stringify(logs[pid]));
+    scheduleSync();
+  }, immediate ? 0 : 350);
+}
+async function loadSettings(){
+  const raw = await Store.get(K.settings);
+  if (raw){ try { S = Object.assign(settingsDefault(), JSON.parse(raw)); } catch(e){ S = settingsDefault(); } }
+  else S = settingsDefault();
+  if (!S.people || !S.people.length) S.people = settingsDefault().people;
+  if (!S.people.find(p => p.id === S.sel)) S.sel = S.people[0].id;
+  if (!S.people.find(p => p.id === S.owner)) S.owner = S.people[0].id;
+}
+async function loadLogs(){
+  for (const p of S.people){
+    const raw = await Store.get(K.log(p.id));
+    if (raw){ try { const o = JSON.parse(raw); logs[p.id] = { lifts:o.lifts||{}, ticks:o.ticks||{} }; } catch(e){ logs[p.id] = {lifts:{},ticks:{}}; } }
+    else logs[p.id] = {lifts:{},ticks:{}};
+  }
+}
+
+/* migrate pre-two-people data ("session:1:2026-09-08") into the owner's log */
+async function migrateLegacy(){
+  if (S.legacyMigrated) return;
+  S.legacyMigrated = true;
+  try {
+    for (let i=0;i<localStorage.length;i++){
+      const k = localStorage.key(i);
+      const m = /^session:(\d):([\d-]+)$/.exec(k);
+      if (!m) continue;
+      const raw = localStorage.getItem(k);
+      const items = JSON.parse(raw);
+      if (Array.isArray(items) && items.length){
+        const t = logOf(S.owner).ticks;
+        const key = tickKey(m[1], m[2]);
+        const old = t[key];
+        const merged = [...new Set([...(old?old.items:[]), ...items.map(Number)])].sort((a,b)=>a-b);
+        t[key] = { items:merged, ts: now() };
+      }
+    }
+  } catch(e){}
+  saveLog(S.owner, true);
+  await saveSettings();
+}
+
+/* ============================================================
+   Toast
+   ============================================================ */
+function toast(msg, colorVar){
+  const el = document.getElementById('toast');
+  el.style.setProperty('--pc', colorVar || 'var(--accent)');
+  el.innerHTML = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2600);
+}
+
+/* ============================================================
+   Overlay / sheet helpers
+   ============================================================ */
+function closeOverlay(){
+  const r = document.getElementById('overlayroot');
+  r.innerHTML = '';
+  document.body.style.overflow = '';
+}
+function openOverlay(html, cls){
+  const r = document.getElementById('overlayroot');
+  r.innerHTML = `<div class="overlay ${cls||''}" id="ov">${html}</div>`;
+  document.body.style.overflow = 'hidden';
+  const ov = document.getElementById('ov');
+  ov.addEventListener('click', ev => { if (ev.target === ov && !ev.target.closest('[data-stay]')) closeOverlay(); });
+}
+const overlayShell = (title, sub, body, {full, center} = {}) => `
+  <div class="sheet ${full?'full':''}" data-stay="1" role="dialog" aria-modal="true">
+    ${full ? '' : '<div class="grab"></div>'}
+    <div class="modal-title"><span>${title}</span>
+      <button class="close-x" data-close aria-label="Close">✕</button></div>
+    ${sub ? `<div class="modal-sub">${sub}</div>` : ''}
+    ${body}
+  </div>`;
+function bindOverlayClicks(){
+  document.querySelectorAll('#overlayroot [data-close]').forEach(b =>
+    b.addEventListener('click', closeOverlay));
+}
+
+/* ============================================================
+   People bar + day switch
+   ============================================================ */
+function renderPersons(){
+  const el = document.getElementById('persons');
+  el.innerHTML = S.people.map(p => {
+    const on = p.id === S.sel;
+    return `<button class="person" data-p="${p.id}" data-a="${S.people.indexOf(p)}"
+        aria-pressed="${on}" style="${on ? `--pc:${personDotColor(p.id)}` : ''}">
+        <span class="dot"></span>${esc(p.name)}</button>`;
+  }).join('');
+  el.querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
+    S.sel = b.dataset.p;
+    saveSettings();
+    render();
+  }));
+}
+function renderSwitch(){
+  const el = document.getElementById('switch');
+  const d = currentDay();
+  el.innerHTML = DAYS.map(x =>
+    `<button data-n="${x.n}" aria-pressed="${x.n === d.n}">${x.label}</button>`).join('');
+  el.querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
+    selDayN = +b.dataset.n;
+    render();
+  }));
+}
+function openingDay(){
+  const todayDow = new Date().getDay();
+  const todays = DAYS.find(x => x.dow === todayDow);
+  return todays || DAYS.find(x => x.dow > todayDow) || DAYS[0];
+}
+function currentDay(){
+  return DAYS.find(x => x.n === selDayN) || openingDay();
+}
+
+/* ============================================================
+   Bottom navigation
+   ============================================================ */
+const NAV = [
+  { v:'session',  label:'Session', icon:'<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>' },
+  { v:'progress', label:'Progress', icon:'<path d="M3 17l5-5 4 4 8-8"/><path d="M15 8h5v5"/>' },
+  { v:'timer',    label:'Timer',    icon:'<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M9 2h6"/>' }
+];
+function renderTabs(){
+  const el = document.getElementById('tabnav');
+  el.innerHTML = NAV.map(t =>
+    `<button data-v="${t.v}" aria-pressed="${view===t.v}" role="tab">
+       <svg viewBox="0 0 24 24" aria-hidden="true">${t.icon}</svg>${t.label}</button>`).join('');
+  el.querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
+    view = b.dataset.v;
+    render();
+  }));
+}
+
+/* ============================================================
+   Main render dispatcher
+   ============================================================ */
+function render(){
+  renderPersons();
+  renderTabs();
+  if (view === 'session'){ renderSwitch(); renderSession(); }
+  else if (view === 'progress'){ document.getElementById('switch').innerHTML = ''; renderProgress(); }
+  else { document.getElementById('switch').innerHTML = ''; renderTimer(); }
+}
+function setPersonAccent(){
+  const p = me();
+  document.documentElement.style.setProperty('--pc', personDotColor(p.id));
+}
+
+/* ============================================================
+   Session screen
+   ============================================================ */
+let sheetCtx = null;
 
 const REFERENCE = `
 <details>
@@ -408,10 +1068,10 @@ const REFERENCE = `
   <summary>Training together</summary>
   <div class="ref-body">
     <ul>
-      <li>Person A does a set while Person B rests or sets up.</li>
-      <li>Person B then does their set while Person A rests.</li>
-      <li>Repeat until you've both finished all the sets, then move on.</li>
+      <li>One person does a set while the other rests or sets up.</li>
+      <li>Then swap. Repeat until you've both finished all the sets.</li>
       <li>You don't need the same weight. Match effort, not the number on the machine.</li>
+      <li>Weights and PBs are saved per person — switch who you are at the top.</li>
     </ul>
   </div>
 </details>
@@ -440,17 +1100,83 @@ const REFERENCE = `
   </div>
 </details>`;
 
-function render(day, isToday, todayDow){
-  document.documentElement.style.setProperty('--accent', `var(${day.accent})`);
+function dayRowHTML(day, idx, p, dayKey){
+  const e = day.ex[idx];
+  const final = e.c[0] === e.c[1] && e.c[1] > 1;
+  const slotKey = slotKeyOf(day.n, idx);
+  const chosen = chosenCanonFor(p.id, slotKey, e);
+  const todayLift = todayLiftFor(p.id, day, idx);
+  const done = ticksFor(p.id, day.n, todayKey()).includes(idx);
+  const isBW = !!e.bw;
 
-  const dateStr = new Date().toLocaleDateString('en-GB',
-    {weekday:'long', day:'numeric', month:'long'}).toUpperCase();
+  let pillHTML, pbHTML = '';
+  if (isBW){
+    pillHTML = `<span class="pill" aria-hidden="true">BW</span>`;
+    pbHTML = `<span class="pbline blank">bodyweight</span>`;
+  } else {
+    const st = personStats(p.id, chosen);
+    const pb = st && st.pb;
+    const lastW = (st && st.last) ? st.last.weight : null;
+    const displayW = todayLift ? todayLift.weight : (lastW != null ? lastW : null);
+    const logged = !!todayLift;
+    pillHTML = `
+      <button class="pill ${logged?'logged':(displayW!=null?'has':'')}" data-i="${idx}" aria-label="Log weight for ${esc(e.name)}">
+        ${displayW != null ? wFmt(displayW) : '—'}<span class="u">${UNIT}</span>
+      </button>`;
+    if (pb){
+      const pbDate = fmtGB(pb.date, true);
+      pbHTML = `<span class="pbline">PB <b>${wFmt(pb.weight)}</b> · ${esc(pbDate)}</span>`;
+    } else {
+      pbHTML = `<span class="pbline blank">no PB yet</span>`;
+    }
+  }
+
+  const doing = e.opts ? (() => {
+    const c = e.opts.find(o=>o.id===chosen);
+    return c && c.id !== e.opts[0].id ? ` <span class="choice" style="color:${personDotColor(p.id)}">→ ${esc(c.name)}</span>` : '';
+  })() : '';
+
+  return `<li class="ex ${done?'done':''}" data-i="${idx}" role="button" tabindex="0"
+      aria-label="${esc(e.name)}, ${esc(e.sets)}. Tap to log." aria-pressed="${done}">
+    <span class="num"><span class="n">${String(idx+1).padStart(2,'0')}</span><span class="tk">✓</span></span>
+    <span class="mid">
+      <span class="name">${esc(e.name)}</span>
+      <span class="meta">${esc(e.muscle)}
+        <span class="count${final?' final':''}">${e.c[0]}/${e.c[1]}</span>${
+          e.also ? ` <span class="also">· also ${esc(e.also)}</span>` : ''}${doing}</span>
+      <span class="restline">${REST[e.type]}</span>
+    </span>
+    <span class="side">
+      <span class="prescribe">${esc(e.sets)}</span>
+      ${pillHTML}
+      ${pbHTML}
+    </span>
+  </li>`;
+}
+
+function todayLiftFor(pid, day, idx){
+  const slot = day.ex[idx];
+  const slotKey = slotKeyOf(day.n, idx);
+  const canon = chosenCanonFor(pid, slotKey, slot);
+  if (slot.bw) return null;
+  const d = todayKey();
+  const e = logOf(pid).lifts['l:' + pid + ':' + canon + ':' + d];
+  return e || null;
+}
+
+function renderSession(){
+  setPersonAccent();
+  const p = me();
+  const day = currentDay();
+  const todayDow = new Date().getDay();
+  const isToday = day.dow === todayDow;
+  const dateStr = new Date().toLocaleDateString('en-GB', {weekday:'long',day:'numeric',month:'long'}).toUpperCase();
 
   let eyebrow, rest = '';
   if (isToday){
     eyebrow = `<span class="live">● TODAY</span> &nbsp;${esc(dateStr)}`;
   } else {
-    eyebrow = `${esc(day.label)}DAY SESSION`;
+    eyebrow = `${day.label}DAY SESSION`;
     const scheduled = DAYS.some(d => d.dow === todayDow);
     if (!scheduled){
       const next = DAYS.find(d => d.dow > todayDow) || DAYS[0];
@@ -461,23 +1187,18 @@ function render(day, isToday, todayDow){
     }
   }
 
-  const rows = day.ex.map((e,i) => {
-    const final = e.c[0] === e.c[1] && e.c[1] > 1;
-    return `<li class="ex" data-i="${i}" role="button" tabindex="0"
-        aria-pressed="false" aria-label="${esc(e.name)}, ${esc(e.sets)}. Tap when done.">
-      <span class="num"><span class="n">${String(i+1).padStart(2,'0')}</span><span class="tk">✓</span></span>
-      <span class="name">${esc(e.name)}</span>
-      <span class="prescribe">${esc(e.sets)}</span>
-      <span class="meta">${esc(e.muscle)}
-        <span class="count${final ? ' final' : ''}">${e.c[0]}/${e.c[1]}</span>${
-          e.also ? ` <span class="also">· also ${esc(e.also)}</span>` : ''}</span>
-      <span class="rest">${REST[e.type]}</span>
-    </li>`;
-  }).join('');
+  const date = todayKey();
+  const done = ticksFor(p.id, day.n, date);
+  const rows = day.ex.map((e,i) => dayRowHTML(day, i, p, date)).join('');
+
+  const prevScroll = window.scrollY;
+  const lastKey = sessionKey;
+  sessionKey = p.id + ':' + day.n;
+  const scrollToTop = lastKey !== sessionKey;
 
   document.getElementById('app').innerHTML = `
-    <div class="anim">
-      <div class="eyebrow">${eyebrow}</div>
+    <div class="anim" id="sessionRoot">
+      <div class="eyebrow"><span class="who">${esc(p.name)}</span> &nbsp;·&nbsp; ${eyebrow}</div>
       <h1>Day <span class="idx">${day.n}</span></h1>
       <div class="focus">${esc(day.title)}</div>
       <div class="stats">${day.ex.length} exercises &nbsp;·&nbsp; ${setCount(day)} working sets &nbsp;·&nbsp; ${day.mins}</div>
@@ -490,10 +1211,10 @@ function render(day, isToday, todayDow){
 
       <div class="block">
         <div class="block-label">The session</div>
-        <div class="taphint">Tap an exercise when it's done</div>
+        <div class="taphint">Tap an exercise to log your weight</div>
         <div class="progress">
           <div class="bar"><span id="barfill"></span></div>
-          <div class="ptext" id="ptext">0/${day.ex.length}</div>
+          <div class="ptext" id="ptext"></div>
           <button class="reset" id="reset" hidden>Reset</button>
         </div>
         <ol id="list">${rows}</ol>
@@ -510,34 +1231,44 @@ function render(day, isToday, todayDow){
       </div>
 
       <footer>
-        The number beside each muscle is how many times you hit it this week —
-        LATS 1/2 means first of two. Highlighted means it's the last time this week.<br><br>
-        Ticks are saved on this phone and clear themselves the next day.<br><br>
+        Tap a weight pill to log what you lifted — it ticks the exercise off too.
+        Below every pill is your <b style="color:var(--accent)">PB</b> for that lift.
+        ${syncFooterHTML()}
+        <br><br>
         General fitness plan for healthy adults. Swap exercises if the kit is taken,
         something hurts, or an old injury says no.
       </footer>
     </div>`;
 
-  document.querySelectorAll('#switch button').forEach(b =>
-    b.setAttribute('aria-pressed', String(+b.dataset.n === day.n)));
-  window.scrollTo(0,0);
+  paintSession(day, p, date, done);
 
-  current = day;
-  done = new Set();
-  paint();
-  wire(day);
-
-  Store.get(keyFor(day)).then(raw => {
-    if (!raw || current !== day) return;
-    try { done = new Set(JSON.parse(raw)); paint(); } catch(e){}
+  const list = document.getElementById('list');
+  list.addEventListener('click', ev => {
+    const pill = ev.target.closest('.pill');
+    const li = ev.target.closest('li.ex');
+    if (li && pill) ev.stopPropagation();
+    if (li) openLogSheet(+li.dataset.i);
   });
+  list.addEventListener('keydown', ev => {
+    if (ev.key !== 'Enter' && ev.key !== ' ') return;
+    const li = ev.target.closest('li.ex');
+    if (li){ ev.preventDefault(); openLogSheet(+li.dataset.i); }
+  });
+  document.getElementById('reset').addEventListener('click', () => {
+    if (!done.length) return;
+    if (!confirm(`Clear ${p.name}'s ticks for today? (Lift logs are kept.)`)) return;
+    setTicks(day.n, date, []);
+  });
+  bindSyncButtons();
+  if (scrollToTop) window.scrollTo(0,0);
+  else window.scrollTo(0, prevScroll);
 }
 
-function paint(){
-  const total = current.ex.length;
-  const n = done.size;
+function paintSession(day, p, date, done){
+  const total = day.ex.length;
+  const n = done.length;
   document.querySelectorAll('#list li.ex').forEach(li => {
-    const on = done.has(+li.dataset.i);
+    const on = done.includes(+li.dataset.i);
     li.classList.toggle('done', on);
     li.setAttribute('aria-pressed', String(on));
   });
@@ -551,46 +1282,852 @@ function paint(){
   rst.hidden = n === 0;
 }
 
-function toggle(i){
-  done.has(i) ? done.delete(i) : done.add(i);
-  paint();
-  Store.set(keyFor(current), JSON.stringify([...done]));
+function setTicks(dow, date, items){
+  const p = me();
+  const t = logOf(p.id).ticks;
+  const k = tickKey(dow, date);
+  // always store (even empty) so a cleared day propagates through sync
+  t[k] = { items:items.slice(), ts:now() };
+  saveLog(p.id, true);
+  render();
 }
 
-function wire(day){
-  const list = document.getElementById('list');
-  list.addEventListener('click', ev => {
-    const li = ev.target.closest('li.ex');
-    if (li) toggle(+li.dataset.i);
-  });
-  list.addEventListener('keydown', ev => {
-    if (ev.key !== 'Enter' && ev.key !== ' ') return;
-    const li = ev.target.closest('li.ex');
-    if (li){ ev.preventDefault(); toggle(+li.dataset.i); }
-  });
-  document.getElementById('reset').addEventListener('click', () => {
-    done = new Set();
-    paint();
-    Store.set(keyFor(day), '[]');
-  });
+function toggleTick(dow, date, idx){
+  const p = me();
+  const cur = ticksFor(p.id, dow, date);
+  const next = cur.includes(idx) ? cur.filter(x => x !== idx) : cur.concat([idx]).sort((a,b)=>a-b);
+  setTicks(dow, date, next);
 }
 
-const todayDow = new Date().getDay();
-const todaysDay = DAYS.find(d => d.dow === todayDow);
-// On a rest day, show the next session that's coming up.
-const opening = todaysDay || DAYS.find(d => d.dow > todayDow) || DAYS[0];
+/* ---------------- sync status line for footer ---------------- */
+function syncFooterHTML(){
+  const cfg = syncConfigured();
+  let html = '';
+  if (!cfg){
+    html = '<span class="sync-line"><span class="dotlive"></span>Local only — weights are saved on this phone. Turn on phone-to-phone sync in Settings.</span>';
+  } else if (S.sync.busy){
+    html = '<span class="sync-line"><span class="dotlive busy"></span>Syncing…</span>';
+  } else if (S.sync.lastErr){
+    html = `<span class="sync-line"><span class="dotlive err"></span>Offline — will retry. <button data-syncnow>Retry now</button></span>`;
+  } else if (S.sync.lastSync){
+    const t = new Date(S.sync.lastSync);
+    html = `<span class="sync-line"><span class="dotlive ok"></span>Synced ${t.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})} ·
+      <button data-syncnow>Sync now</button></span>`;
+  } else {
+    html = '<span class="sync-line"><span class="dotlive"></span>Ready to sync.</span>';
+  }
+  return html;
+}
+function bindSyncButtons(){
+  document.querySelectorAll('[data-syncnow]').forEach(b => b.addEventListener('click', () => doSync()));
+}
 
-document.getElementById('switch').innerHTML = DAYS.map(d =>
-  `<button data-n="${d.n}" aria-pressed="false">${d.label}</button>`).join('');
+/* ============================================================
+   Log sheet
+   ============================================================ */
+function openLogSheet(idx){
+  const p = me();
+  const day = currentDay();
+  const slot = day.ex[idx];
+  const slotKey = slotKeyOf(day.n, idx);
+  const date = todayKey();
+  const doneNow = ticksFor(p.id, day.n, date).includes(idx);
+  const isBW = !!slot.bw;
+  const chosen = chosenCanonFor(p.id, slotKey, slot);
+  const lift = logOf(p.id).lifts['l:' + p.id + ':' + chosen + ':' + date] || null;
+  const st = personStats(p.id, chosen);
+  const pb = st ? st.pb : null;
+  const last = st ? st.last : null;
+  const presc = parsePresc(slot.sets);
+  const colorVar = personDotColor(p.id);
 
-document.getElementById('switch').addEventListener('click', ev => {
-  const b = ev.target.closest('button');
-  if (!b) return;
-  const d = DAYS.find(x => x.n === +b.dataset.n);
-  render(d, d.dow === todayDow, todayDow);
-});
+  const sheetId = 'logsheet';
+  const body = `
+    ${slot.opts ? `<div class="modal-sec" style="margin-top:14px"><span class="lbl">Which one today?</span>
+      <div class="choicechips" data-choices>${slot.opts.map(o =>
+        `<button data-c="${o.id}" aria-pressed="${chosen===o.id}">${esc(o.name)}</button>`).join('')}</div></div>` : ''}
 
-render(opening, !!todaysDay, todayDow);
+    <div class="presc-line">
+      <span>Set: <b>${esc(slot.sets)}</b></span>
+      <span>Rest: <b>${REST[slot.type]}</b></span>
+    </div>
+
+    <div class="hint-row" id="lastrow">${lastHintHTML(last, pb, lift, isBW)}</div>
+
+    ${isBW ? `
+      <div class="modal-sec">
+        <p style="font-size:15px;color:var(--chalk);opacity:.9;line-height:1.6">Bodyweight exercise — nothing to log. Tap <b>Done</b> when you've finished your sets.</p>
+      </div>`
+    : `
+    <div class="modal-sec" id="wsec">
+      <div class="winput-wrap">
+        <input class="winput" id="winput" type="text" inputmode="decimal" autocomplete="off"
+          value="${lift ? wFmt(lift.weight) : (last ? wFmt(last.weight) : '')}"
+          placeholder="—" aria-label="Weight in ${UNIT}">
+        <span class="wunit">${UNIT} per working set</span>
+      </div>
+      <div class="quickchips">
+        <button class="qchip small" data-add="-2.5">−2.5</button>
+        <button class="qchip" data-add="2.5">+2.5</button>
+        <button class="qchip" data-add="5">+5</button>
+        ${last ? `<button class="qchip small" data-last>last ${wFmt(last.weight)}</button>` : ''}
+      </div>
+
+      <div class="reps-block" id="repsblock">
+        <div class="reps-title"><span>Reps per set <span style="text-transform:none;letter-spacing:.02em;color:var(--muted)">(optional)</span></span>
+          <button class="toggle" id="repstoggle">${lift && lift.reps ? 'hide' : 'edit'}</button></div>
+        ${repRowsHTML(lift, presc)}
+      </div>
+    </div>`}
+
+    <div class="cta-row">
+      ${isBW
+        ? `<button class="cta primary" id="tickbtn" style="--pc:${colorVar}">${doneNow ? 'Untick this exercise' : 'Tick it done'}<span class="sub">bodyweight — nothing to log</span></button>`
+        : lift
+          ? `<button class="cta primary" id="savebtn" style="--pc:${colorVar}">Update to ${wFmt(lift.weight)} ${UNIT}<span class="sub">saves &amp; keeps it ticked</span></button>
+             <button class="cta ghost" data-close>Close</button>`
+          : `<button class="cta primary" id="savebtn" style="--pc:${colorVar}">Log ${UNIT}<span class="sub">saves &amp; ticks it off</span></button>
+             <button class="cta ghost" id="tickbtn">${doneNow ? 'Untick' : 'Done without a weight'}</button>`}
+    </div>
+    <p style="text-align:center;margin-top:14px;font-size:12.5px;color:var(--muted);line-height:1.5">
+      ${lift ? `Logged today at <b style="color:var(--chalk)">${wFmt(lift.weight)} ${UNIT}</b>${lift.reps ? ' · ' + lift.reps.join('/') + ' reps' : ''} — updating replaces it.`
+        : doneNow ? 'This exercise is ticked today without a weight.' : 'Tap Log to record the weight, or Done to just tick it.'}
+    </p>`;
+
+  const title = `${esc(slot.name)}`;
+  const sub = `${esc(p.name)} · ${isBW ? 'bodyweight' : esc(slot.sets)}`;
+  openOverlay(overlayShell(title, sub, body, {center:true}));
+  bindOverlayClicks();
+  document.querySelectorAll('#overlayroot [data-close]').forEach(b => b.addEventListener('click', closeOverlay));
+
+  const root = document.getElementById('ov');
+  root.style.setProperty('--pc', colorVar);
+
+  if (slot.opts){
+    root.querySelectorAll('[data-choices] button').forEach(b => b.addEventListener('click', () => {
+      S.lastChoice[p.id] = S.lastChoice[p.id] || {};
+      S.lastChoice[p.id][slotKey] = b.dataset.c;
+      saveSettings();
+      openLogSheet(idx); // rebuild with the new exercise identity
+    }));
+  }
+
+  if (!isBW){
+    const inp = document.getElementById('winput');
+    inp.addEventListener('input', () => updateSaveBtn());
+    root.querySelectorAll('[data-add]').forEach(b => b.addEventListener('click', () => {
+      const cur = parseFloat(inp.value);
+      const v = (isFinite(cur) ? cur : 0) + parseFloat(b.dataset.add);
+      inp.value = v > 0 ? wFmt(v) : '';
+      updateSaveBtn();
+    }));
+    const lastBtn = root.querySelector('[data-last]');
+    if (lastBtn) lastBtn.addEventListener('click', () => { inp.value = wFmt(last.weight); updateSaveBtn(); });
+    document.getElementById('repstoggle').addEventListener('click', () => {
+      const rows = document.querySelector('#repsblock .setrows');
+      const showing = rows.style.display !== 'none';
+      rows.style.display = showing ? 'none' : '';
+      document.getElementById('repstoggle').textContent = showing ? 'edit' : 'hide';
+    });
+    root.querySelectorAll('.setstepper button').forEach(b => b.addEventListener('click', () => {
+      const step = +b.dataset.d;
+      const input = b.parentElement.querySelector('input');
+      let v = parseInt(input.value,10) || 0;
+      v = Math.max(0, Math.min(60, v + step));
+      input.value = v;
+    }));
+    updateSaveBtn();
+  }
+
+  const tickbtn = document.getElementById('tickbtn');
+  if (tickbtn) tickbtn.addEventListener('click', () => {
+    toggleTick(day.n, date, idx);          // toggles both ways for tick-only rows
+    closeOverlay();
+    toast(doneNow ? 'Unticked' : 'Ticked off — no weight logged', colorVar);
+  });
+  if (!isBW){
+    document.getElementById('savebtn').addEventListener('click', () => saveLogSheet(idx));
+  }
+
+  function updateSaveBtn(){
+    const el = document.getElementById('winput');
+    const b = document.getElementById('savebtn');
+    if (!el || !b) return;
+    const w = parseFloat(el.value);
+    const base = lift ? 'Update to' : 'Log';
+    const wTxt = isFinite(w) && w > 0 ? `${wFmt(w)} ${UNIT}` : UNIT;
+    b.innerHTML = `${base} ${wTxt}<span class="sub">${lift ? 'saves &amp; keeps it ticked' : 'saves &amp; ticks it off'}</span>`;
+    b.classList.toggle('can', isFinite(w) && w > 0);
+    if (b.classList.contains('can')) b.style.opacity = 1; else b.style.opacity = .45;
+  }
+}
+
+function repRowsHTML(lift, presc){
+  const sets = presc ? presc.sets : 3;
+  const max = presc ? presc.max : 12;
+  const cur = lift && lift.reps ? lift.reps : Array(sets).fill(max);
+  let rows = '';
+  for (let i=0;i<sets;i++){
+    rows += `<div class="setrow"><span class="s">Set ${i+1}</span>
+      <div class="setstepper"><button data-d="-1" aria-label="fewer reps">−</button>
+      <input type="text" inputmode="numeric" value="${cur[i]}" aria-label="Reps in set ${i+1}">
+      <button data-d="1" aria-label="more reps">+</button></div></div>`;
+  }
+  return `<div class="setrows" ${lift && lift.reps ? '' : 'style="display:none"'} data-open="${lift && lift.reps ? '1':'0'}">${rows}</div>`;
+}
+
+function lastHintHTML(last, pb, lift, isBW){
+  if (isBW) return 'Nothing to weigh — just tick it off when your sets are done.';
+  let parts = [];
+  if (last){
+    const repTxt = last.reps ? last.reps.map(r => r || '·').join('·') : 'target';
+    parts.push(`Last: <b>${wFmt(last.weight)} ${UNIT}</b>${last.reps ? ' · ' + repTxt : ''} <span style="opacity:.6">· ${fmtGB(last.date)}</span>`);
+  } else {
+    parts.push('No weight logged for this lift yet — start it off!');
+  }
+  if (pb){
+    parts.push(`PB: <b style="color:var(--pc)">${wFmt(pb.weight)} ${UNIT}</b> <span style="opacity:.6">· ${fmtGB(pb.date,true)}</span>`);
+  }
+  const beat = last && pb && lift && lift.weight > pb.weight;
+  const cls = beat ? 'pb-new' : '';
+  return `<div class="${cls}">${parts.join('<br>')}</div>`;
+}
+
+function saveLogSheet(idx){
+  const p = me();
+  const day = currentDay();
+  const slot = day.ex[idx];
+  const slotKey = slotKeyOf(day.n, idx);
+  const date = todayKey();
+  const canon = chosenCanonFor(p.id, slotKey, slot);
+  const opt = slot.opts ? slot.opts.find(o => o.id === canon) : null;
+  const label = opt ? opt.name : slot.name;
+  const w = parseFloat(document.getElementById('winput').value);
+  if (!isFinite(w) || w <= 0 || w > MAXW){ toast('Enter a valid weight first'); return; }
+
+  // optional reps
+  let reps = null;
+  const rows = document.querySelectorAll('#repsblock .setstepper input');
+  if (rows.length){
+    const vals = [...rows].map(r => parseInt(r.value,10) || 0);
+    reps = vals;
+  }
+
+  const oldPb = personStats(p.id, canon);
+  const eid = 'l:' + p.id + ':' + canon + ':' + date;
+  const entry = {
+    id:eid, kind:'lift', pid:p.id, ex:canon, name:label,
+    date, weight:w, reps, ts:now(),
+    day: day.n
+  };
+  logOf(p.id).lifts[eid] = entry;
+  saveLog(p.id, true);
+
+  // tick it off
+  const done = ticksFor(p.id, day.n, date);
+  if (!done.includes(idx)){
+    const t = logOf(p.id).ticks;
+    t[tickKey(day.n, date)] = { items:done.concat([idx]).sort((a,b)=>a-b), ts:now() };
+  }
+  saveLog(p.id, true);
+
+  closeOverlay();
+
+  const isNewPb = !(oldPb && oldPb.pb && oldPb.pb.weight >= w);
+  toast(isNewPb
+    ? `🏆 NEW PB — ${wFmt(w)} ${UNIT} on ${esc(label)}`
+    : `Logged ${wFmt(w)} ${UNIT} · ${esc(label)}`, personDotColor(p.id));
+  render();
+}
+
+/* ============================================================
+   Progress screen
+   ============================================================ */
+function renderProgress(){
+  setPersonAccent();
+  const p = me();
+  const lifts = liftsOf(p.id);
+  const date = todayKey();
+
+  // aggregate by canon
+  const map = new Map();
+  for (const e of lifts){
+    if (!map.has(e.ex)) map.set(e.ex, { ex:e.ex, name:CANON_LABEL[e.ex] || e.name, entries:[] });
+    map.get(e.ex).entries.push(e);
+  }
+  const groups = [];
+  for (const [ex, g] of map){
+    g.entries.sort((a,b)=>a.ts-b.ts);
+    let pb = null;
+    for (const e of g.entries) if (!pb || e.weight > pb.weight) pb = e;
+    g.pb = pb;
+    g.muscle = muscleFor(ex);
+    groups.push(g);
+  }
+  groups.sort((a,b) => (b.pb.weight - a.pb.weight));
+
+  let body = `
+    <div class="eyebrow"><span class="who">${esc(p.name)}</span> &nbsp;·&nbsp; PROGRESS</div>
+    <h1 class="small">Lift <span class="idx" style="color:${personDotColor(p.id)}">history</span></h1>
+    <div class="sumline">
+      <div class="statcard"><span class="v" style="color:${personDotColor(p.id)}">${groups.length}</span><span class="k">lifts logged</span></div>
+      <div class="statcard"><span class="v" style="color:${personDotColor(p.id)}">${groups.filter(g=>g.entries.length>=2).length}</span><span class="k">with a trend</span></div>
+      <div class="statcard"><span class="v" style="color:${personDotColor(p.id)}">${liftCount(lifts)}</span><span class="k">total sessions</span></div>
+    </div>`;
+
+  if (!groups.length){
+    body += `<div class="empty">Nothing logged yet.<br>Tap an exercise in the SESSION tab and enter a weight.<br>Your PBs and history build up here.</div>`;
+  } else {
+    for (const g of groups){
+      const repsTxt = g.pb.reps ? g.pb.reps.map(r=>r||'·').join('·') : '';
+      body += `
+      <div class="block" style="margin-top:22px">
+        <div class="pr-row" data-ex="${g.ex}">
+          <span class="rn"><span class="nm">${esc(g.name)}</span>
+            <span class="mus">${esc(g.muscle)}${g.pb.reps ? ' · ' + esc(g.pb.reps.length) + ' sets logged' : ''}</span></span>
+          <span class="spark">${sparkSVG(g.entries.map(e=>e.weight))}</span>
+          <span class="pbv"><span class="w">${wFmt(g.pb.weight)}</span>
+            <span class="d">PB · ${fmtGB(g.pb.date)}</span></span>
+        </div>
+      </div>`;
+    }
+  }
+  body += `<p style="margin-top:20px;font-size:13px;color:var(--muted);line-height:1.6;font-family:'IBM Plex Mono',monospace;letter-spacing:.02em">
+    PB = the heaviest weight you've logged for that lift, with the date you first hit it.
+    Tap a row to see every session.</p>`;
+
+  document.getElementById('app').innerHTML = `<div class="anim">${body}</div>`;
+  document.querySelectorAll('.pr-row').forEach(r => r.addEventListener('click', () => openHistory(r.dataset.ex)));
+  window.scrollTo(0,0);
+}
+function muscleFor(ex){
+  for (const d of DAYS) for (const e of d.ex) if (e.canon === ex || (e.opts && e.opts.some(o=>o.id===ex))) return e.muscle;
+  return '';
+}
+function liftCount(lifts){
+  const days = new Set(lifts.map(e => e.date));
+  return days.size;
+}
+function sparkSVG(weights){
+  if (weights.length < 2) return '<span class="spark" style="display:inline-flex;align-items:center;justify-content:center;font-size:9px;color:var(--muted);letter-spacing:.05em;font-family:\'IBM Plex Mono\',monospace">soon</span>';
+  const w = 74, h = 28, p = 3;
+  const mn = Math.min(...weights), mx = Math.max(...weights);
+  const rng = (mx - mn) || 1;
+  const pts = weights.map((v,i) => {
+    const x = p + (i/(weights.length-1))*(w-2*p);
+    const y = h - p - ((v - mn)/rng)*(h-2*p);
+    return [x,y];
+  });
+  const line = pts.map(pt => pt.map(v=>v.toFixed(1)).join(',')).join(' ');
+  const last = pts[pts.length-1];
+  const first = pts[0];
+  return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">
+    <polyline points="${first[0].toFixed(1)},${h-p} ${line}" fill="none" stroke="currentColor" stroke-width="1.6" style="color:var(--accent)" stroke-linejoin="round" stroke-linecap="round"/>
+    <circle cx="${last[0].toFixed(1)}" cy="${last[1].toFixed(1)}" r="2.4" fill="var(--accent)"/>
+  </svg>`;
+}
+
+function openHistory(ex){
+  const p = me();
+  const colorVar = personDotColor(p.id);
+  const entries = liftsByCanon(p.id, ex).sort((a,b)=>a.ts-b.ts);
+  let pb = null;
+  for (const e of entries) if (!pb || e.weight > pb.weight) pb = e;
+  const name = CANON_LABEL[ex] || (entries.length ? entries[0].name : ex);
+
+  let hist = entries.slice().reverse().map(e => {
+    const isPb = pb && e.weight === pb.weight && e.ts === pb.ts;
+    const repTxt = e.reps ? e.reps.map(r=>r||'·').join(' · ') : '';
+    return `<div class="hist-item">
+      <div class="hrow">
+        <span class="hdate">${fmtGB(e.date, true)}</span>
+        <span class="hw ${isPb?'pb-mark':''}">${wFmt(e.weight)} ${UNIT} ${isPb?'<span class="tag">· PB</span>':''}</span>
+      </div>
+      ${repTxt ? `<div class="hreps">${repTxt} reps</div>` : '<div class="hreps">target reps (not entered)</div>'}
+    </div>`;
+  }).join('');
+
+  const body = `
+    <div class="modal-sec" style="margin-top:10px">
+      <div class="sumline" style="margin-top:0">
+        <div class="statcard"><span class="v" style="color:${colorVar}">${pb ? wFmt(pb.weight) : '—'}</span><span class="k">PB ${UNIT} · ${pb ? fmtGB(pb.date,true) : ''}</span></div>
+        <div class="statcard"><span class="v" style="color:${colorVar}">${entries.length}</span><span class="k">sessions</span></div>
+        <div class="statcard"><span class="v" style="color:${colorVar}">${entries.reduce((s,e)=>s+(e.reps?e.reps.reduce((a,b)=>a+(b||0),0):0),0)}</span><span class="k">total reps</span></div>
+      </div>
+      ${entries.length >= 2 ? `<div style="margin-top:16px;text-align:center">${sparkSVG(entries.map(e=>e.weight)).replace('<span class="spark"','<span class="spark" style="width:100%;height:46px"')}</div>` : ''}
+    </div>
+    <div class="modal-sec"><span class="lbl">Every logged session</span>${hist || '<div class="empty">Nothing yet.</div>'}</div>`;
+
+  openOverlay(overlayShell(`${esc(name)} — ${esc(p.name)}`, `PB &amp; full history · ${UNIT}`, body, {full:false, center:false}));
+  bindOverlayClicks();
+}
+
+/* ============================================================
+   Timer tab
+   ============================================================ */
+const Timer = { total:0, left:0, raf:null, end:0, running:false, preset:null };
+let audioCtx = null;
+function beep(){
+  try {
+    audioCtx = audioCtx || new (window.AudioContext||window.webkitAudioContext)();
+    const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+    o.connect(g); g.connect(audioCtx.destination);
+    o.frequency.value = 880; o.type = 'sine';
+    g.gain.setValueAtTime(.0001, audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(.3, audioCtx.currentTime + .02);
+    g.gain.exponentialRampToValueAtTime(.0001, audioCtx.currentTime + .5);
+    o.start(); o.stop(audioCtx.currentTime + .55);
+  } catch(e){}
+}
+function renderTimer(){
+  setPersonAccent();
+  const total = Timer.total, left = Timer.running ? Math.max(0, Math.round((Timer.end - now())/1000)) : Timer.left;
+  const pct = total ? (1 - left/total)*100 : 0;
+  const mm = String(Math.floor(left/60)).padStart(2,'0'), ss = String(left%60).padStart(2,'0');
+  document.getElementById('app').innerHTML = `
+    <div class="anim">
+      <div class="eyebrow">REST <span class="live">TIMER</span></div>
+      <h1 class="small">Between <span class="idx">sets</span></h1>
+      <div class="timer-card">
+        <div class="tring" id="tring"><span class="tdisp" id="tdisp">${mm}:${ss}<span class="unit">min</span></span></div>
+        <div class="tctl">
+          <button class="cta ${Timer.running?'ghost':'primary'}" id="tstart">${Timer.running ? 'Pause' : (total ? 'Resume' : 'Start')}</button>
+          <button class="cta ghost" id="treset" ${total?'':'disabled'}>Reset</button>
+        </div>
+        <div class="tpresets" id="tpresets">
+          <button class="tpreset" data-s="105" data-l="Compound">Compound 1:45</button>
+          <button class="tpreset" data-s="60" data-l="Isolation">Isolation 1:00</button>
+          <button class="tpreset" data-s="45" data-l="Core">Core 0:45</button>
+        </div>
+        <div class="tend-note" id="tendnote"></div>
+        <p style="margin-top:22px;font-size:13px;color:var(--muted);line-height:1.6">Presets match the plan: compounds 90–120s, isolation 45–75s, core 30–60s. The timer pings when it's time to lift again.</p>
+      </div>
+    </div>`;
+  const ring = document.getElementById('tring');
+  ring.style.background = `conic-gradient(var(--accent) ${pct*3.6}deg, var(--line) 0deg)`;
+  document.getElementById('tstart').addEventListener('click', () => {
+    if (Timer.running){ Timer.running = false; cancelAnimationFrame(Timer.raf); Timer.left = Math.max(0, (Timer.end - now())/1000); renderTimer(); return; }
+    if (!Timer.total){
+      Timer.total = REST_MIN.compound; Timer.left = Timer.total;
+      // pick nearest preset for the visual
+    }
+    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+    Timer.end = now() + Timer.left*1000;
+    Timer.running = true;
+    tickTimer();
+  });
+  document.getElementById('treset').addEventListener('click', () => {
+    Timer.running = false; cancelAnimationFrame(Timer.raf);
+    Timer.total = 0; Timer.left = 0;
+    renderTimer();
+  });
+  document.querySelectorAll('.tpreset').forEach(b => b.addEventListener('click', () => {
+    const s = +b.dataset.s;
+    Timer.running = false; cancelAnimationFrame(Timer.raf);
+    Timer.total = s; Timer.left = s;
+    renderTimer();
+    beep();
+  }));
+  document.getElementById('tendnote').innerHTML = '';
+}
+function tickTimer(){
+  if (!Timer.running) return;
+  const left = Math.max(0, Math.round((Timer.end - now())/1000));
+  Timer.left = left;
+  const mm = String(Math.floor(left/60)).padStart(2,'0'), ss = String(left%60).padStart(2,'0');
+  const d = document.getElementById('tdisp');
+  const ring = document.getElementById('tring');
+  if (d && ring){
+    d.innerHTML = `${mm}:${ss}<span class="unit">min</span>`;
+    const pct = Timer.total ? (1 - left/Timer.total)*100 : 0;
+    ring.style.background = `conic-gradient(var(--accent) ${pct*3.6}deg, var(--line) 0deg)`;
+  }
+  if (left <= 0){
+    Timer.running = false;
+    beep(); setTimeout(beep, 500); setTimeout(beep, 1000);
+    try{ navigator.vibrate && navigator.vibrate([200,100,200]); }catch(e){}
+    const n = document.getElementById('tendnote');
+    if (n) n.innerHTML = `<b>Time's up</b> — rest over, next set when you're ready.`;
+    if (d) d.innerHTML = `00:00<span class="unit">min</span>`;
+    return;
+  }
+  Timer.raf = requestAnimationFrame(tickTimer);
+}
+
+/* ============================================================
+   Settings + onboarding
+   ============================================================ */
+function openSettings(){
+  const p = me();
+  const cfg = syncConfigured();
+  let syncHTML;
+  if (!cfg){
+    syncHTML = `
+      <div class="set-row">
+        <span class="sk">Phone-to-phone sync</span>
+        <div class="sv warn"><b>Not configured.</b> Each phone currently keeps its own data.<br><br>
+        To share weights and PBs between Danny's and Kieran's phones you add two free keys to this app once.
+        It's a 3-minute, one-time setup — the walkthrough lives in <b>SETUP.md</b> at the top of the repository.
+        After that, both phones just enter the same PIN here and they stay in sync automatically.</div>
+      </div>`;
+  } else if (!S.sync.pin){
+    syncHTML = `
+      <div class="set-row">
+        <span class="sk">Phone-to-phone sync</span>
+        <div class="sv ok"><b>Ready.</b> The shared store is connected — this phone hasn't joined it yet.</div>
+        <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+          <button class="mini-btn accent" data-act="connect">Connect phones (enter the shared PIN)</button>
+        </div>
+        <div class="sv" style="margin-top:12px;font-size:12.5px;line-height:1.6">Make up one PIN you'll both remember, enter it here, and enter the same PIN on the other phone. 6+ characters is safer than 4.</div>
+      </div>`;
+  } else {
+    const st = S.sync.lastSync ? new Date(S.sync.lastSync).toLocaleString('en-GB') : 'never';
+    const err = S.sync.lastErr ? `<div class="sv" style="color:var(--d3);margin-top:6px">${esc(S.sync.lastErr)}</div>` : '';
+    syncHTML = `
+      <div class="set-row">
+        <span class="sk">Phone-to-phone sync</span>
+        <div style="margin-top:8px" class="sync-status">
+          <span class="dotlive ${S.sync.busy?'busy':(S.sync.lastErr?'err':(S.sync.lastSync?'ok':''))}"></span>
+          ${S.sync.busy ? 'Syncing…' : (S.sync.lastErr ? 'Last sync failed' : (S.sync.lastSync ? 'Last synced ' + esc(st) : 'Never synced yet'))}
+        </div>
+        ${err}
+        <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+          <button class="mini-btn accent" data-act="syncnow">Sync now</button>
+          <button class="mini-btn" data-act="unsync">Disconnect this phone</button>
+        </div>
+        <div class="sv" style="margin-top:12px;font-size:12.5px;line-height:1.6">Both phones use the same PIN. If you forget it, each phone keeps its own copy — use Export below as a backup.</div>
+      </div>`;
+  }
+  const whoRows = S.people.map((pp,i) => `
+    <div class="set-row">
+      <span class="sk"><span class="dot" style="background:${personDotColor(pp.id)}"></span>${esc(pp.name)}</span>
+      <div class="name-edit">
+        <input data-name="${pp.id}" value="${esc(pp.name)}" maxlength="14" aria-label="Name for ${esc(pp.name)}">
+        <button class="mini-btn accent" data-savename="${pp.id}">Save</button>
+      </div>
+      <div class="sv" style="margin-top:8px;font-size:12px">This phone opens as:
+        <b style="color:var(--chalk)">${S.people.find(x=>x.id===S.owner).name}</b> · owner setting below.</div>
+    </div>`).join('');
+
+  const body = `
+    <div class="modal-sec" style="margin-top:8px">
+      <span class="lbl">Who are you right now?</span>
+      <div style="display:flex;gap:8px">${S.people.map(pp => `
+        <button class="person" data-setp="${pp.id}" data-a="${S.people.indexOf(pp)}" style="--pc:${personDotColor(pp.id)}" aria-pressed="${pp.id===S.sel}">
+          <span class="dot"></span>${esc(pp.name)}</button>`).join('')}
+      </div>
+    </div>
+    <div class="modal-sec">
+      <span class="lbl">This phone belongs to</span>
+      <div style="display:flex;gap:8px">${S.people.map(pp => `
+        <button class="person" data-owner="${pp.id}" data-a="${S.people.indexOf(pp)}" style="--pc:${personDotColor(pp.id)}" aria-pressed="${pp.id===S.owner}">
+          <span class="dot"></span>${esc(pp.name)}</button>`).join('')}
+      </div>
+      <div class="sv" style="margin-top:9px;font-size:12.5px;color:var(--muted)">Used on first open and to keep your data with you. You can still switch who you are any time from the top bar.</div>
+    </div>
+    <div class="modal-sec"><span class="lbl">Names</span>${whoRows}</div>
+    <div class="modal-sec"><span class="lbl">Sync</span>${syncHTML}</div>
+    <div class="modal-sec">
+      <span class="lbl">Data &amp; backup</span>
+      <div class="set-row">
+        <span class="sk">Export everything</span>
+        <div class="sv">Download a full backup of both people's logs as a file. Do this every few weeks for peace of mind.</div>
+        <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+          <button class="mini-btn" data-act="expjson">Full backup (.json)</button>
+          <button class="mini-btn" data-act="expcsv">Spreadsheet (.csv)</button>
+        </div>
+      </div>
+      <div class="set-row">
+        <span class="sk" style="color:var(--d3)">Danger zone</span>
+        <div class="sv">Wipe <b>this phone's</b> local data only. It won't touch the other phone unless sync re-uploads it.</div>
+        <div style="margin-top:10px"><button class="mini-btn" style="border-color:var(--d3);color:var(--d3)" data-act="wipe">Erase local data</button></div>
+      </div>
+    </div>
+    <div class="modal-sec">
+      <span class="lbl">About</span>
+      <div class="sv" style="line-height:1.7">
+        Weights in ${UNIT}. General fitness plan for healthy adults — swap exercises if the kit is taken,
+        something hurts, or an old injury says no. Tick marks clear each day; your lift history is kept forever.
+        ${SUPABASE.url && !SUPABASE_TABLE_SQL_OK ? 'Sync is switched on but the database tables have not been created yet — run the SQL in supabase.sql.' : ''}
+      </div>
+    </div>`;
+
+  openOverlay(overlayShell('Settings', 'for this app', body, {full:false, center:false}));
+  bindOverlayClicks();
+
+  const root = document.getElementById('ov');
+  root.querySelectorAll('[data-setp]').forEach(b => b.addEventListener('click', () => {
+    S.sel = b.dataset.setp; saveSettings(); render();
+    root.querySelectorAll('[data-setp]').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.setp === S.sel)));
+  }));
+  root.querySelectorAll('[data-owner]').forEach(b => b.addEventListener('click', () => {
+    S.owner = b.dataset.owner; saveSettings();
+    root.querySelectorAll('[data-owner]').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.owner === S.owner)));
+  }));
+  root.querySelectorAll('[data-savename]').forEach(b => b.addEventListener('click', () => {
+    const id = b.dataset.savename;
+    const inp = root.querySelector(`[data-name="${id}"]`);
+    const nm = inp.value.trim().slice(0,14);
+    if (nm){
+      const pp = S.people.find(x => x.id === id);
+      pp.name = nm;
+      saveSettings(); render(); openSettings();
+    }
+  }));
+  root.querySelectorAll('[data-act]').forEach(b => b.addEventListener('click', () => {
+    const a = b.dataset.act;
+    if (a === 'connect') openSyncSetup();
+    else if (a === 'syncnow') doSync(true);
+    else if (a === 'unsync'){
+      if (!confirm('Disconnect this phone from sync? Its local data stays.')) return;
+      S.sync = { pin:'', room:'', lastSync:0, lastErr:'', busy:false };
+      saveSettings(); openSettings();
+    }
+    else if (a === 'expjson') exportData('json');
+    else if (a === 'expcsv') exportData('csv');
+    else if (a === 'wipe'){
+      if (!confirm('Erase ALL data stored locally on this phone? This cannot be undone.')) return;
+      if (!confirm('Are you absolutely sure?')) return;
+      wipeLocal();
+    }
+  }));
+}
+
+function openSyncSetup(){
+  const cfg = syncConfigured();
+  if (!cfg){
+    toast('Add your Supabase keys first — see SETUP.md');
+    return;
+  }
+  const colorVar = personDotColor(me().id);
+  const body = `
+    <p style="font-size:15px;line-height:1.65;color:var(--muted)">One shared PIN connects both phones. Enter the <b style="color:var(--chalk)">same PIN</b> on Danny's and Kieran's phones — pick something you'll both remember (at least 4 characters, more is safer).</p>
+    <div class="modal-sec">
+      <div class="winput-wrap">
+        <input class="winput" id="pin" type="password" inputmode="text" autocomplete="off" style="font-size:34px;max-width:200px" placeholder="····" aria-label="Shared sync PIN">
+      </div>
+    </div>
+    <div class="cta-row">
+      <button class="cta primary" id="pinok" style="--pc:${colorVar}">Connect</button>
+      <button class="cta ghost" data-close>Cancel</button>
+    </div>
+    <p id="pinmsg" style="text-align:center;margin-top:14px;font-size:13px;color:var(--d3);display:none"></p>`;
+  openOverlay(overlayShell('Connect phones', 'one PIN for both phones', body, {center:true}));
+  bindOverlayClicks();
+  const ok = document.getElementById('pinok');
+  const pin = document.getElementById('pin');
+  const msg = document.getElementById('pinmsg');
+  const doPin = async () => {
+    const v = pin.value.trim();
+    if (v.length < 4){ msg.textContent = 'PIN needs at least 4 characters.'; msg.style.display='block'; return; }
+    ok.disabled = true; ok.textContent = 'Connecting…';
+    msg.style.display = 'none';
+    const secret = sha256('gym-pin:' + v.toLowerCase());
+    S.sync.pin = v;
+    S.sync.room = secret.slice(0,16);
+    await saveSettings();
+    const res = await doSync(true, secret);
+    if (res && res.ok){
+      toast('Phones connected ✦');
+      closeOverlay();
+      render();
+    } else {
+      ok.disabled = false; ok.textContent = 'Connect';
+      msg.textContent = res && res.msg ? res.msg : 'Could not reach the sync store. Check your connection and the keys in SETUP.md.';
+      msg.style.display='block';
+    }
+  };
+  ok.addEventListener('click', doPin);
+  pin.addEventListener('keydown', ev => { if (ev.key === 'Enter') doPin(); });
+  setTimeout(() => pin.focus(), 80);
+}
+
+/* ---------- export / wipe ---------- */
+function exportData(fmt){
+  const stamp = todayKey();
+  const all = {};
+  for (const p of S.people) all[p.id] = logOf(p.id);
+  let name, type, text;
+  if (fmt === 'json'){
+    name = `gym-backup-${stamp}.json`;
+    type = 'application/json';
+    text = JSON.stringify({ exported:new Date().toISOString(), unit:UNIT, people:S.people, data:all }, null, 2);
+  } else {
+    name = `gym-weights-${stamp}.csv`;
+    type = 'text/csv';
+    const rows = ['person,date,exercise,weight_kg,reps,note'];
+    for (const p of S.people){
+      for (const e of liftsOf(p.id)){
+        rows.push([p.name, e.date, e.name || e.ex, e.weight, e.reps ? e.reps.join('/') : '', e.note || ''].map(v => '"'+String(v).replace(/"/g,'""')+'"').join(','));
+      }
+    }
+    text = rows.join('\n');
+  }
+  try {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([text], {type}));
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 400);
+    toast('Backup downloaded');
+  } catch(e){ toast('Export failed on this device'); }
+}
+function wipeLocal(){
+  for (const k of Object.keys(localStorage)){
+    if (k.startsWith('gym:') || /^session:/.test(k)) localStorage.removeItem(k);
+  }
+  if (window.storage){ /* best effort only for our own keys */
+    try { Object.keys(mem).forEach(k => delete mem[k]); } catch(e){}
+  }
+  location.reload();
+}
+
+/* ============================================================
+   Onboarding
+   ============================================================ */
+function onboard(){
+  const body = `
+    <div class="onb-title">Welcome</div>
+    <div class="onb-sub">This app tracks your weights, reps and PBs per person — Danny and Kieran.
+      First, whose phone is this?</div>
+    <div class="onb-cards">
+      ${S.people.map((p,i) => `
+      <button class="onb-card" data-who="${p.id}">
+        <span class="ava" style="background:${personDotColor(p.id)}">${esc(p.initial)}</span>
+        <span class="nm">${esc(p.name)}</span>
+        <span class="who">this is my phone</span>
+      </button>`).join('')}
+    </div>
+    <p style="margin-top:18px;font-size:13.5px;color:var(--muted);line-height:1.6;text-align:center">
+      You can switch who you are any time at the top of the screen.<br>Names can be changed later in Settings.</p>`;
+  openOverlay(overlayShell('', '', body, {center:true}));
+  document.querySelectorAll('#overlayroot [data-who]').forEach(b => b.addEventListener('click', () => {
+    const id = b.dataset.who;
+    S.owner = id; S.sel = id;
+    S.onboarded = true;
+    saveSettings();
+    closeOverlay();
+    render();
+    toast(`Nice — you're ${S.people.find(p=>p.id===id).name}. Tap an exercise to log a weight.`);
+  }));
+}
+
+/* ============================================================
+   Sync engine (Supabase)
+   ============================================================ */
+function syncConfigured(){
+  return !!(SUPABASE.url && SUPABASE.anonKey && SUPABASE_TABLE_SQL_OK);
+}
+let syncTimer = null, syncInFlight = false;
+function scheduleSync(){
+  clearTimeout(syncTimer);
+  if (!syncConfigured()) return;
+  syncTimer = setTimeout(() => doSync(false), 2500);
+}
+async function doSync(manual, secretOverride){
+  if (!syncConfigured()) return { ok:false, msg:'Sync not configured (see SETUP.md)' };
+  if (syncInFlight) return { ok:true, silent:true };
+  if (!secretOverride && !S.sync.pin) {
+    // first time: prompt for the shared PIN
+    if (manual) openSyncSetup();
+    return { ok:false, silent:true };
+  }
+  syncInFlight = true;
+  S.sync.busy = true;
+  S.sync.lastErr = '';
+  saveSettings();
+  try {
+    const secret = secretOverride || sha256('gym-pin:' + S.sync.pin.toLowerCase());
+    const room = secret.slice(0,16);
+    // build payload: every local lift + tick across both people
+    const rows = [];
+    for (const p of S.people){
+      for (const e of Object.values(logOf(p.id).lifts)) rows.push({ id:e.id, pid:p.id, ts:e.ts, data:e });
+      for (const k of Object.keys(logOf(p.id).ticks)){
+        const t = logOf(p.id).ticks[k];
+        const [dow, date] = k.split(':');
+        rows.push({ id:'t:' + p.id + ':' + dow + ':' + date, pid:p.id, ts:t.ts, data:{ kind:'tick', pid:p.id, dow:+dow, date, items:t.items, ts:t.ts } });
+      }
+    }
+    const res = await fetch(SUPABASE.url.replace(/\/$/,'') + '/rest/v1/rpc/sync_state', {
+      method:'POST',
+      headers:{ 'apikey': SUPABASE.anonKey, 'Authorization':'Bearer ' + SUPABASE.anonKey, 'Content-Type':'application/json' },
+      body: JSON.stringify({ p_secret: secret, p_rows: rows, p_since: 0 })
+    });
+    if (!res.ok){
+      let msg = 'Sync failed (' + res.status + ')';
+      try { const j = await res.json(); msg = (j.message || j.msg || msg); } catch(e){}
+      throw new Error(msg);
+    }
+    const remote = await res.json();
+    let changed = 0;
+    for (const row of (remote || [])){
+      const d = row.data || {};
+      if (d.kind === 'tick'){
+        const pid = d.pid, key = tickKey(d.dow, d.date);
+        const t = logOf(pid).ticks[key];
+        if (!t || d.ts > t.ts){
+          logOf(pid).ticks[key] = { items:(d.items||[]).slice(), ts:d.ts };
+          changed++;
+        }
+      } else if (d.id && d.ts){
+        const pid = d.pid;
+        const cur = logOf(pid).lifts[d.id];
+        if (!cur || d.ts > cur.ts){
+          logOf(pid).lifts[d.id] = d;
+          changed++;
+        }
+      }
+    }
+    if (changed){
+      for (const p of S.people) saveLog(p.id, true);
+    }
+    S.sync.lastSync = now();
+    S.sync.lastErr = '';
+    await saveSettings();
+    render();
+    return { ok:true };
+  } catch(e){
+    S.sync.lastErr = String(e && e.message ? e.message : e).slice(0,200);
+    await saveSettings();
+    render();
+    return { ok:false, msg: S.sync.lastErr };
+  } finally {
+    syncInFlight = false;
+    S.sync.busy = false;
+    saveSettings();
+  }
+}
+
+/* ============================================================
+   Boot
+   ============================================================ */
+(async function boot(){
+  await loadSettings();
+  await loadLogs();
+  await migrateLegacy();
+
+  document.getElementById('switch').innerHTML = '';
+  render();
+
+  document.getElementById('gearbtn').addEventListener('click', openSettings);
+
+  if (!S.onboarded){
+    onboard();
+  } else if (syncConfigured() && S.sync.pin){
+    doSync(false);
+  }
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden && syncConfigured() && S.sync.pin) doSync(false);
+  });
+  window.addEventListener('focus', () => {
+    if (syncConfigured() && S.sync.pin && !syncInFlight) doSync(false);
+  });
+  setInterval(() => {
+    if (!document.hidden && syncConfigured() && S.sync.pin && !syncInFlight) doSync(false);
+  }, 60000);
+})();
 </script>
 </body>
 </html>
