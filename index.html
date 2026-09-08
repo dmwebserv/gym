@@ -513,7 +513,7 @@
   .tring::before{
     content:'';position:absolute;inset:12px;border-radius:50%;background:var(--base);
   }
-  .tdisp{position:relative;z-index:1;font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:52px;letter-spacing:-.02em;}
+  .tdisp{position:relative;z-index:1;font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:clamp(40px,13vw,52px);letter-spacing:-.02em;white-space:nowrap;}
   .tdisp .unit{font-size:14px;color:var(--muted);letter-spacing:.08em;margin-left:4px;}
   .tctl{display:flex;gap:10px;justify-content:center;margin-top:22px;}
   .tctl button{flex:none;min-width:112px;}
@@ -1594,11 +1594,17 @@ function renderProgress(){
   }
   body += `<p style="margin-top:20px;font-size:13px;color:var(--muted);line-height:1.6;font-family:'IBM Plex Mono',monospace;letter-spacing:.02em">
     PB = the heaviest weight you've logged for that lift, with the date you first hit it.
-    Tap a row to see every session.</p>`;
+    Tap a row to see every session.</p>
+    <div style="margin-top:26px;border-top:1px solid var(--line);padding-top:14px">
+      ${syncFooterHTML()}
+    </div>`;
 
   document.getElementById('app').innerHTML = `<div class="anim">${body}</div>`;
   document.querySelectorAll('.pr-row').forEach(r => r.addEventListener('click', () => openHistory(r.dataset.ex)));
+  bindSyncButtons();
   window.scrollTo(0,0);
+  // pull fresh updates from the other phone whenever Progress opens
+  if (syncConfigured() && S.sync.pin && !syncInFlight) doSync(false);
 }
 function muscleFor(ex){
   for (const d of DAYS) for (const e of d.ex) if (e.canon === ex || (e.opts && e.opts.some(o=>o.id===ex))) return e.muscle;
@@ -1681,7 +1687,7 @@ function beep(){
 }
 function renderTimer(){
   setPersonAccent();
-  const total = Timer.total, left = Timer.running ? Math.max(0, Math.round((Timer.end - now())/1000)) : Timer.left;
+  const total = Timer.total, left = Math.max(0, Math.round(Timer.running ? (Timer.end - now())/1000 : Timer.left));
   const pct = total ? (1 - left/total)*100 : 0;
   const mm = String(Math.floor(left/60)).padStart(2,'0'), ss = String(left%60).padStart(2,'0');
   document.getElementById('app').innerHTML = `
@@ -1706,7 +1712,7 @@ function renderTimer(){
   const ring = document.getElementById('tring');
   ring.style.background = `conic-gradient(var(--accent) ${pct*3.6}deg, var(--line) 0deg)`;
   document.getElementById('tstart').addEventListener('click', () => {
-    if (Timer.running){ Timer.running = false; cancelAnimationFrame(Timer.raf); Timer.left = Math.max(0, (Timer.end - now())/1000); renderTimer(); return; }
+    if (Timer.running){ Timer.running = false; cancelAnimationFrame(Timer.raf); Timer.left = Math.max(0, Math.round((Timer.end - now())/1000)); renderTimer(); return; }
     if (!Timer.total){
       Timer.total = REST_MIN.compound; Timer.left = Timer.total;
       // pick nearest preset for the visual
