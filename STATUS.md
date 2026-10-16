@@ -3,7 +3,7 @@
 **Read this first when you pick this up.** It's the single page: what's decided, what's built, what's
 left, and where the detail lives.
 
-Last updated: **16 October 2026** · **Releases 1, 2, 3 and 4 are built and tested, plus restore and sync hardening from Release 5.** 320 automated checks pass.
+Last updated: **16 October 2026** · **Releases 1, 2, 3 and 4 are built, tested and merged to `main` (PR #3), plus restore and sync hardening from Release 5.** 320 automated checks pass.
 
 ---
 
@@ -18,7 +18,7 @@ Last updated: **16 October 2026** · **Releases 1, 2, 3 and 4 are built and test
 | **Release 4 — Progress & motivation** | ✅ Built and tested: four Progress views (lifts, PB wall, 12-week map, you two), the session-complete summary, the PB moment, named partner PBs, last-three-sessions, plate calculator, search, short-on-time trim, superset hand-off |
 | **Data safety** | ✅ Built and tested: restore from a backup, safer erase, sync that only sends what changed |
 | **Your data** | Untouched. Nothing rewritten, migrated or deleted — proven by a test that boots the app on a phone full of old data |
-| **On your phones?** | **Not yet** — `dmwebserv.github.io/gym` serves `main`. Everything is on the branch `arena/5722d17c-gym`, ready for a pull request |
+| **On your phones?** | **Yes** — merged to `main` via PR #3, which `dmwebserv.github.io/gym` serves. It goes live as soon as GitHub Pages rebuilds; the installed app picks the new version up on its next launch with signal |
 | **Next** | The remainder of Release 5, and the two deferred items listed in §9 |
 
 ## 2. Where everything is
@@ -221,7 +221,7 @@ no longer breaks if the browser lacks `matchMedia` (found by the tests).
 | **1** | Reps model + invented-reps fix, undo, edit/delete, log-for-both, typo guard, entry hardening | ✅ built, 81 checks |
 | **2** | The new programme, derived badges, automatic rotation, substitutes, "do it later", the pull-up ladder, retired-exercise labels, legend, backup nudge, rep clean-up | ✅ built, 41 checks |
 | **3** | Splash, boot skeleton, manifest, icon set, offline shell, install polish, launch images, top-bar colour, self-hosted fonts | ✅ built, 43 checks |
-| **4** | Progress & motivation: frequency heatmap, "on this day", milestones, PR wall, comparison, session summary, PB celebration, partner feed, achievements | ⏭ **next** |
+| **4** | Progress & motivation: the four views, "on this day", milestones, PB wall, comparison, session summary, PB celebration, partner feed, gym-floor tools | ✅ built, 93 checks |
 | 5 | Restore + erasing safety ✅, incremental sync ✅, schema-stamped backups ✅; still open: automatic snapshots, heatmap of what you skipped, focus handling, themes | partly built |
 
 ## 10. How to pick this up
