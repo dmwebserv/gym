@@ -205,6 +205,15 @@ no longer breaks if the browser lacks `matchMedia` (found by the tests).
    it's your call when to press it. **Recommendation: press it once you're happy with the new logging**,
    after exporting a backup.
 
+## 8b. Two things to know about the setup (not changes — facts)
+
+- **The repo is public**, and GitHub Pages needs that to stay free. So the plan, this file and the tests
+  are readable by anyone with the link. Nothing personal is in them beyond your first names and your
+  training weights.
+- **The shared sync room is protected only by your PIN.** The Supabase key in the app is a public one by
+  design (it can do nothing without the room secret), and the room name is derived from that PIN — so a
+  strong PIN is what keeps the shared copy private. Everything else never leaves the phone.
+
 ## 9. Build plan
 
 | Release | Scope | State |

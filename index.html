@@ -750,9 +750,12 @@
   .hmc{width:100%;max-width:26px;height:20px;border-radius:2px;background:var(--surface);
     border:1px solid var(--line);flex:1;display:inline-block;}
   .hmc.l0{}
-  .hmc.l1{background:color-mix(in srgb, var(--pc,var(--accent)) 30%, var(--surface));border-color:transparent;}
-  .hmc.l2{background:color-mix(in srgb, var(--pc,var(--accent)) 60%, var(--surface));border-color:transparent;}
+  /* Built in two steps on purpose: a plain colour first (older Safari), the blend after */
+  .hmc.l1{background:#2F3A44;border-color:transparent;}
+  .hmc.l2{background:#5A6470;border-color:transparent;}
   .hmc.l3{background:var(--pc,var(--accent));border-color:transparent;}
+  .hmc.l1{background:color-mix(in srgb, var(--pc,var(--accent)) 30%, var(--surface));}
+  .hmc.l2{background:color-mix(in srgb, var(--pc,var(--accent)) 60%, var(--surface));}
   .hmc.future{opacity:.28;border-style:dashed;}
   .hmkey{display:flex;align-items:center;gap:8px;margin-top:12px;font-family:'IBM Plex Mono',monospace;
     font-size:10.5px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;}
