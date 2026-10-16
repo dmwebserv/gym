@@ -3,7 +3,7 @@
 **Read this first when you pick this up.** It's the single page: what's decided, what's built, what's
 left, and where the detail lives.
 
-Last updated: **16 October 2026** · **Releases 1 and 2 are built and tested.** 138 automated checks pass.
+Last updated: **16 October 2026** · **Releases 1, 2 and 3 are built and tested, plus restore and sync hardening from Release 5.** 224 automated checks pass.
 
 ---
 
@@ -14,9 +14,11 @@ Last updated: **16 October 2026** · **Releases 1 and 2 are built and tested.** 
 | **The workout** | Reworked, agreed, and **now built into the app** |
 | **Release 1 — how you log** | ✅ Built and tested: last-set reps, undo, edit/delete, log-for-both, typo guard |
 | **Release 2 — the new programme** | ✅ Built and tested: the new exercises, automatic weekly rotation, substitutes, the pull-up ladder |
+| **Release 3 — it feels like an app** | ✅ Built and tested: splash screen, boot skeleton, home-screen install with proper icons, offline works with no signal at all, top bar follows the day |
+| **Data safety** | ✅ Built and tested: restore from a backup, safer erase, sync that only sends what changed |
 | **Your data** | Untouched. Nothing rewritten, migrated or deleted — proven by a test that boots the app on a phone full of old data |
 | **On your phones?** | **Not yet** — `dmwebserv.github.io/gym` serves `main`. Everything is on the branch `arena/5722d17c-gym`, ready for a pull request |
-| **Next** | Release 3 (splash / install / offline), then data safety, then the extras |
+| **Next** | Release 4 (progress & motivation), then the rest of Release 5 |
 
 ## 2. Where everything is
 
@@ -31,7 +33,8 @@ Last updated: **16 October 2026** · **Releases 1 and 2 are built and tested.** 
 | `IMPROVEMENTS-2.md` | Round 2: answers, specs, 58 ideas + 2 bugs |
 | `IMPROVEMENTS-3.md` | Round 3: the long list — 225 ideas (`X1`–`X225`) |
 | `index.html` | **The app.** Releases 1 and 2 are in. |
-| `tests/` | 138 automated checks that drive the real app |
+| `tests/` | 224 automated checks that drive the real app |
+| `manifest.webmanifest`, `sw.js`, `fonts/`, `pwa-*.png`, `splash-*.png` | What makes it install and work offline |
 | `supabase.sql` | The shared sync store. **Untouched.** |
 
 ## 3. Decisions locked
@@ -101,9 +104,53 @@ X153 timed notification (see §6), X226 calendar events.
   blanks the invented reps only, keeps weight and date, spares records that have a real last-set rep,
   and it's undoable straight away).
 
+**Release 3 — it feels like an app**
+
+- **Splash screen and boot skeleton.** Launching shows the logo and "SESSION", then the page's own
+  shape fills in — so the app never shows a blank white or empty screen. There's a four-second failsafe,
+  so this can never strand you on the splash.
+- **Real home-screen install.** A proper manifest with 192/512 icons and a maskable icon (so launchers
+  can round it without cropping the logo), the right name, the app's own colours, a portrait lock, and
+  home-screen shortcuts (Android) to Today / Timer / Progress.
+- **Offline for real.** A service worker caches the app itself, so it opens with no signal at all — the
+  first screen you've ever opened. It is **network-first**, so a new version appears the moment you have
+  signal, but the copy on the phone means a dead patch in the gym changes nothing.
+- **Your data is never cached by the service worker.** Cross-origin requests (the sync room) pass
+  straight through, untouched and always fresh.
+- **A new version never interrupts a session.** It downloads quietly and is adopted on your *next*
+  launch, and only when no sheet is open.
+- **The fonts are now part of the app** (Archivo and IBM Plex Mono, 116 KB) instead of coming from
+  Google — no third-party request at all, and they work offline.
+- **Nine iOS launch images**, so the app opens straight into its own colours instead of a white flash.
+- **The phone's top status bar follows the day** — yellow, blue, red — and its normal colour elsewhere.
+- **Offline says so, plainly:** "Offline — everything still saves on this phone and syncs when you have
+  signal."
+- **"This phone" in Settings** tells you whether you're opened as an installed app and whether the
+  browser has granted your data protection, in plain words.
+- **Buzz on/off and Normal/Higher contrast** in Settings (contrast raises every faint grey at once
+  — useful in a bright gym).
+
+**Data safety (built early, because this is the one that matters)**
+
+- **Restore from a backup.** You could export but never import — that hole is closed. It **merges**:
+  anything you have that's newer is kept, anything missing is added, nothing is ever deleted, unknown
+  people are ignored, and it's undoable. You see the counts (added / updated / skipped) *before* it
+  writes anything, and it refuses the CSV if you pick the wrong file.
+- **Erase is now a proper sheet**, not a browser popup: it names how many lifts and ticks are on this
+  phone, says plainly that it doesn't touch the other phone, offers an export first, and still needs a
+  second tap to arm.
+- **Backups are stamped** with the app, a schema version and a date, so any future version can always
+  read an old file.
+- **Sync now only sends what changed** — a quiet sync sends **zero** rows instead of every record you
+  own, and asks only for rows newer than the last it saw. Every 20th sync (and every manual one) still
+  sends everything, so a missed row can never be lost. Two phones have been simulated against the real
+  SQL semantics: deletes stick, an older stale copy cannot resurrect a deleted record, an offline lift
+  catches up, and a brand-new phone recovers the whole room.
+
 **Also fixed while I was in there:** the app no longer reports "Connected ✦" without checking your PIN;
 a wrong PIN is no longer saved before the store accepts it; ticks now roll over correctly if the app is
-left open past midnight; and "Erase local data" clears the injected-storage path too.
+left open past midnight; "Erase local data" clears the injected-storage path too; and the Settings sheet
+no longer breaks if the browser lacks `matchMedia` (found by the tests).
 
 ## 6. Platform limits — worth remembering before asking for these again
 
@@ -140,13 +187,13 @@ left open past midnight; and "Erase local data" clears the injected-storage path
 |---|---|---|
 | **1** | Reps model + invented-reps fix, undo, edit/delete, log-for-both, typo guard, entry hardening | ✅ built, 81 checks |
 | **2** | The new programme, derived badges, automatic rotation, substitutes, "do it later", the pull-up ladder, retired-exercise labels, legend, backup nudge, rep clean-up | ✅ built, 41 checks |
-| **3** | Splash screen, boot skeleton, manifest, icon set, offline app shell, install polish, safe areas | ⏭ **next** |
-| 4 | Progress & motivation: per-dumbbell handling, frequency heatmap, "on this day", milestones, PR wall, comparison, session summary, PB celebration, partner feed, share cards, achievements | todo |
-| 5 | Data safety (import/restore, snapshots), sync streamlining, accessibility (danger-zone confirmations, focus handling), themes, settings search | todo |
+| **3** | Splash, boot skeleton, manifest, icon set, offline shell, install polish, launch images, top-bar colour, self-hosted fonts | ✅ built, 43 checks |
+| **4** | Progress & motivation: frequency heatmap, "on this day", milestones, PR wall, comparison, session summary, PB celebration, partner feed, achievements | ⏭ **next** |
+| 5 | Restore + erasing safety ✅, incremental sync ✅, schema-stamped backups ✅; still open: automatic snapshots, heatmap of what you skipped, focus handling, themes | partly built |
 
 ## 10. How to pick this up
 
-Say any of: **"Read STATUS.md and start Release 3"**, or name a release, or a code from
+Say any of: **"Read STATUS.md and start Release 4"**, or name a release, or a code from
 `IMPROVEMENTS-3.md`. Everything needed is in these files; nothing has to be re-explained.
 
 ## 11. Guardrails I'm holding to (so they survive anyone touching this)
@@ -157,5 +204,7 @@ Say any of: **"Read STATUS.md and start Release 3"**, or name a release, or a co
 - **Never delete.** Deletions are tombstones that sync, so the other phone can't resurrect them.
 - **Single file, no build step, no dependencies.** It's why the app is instant and hand-editable.
 - **Any restore or import merges (newest wins) and never overwrites newer data.**
-- **Run `tests/` before merging anything that touches `index.html`.** Three files, 138 checks, about
-  20 seconds.
+- **Run `tests/` before merging anything that touches `index.html`.** Six files, 224 checks, about
+  30 seconds.
+- **Nothing third-party loads at runtime** — not the fonts, not a script, not an icon. The sync room is
+  the only network call the app ever makes, and it is never cached.

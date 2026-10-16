@@ -7,12 +7,40 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Session">
 <meta name="theme-color" content="#12161A">
-<link rel="apple-touch-icon" href="icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="pwa-192.png">
+<link rel="apple-touch-icon" sizes="192x192" href="pwa-192.png">
+<link rel="apple-touch-icon" sizes="512x512" href="pwa-512.png">
 <link rel="icon" type="image/png" href="icon.png">
+<link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)" href="splash-750x1334.png">
+<link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2)" href="splash-828x1792.png">
+<link rel="apple-touch-startup-image" media="(device-width: 540px) and (device-height: 960px) and (-webkit-device-pixel-ratio: 2)" href="splash-1080x1920.png">
+<link rel="apple-touch-startup-image" media="(device-width: 585px) and (device-height: 1266px) and (-webkit-device-pixel-ratio: 2)" href="splash-1170x2532.png">
+<link rel="apple-touch-startup-image" media="(device-width: 589px) and (device-height: 1278px) and (-webkit-device-pixel-ratio: 2)" href="splash-1179x2556.png">
+<link rel="apple-touch-startup-image" media="(device-width: 642px) and (device-height: 1389px) and (-webkit-device-pixel-ratio: 2)" href="splash-1284x2778.png">
+<link rel="apple-touch-startup-image" media="(device-width: 645px) and (device-height: 1398px) and (-webkit-device-pixel-ratio: 2)" href="splash-1290x2796.png">
+<link rel="apple-touch-startup-image" media="(device-width: 562px) and (device-height: 1218px) and (-webkit-device-pixel-ratio: 2)" href="splash-1125x2436.png">
+<link rel="apple-touch-startup-image" media="(device-width: 621px) and (device-height: 1344px) and (-webkit-device-pixel-ratio: 2)" href="splash-1242x2688.png">
 <title>Session</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<!-- Fonts are self-hosted: no third-party request, and they work with no signal -->
+<link rel="preload" href="fonts/archivo-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/ibm-plex-mono-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+  @font-face{font-family:Archivo;font-style:normal;font-weight:400;font-display:swap;
+    src:url(fonts/archivo-latin-400-normal.woff2) format('woff2');}
+  @font-face{font-family:Archivo;font-style:normal;font-weight:600;font-display:swap;
+    src:url(fonts/archivo-latin-600-normal.woff2) format('woff2');}
+  @font-face{font-family:Archivo;font-style:normal;font-weight:700;font-display:swap;
+    src:url(fonts/archivo-latin-700-normal.woff2) format('woff2');}
+  @font-face{font-family:Archivo;font-style:normal;font-weight:900;font-display:swap;
+    src:url(fonts/archivo-latin-900-normal.woff2) format('woff2');}
+  @font-face{font-family:'IBM Plex Mono';font-style:normal;font-weight:400;font-display:swap;
+    src:url(fonts/ibm-plex-mono-latin-400-normal.woff2) format('woff2');}
+  @font-face{font-family:'IBM Plex Mono';font-style:normal;font-weight:500;font-display:swap;
+    src:url(fonts/ibm-plex-mono-latin-500-normal.woff2) format('woff2');}
+  @font-face{font-family:'IBM Plex Mono';font-style:normal;font-weight:600;font-display:swap;
+    src:url(fonts/ibm-plex-mono-latin-600-normal.woff2) format('woff2');}
+</style>
 <style>
   :root{
     --base:#12161A;
@@ -37,7 +65,7 @@
     font-family:'Archivo',system-ui,sans-serif;
     font-size:16px;
     line-height:1.45;
-    padding:max(env(safe-area-inset-top),14px) var(--pad) calc(env(safe-area-inset-bottom) + var(--tabh) + 34px);
+    padding:max(env(safe-area-inset-top),14px) max(var(--pad), env(safe-area-inset-right)) calc(env(safe-area-inset-bottom) + var(--tabh) + 34px) max(var(--pad), env(safe-area-inset-left));
     max-width:620px;
     margin:0 auto;
     overscroll-behavior-y:contain;
@@ -304,7 +332,7 @@
   .tabbar{
     position:fixed;left:0;right:0;bottom:0;z-index:40;
     display:flex;justify-content:center;gap:6px;
-    padding:8px var(--pad) calc(env(safe-area-inset-bottom) + 8px);
+    padding:8px max(var(--pad), env(safe-area-inset-right)) calc(env(safe-area-inset-bottom) + 8px) max(var(--pad), env(safe-area-inset-left));
     background:rgba(18,22,26,.92);
     backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
     border-top:1px solid var(--line);
@@ -597,6 +625,47 @@
   footer .sync-line{margin-top:8px;display:flex;align-items:center;gap:7px;}
   footer .sync-line button{border:none;background:none;color:var(--accent);font-family:inherit;font-size:11px;letter-spacing:.04em;cursor:pointer;padding:0;text-decoration:underline;}
 
+
+  /* ---- boot splash + skeleton ---- */
+  #splash{
+    position:fixed;inset:0;z-index:200;background:var(--base);
+    display:flex;align-items:center;justify-content:center;
+    transition:opacity .45s ease, visibility .45s ease;
+  }
+  #splash.gone{opacity:0;visibility:hidden;pointer-events:none;}
+  .splash-inner{display:flex;flex-direction:column;align-items:center;gap:16px;}
+  .splash-inner img{width:72px;height:72px;border-radius:16px;opacity:.96;}
+  .splash-word{
+    font-family:'IBM Plex Mono',monospace;font-size:15px;font-weight:600;
+    letter-spacing:.42em;color:var(--chalk);text-indent:.42em;
+  }
+  .splash-rule{width:56px;height:3px;border-radius:2px;background:var(--accent);}
+  #bootskeleton{max-width:620px;margin:0 auto;}
+  #bootskeleton.gone{display:none;}
+  .sk-row{display:flex;gap:8px;margin-bottom:12px;}
+  .sk-box{height:42px;border-radius:3px;background:var(--surface);border:1px solid var(--line);}
+  .sk-a{flex:1;} .sk-b{width:46px;flex:none;}
+  .sk-switch{display:flex;gap:6px;margin-bottom:26px;}
+  .sk-pill{flex:1;height:38px;border-radius:3px;background:var(--surface);border:1px solid var(--line);}
+  .sk-line{height:12px;border-radius:3px;background:var(--surface);margin-bottom:10px;}
+  .sk-tall{height:44px;margin-bottom:14px;}
+  .sk-w30{width:30%;} .sk-w40{width:40%;} .sk-w70{width:70%;}
+  .sk-block{height:74px;border-radius:4px;background:var(--surface);border:1px solid var(--line);margin-bottom:10px;}
+  .sk-note{
+    font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.14em;
+    color:var(--muted);text-transform:uppercase;text-align:center;margin-top:18px;
+  }
+  @media (prefers-reduced-motion:reduce){ #splash{transition:none;} }
+
+  /* Higher contrast: one switch, applied everywhere muted text or hairlines are used. */
+  .contrast-high{
+    --muted:#AEBAC6;
+    --line:#3C4956;
+  }
+  .contrast-high .pbline.blank{opacity:.9;}
+  .contrast-high .restline{opacity:1;}
+  .contrast-high li.ex.done{opacity:.66;}
+  .contrast-high .block p{opacity:1;}
   @keyframes rise{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
   @keyframes fade{from{opacity:0;}to{opacity:1;}}
   @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
@@ -612,6 +681,29 @@
 </style>
 </head>
 <body>
+
+<!-- Boot splash: covers the moment between launch and your data being ready, so it
+     never looks like an empty page. Fades out on the first render. -->
+<div id="splash" aria-hidden="true">
+  <div class="splash-inner">
+    <img src="pwa-192.png" alt="" width="72" height="72">
+    <div class="splash-word">SESSION</div>
+    <div class="splash-rule"></div>
+  </div>
+</div>
+
+<!-- Boot skeleton: the shell, so the layout never jumps while the log loads -->
+<div id="bootskeleton" aria-hidden="true">
+  <div class="sk-row"><div class="sk-box sk-a"></div><div class="sk-box sk-b"></div></div>
+  <div class="sk-switch"><div class="sk-pill"></div><div class="sk-pill"></div><div class="sk-pill"></div></div>
+  <div class="sk-line sk-w40"></div>
+  <div class="sk-line sk-w70 sk-tall"></div>
+  <div class="sk-line sk-w30"></div>
+  <div class="sk-block"></div>
+  <div class="sk-block"></div>
+  <div class="sk-block"></div>
+  <div class="sk-note">Opening your log…</div>
+</div>
 
 <header id="topbar">
   <div class="toprow">
@@ -657,6 +749,8 @@ const PEOPLE_DEF = [
 ];
 
 const UNIT = 'kg';
+const APP_VERSION = '5.0';
+const EXPORT_SCHEMA = 2;
 const MAXW = 500;
 
 const DAYS = [
@@ -1021,8 +1115,10 @@ function settingsDefault(){
     swap:{},                        // pid → 'dayN:date:idx' → {id, name} — "machine taken?" for today only
     dayOrder:{},                    // pid → 'dayN:date' → [slot indexes] — "do it later", today only
     lastBackup:0,
+    haptics:true,
+    contrast:'normal',
     repsCleanedAt:0,
-    sync:{ pin:'', room:'', lastSync:0, lastErr:'', busy:false }
+    sync:{ pin:'', room:'', lastSync:0, lastErr:'', busy:false, upTs:0, downTs:0, count:0 }
   };
 }
 /* ---------- per-day helpers (all local, none of it touches your records) ---------- */
@@ -1251,6 +1347,7 @@ async function migrateLegacy(){
    Toast
    ============================================================ */
 function buzz(ms){
+  if (S && S.haptics === false) return;
   try { if (navigator.vibrate) navigator.vibrate(ms || 12); } catch(e){}
 }
 function toast(msg, colorVar, undoFn){
@@ -1355,11 +1452,34 @@ function renderTabs(){
    ============================================================ */
 function render(){
   lastRenderedDay = todayKey();
+  paintThemeColor();
   renderPersons();
   renderTabs();
   if (view === 'session'){ renderSwitch(); renderSession(); }
   else if (view === 'progress'){ document.getElementById('switch').innerHTML = ''; renderProgress(); }
   else { document.getElementById('switch').innerHTML = ''; renderTimer(); }
+}
+function setContrast(mode){
+  S.contrast = mode === 'high' ? 'high' : 'normal';
+  document.documentElement.classList.toggle('contrast-high', S.contrast === 'high');
+  saveSettings();
+}
+function whatsNewHTML(){
+  return `
+    <div class="set-row">
+      <span class="sk">What's new — v${esc(APP_VERSION)}</span>
+      <div class="sv" style="line-height:1.75">
+        <b style="color:var(--chalk)">Logging:</b> one box for the reps in your last set (it used to record
+        numbers you never typed), undo on everything, and you can now edit or delete any past record.<br>
+        <b style="color:var(--chalk)">The plan:</b> the new Monday/Wednesday/Friday, with the dumbbell ⇄ barbell
+        and cable ⇄ machine alternation worked out for you, "machine taken?" substitutes, and the pull-up
+        ladder at the bottom of every session.<br>
+        <b style="color:var(--chalk)">Safety:</b> restore from a backup, a nudge if it has been a month, and a
+        button to clean up the rep numbers the old version invented.<br>
+        <b style="color:var(--chalk)">This release:</b> the app opens with a splash and works with no signal at
+        all — it is installed, so it also keeps your data safer.
+      </div>
+    </div>`;
 }
 function setPersonAccent(){
   const p = me();
@@ -1730,6 +1850,7 @@ function renderSession(){
         Tap a weight pill to log what you lifted — weight and last-set reps — and it ticks the exercise off too.
         The number under the pill is your last set; below that is your <b style="color:var(--accent)">PB</b> for that lift.
         ${syncFooterHTML()}
+        ${netNoteHTML()}
         ${backupNudgeHTML()}
         <br><br>
         General fitness plan for healthy adults. Swap exercises if the kit is taken,
@@ -2397,6 +2518,7 @@ function renderProgress(){
     Tap a row to see every session — and to edit or delete one.</p>
     <div style="margin-top:26px;border-top:1px solid var(--line);padding-top:14px">
       ${syncFooterHTML()}
+      ${netNoteHTML()}
       ${backupNudgeHTML()}
     </div>`;
 
@@ -2616,6 +2738,10 @@ function tickTimer(){
    ============================================================ */
 function openSettings(){
   const p = me();
+  storageRowHTML().then(html => {
+    const el = document.getElementById('storagerow');
+    if (el) el.innerHTML = html;
+  });
   const cfg = syncConfigured();
   let syncHTML;
   if (!cfg){
@@ -2693,6 +2819,7 @@ function openSettings(){
         <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
           <button class="mini-btn" data-act="expjson">Full backup (.json)</button>
           <button class="mini-btn" data-act="expcsv">Spreadsheet (.csv)</button>
+          <button class="mini-btn accent" data-act="restore">Restore from backup</button>
         </div>
       </div>
       <div class="set-row">
@@ -2704,10 +2831,44 @@ function openSettings(){
         <div style="margin-top:10px"><button class="mini-btn" data-act="cleanreps">Clean up auto-filled reps</button></div>
       </div>
       <div class="set-row">
+        <span class="sk">Feel</span>
+        <div class="sv">A short buzz when you log or tick something, on phones that support it. It never
+        makes a sound, so it is fine in a quiet gym.</div>
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <button class="mini-btn ${S.haptics === false ? '' : 'accent'}" data-act="hap-on">Buzz on</button>
+          <button class="mini-btn ${S.haptics === false ? 'accent' : ''}" data-act="hap-off">Buzz off</button>
+        </div>
+      </div>
+      <div class="set-row">
+        <span class="sk">Contrast</span>
+        <div class="sv">Raises the contrast of the small grey text — useful in a bright gym.</div>
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <button class="mini-btn ${S.contrast === 'high' ? '' : 'accent'}" data-act="con-normal">Normal</button>
+          <button class="mini-btn ${S.contrast === 'high' ? 'accent' : ''}" data-act="con-high">Higher</button>
+        </div>
+      </div>
+      <div class="set-row">
         <span class="sk" style="color:var(--d3)">Danger zone</span>
         <div class="sv">Wipe <b>this phone's</b> local data only. It won't touch the other phone unless sync re-uploads it.</div>
         <div style="margin-top:10px"><button class="mini-btn" style="border-color:var(--d3);color:var(--d3)" data-act="wipe">Erase local data</button></div>
       </div>
+    </div>
+    <div class="modal-sec">
+      <span class="lbl">This phone</span>
+      <div class="set-row">
+        <span class="sk">How it is opened</span>
+        ${installRowHTML()}
+      </div>
+      <div class="set-row">
+        <span class="sk">Your data</span>
+        <div class="sv">Two copies exist: this phone's own copy, and the shared sync room (which is why you
+        can see each other's logs). The export below is the third one.</div>
+        <div id="storagerow">${storageRowHTMLSync()}</div>
+      </div>
+    </div>
+    <div class="modal-sec">
+      <span class="lbl">What's new</span>
+      ${whatsNewHTML()}
     </div>
     <div class="modal-sec">
       <span class="lbl">What the symbols mean</span>
@@ -2770,13 +2931,14 @@ function openSettings(){
       saveSettings(); openSettings();
     }
     else if (a === 'cleanreps') cleanOldReps();
+    else if (a === 'hap-on'){ S.haptics = true; saveSettings(); openSettings(); }
+    else if (a === 'hap-off'){ S.haptics = false; saveSettings(); openSettings(); }
+    else if (a === 'con-normal'){ setContrast('normal'); openSettings(); }
+    else if (a === 'con-high'){ setContrast('high'); openSettings(); }
+    else if (a === 'restore') openRestoreSheet();
     else if (a === 'expjson') exportData('json');
     else if (a === 'expcsv') exportData('csv');
-    else if (a === 'wipe'){
-      if (!confirm('Erase ALL data stored locally on this phone? This cannot be undone.')) return;
-      if (!confirm('Are you absolutely sure?')) return;
-      wipeLocal();
-    }
+    else if (a === 'wipe') openEraseSheet();
   }));
 }
 
@@ -2815,6 +2977,7 @@ function openSyncSetup(){
     // would be retried forever and the only way back is the Reconnect button.
     S.sync.pin = v;
     S.sync.room = wireSecret(secret).slice(0,16);
+    S.sync.upTs = 0; S.sync.downTs = 0; S.sync.count = 0;
     const res = await doSync(true, secret);
     if (res && res.ok){
       await saveSettings();
@@ -2844,7 +3007,10 @@ function exportData(fmt){
   if (fmt === 'json'){
     name = `gym-backup-${stamp}.json`;
     type = 'application/json';
-    text = JSON.stringify({ exported:new Date().toISOString(), unit:UNIT, people:S.people, data:all }, null, 2);
+    text = JSON.stringify({
+      app:'Session', schema:EXPORT_SCHEMA, version:APP_VERSION,
+      exported:new Date().toISOString(), unit:UNIT, people:S.people, data:all
+    }, null, 2);
   } else {
     name = `gym-weights-${stamp}.csv`;
     type = 'text/csv';
@@ -2870,6 +3036,171 @@ function exportData(fmt){
     toast('Backup downloaded');
   } catch(e){ toast('Export failed on this device'); }
 }
+/* ============================================================
+   Restore from a backup (the one real hole: you could export but not import)
+   Merges only — newest wins, exactly like sync. It never deletes and it never
+   overwrites anything newer, so a stale backup file cannot do damage.
+   ============================================================ */
+function analyseBackup(obj){
+  const out = { lifts:[], ticks:[], unknownPeople:[], peopleCount:0, exported:obj && obj.exported };
+  if (!obj || typeof obj !== 'object') return null;
+  const data = obj.data;
+  if (!data || typeof data !== 'object') return null;
+  const known = new Set(S.people.map(p => p.id));
+  for (const pid of Object.keys(data)){
+    if (!known.has(pid)){ out.unknownPeople.push(pid); continue; }
+    out.peopleCount++;
+    const bucket = data[pid] || {};
+    for (const id of Object.keys(bucket.lifts || {})){
+      const e = bucket.lifts[id];
+      if (e && typeof e === 'object' && e.weight != null) out.lifts.push({ pid, id, entry:e });
+    }
+    for (const k of Object.keys(bucket.ticks || {})){
+      const t = bucket.ticks[k];
+      if (t && typeof t === 'object') out.ticks.push({ pid, k, t });
+    }
+  }
+  return out;
+}
+function previewBackup(plan){
+  let add = 0, update = 0, skip = 0;
+  for (const x of plan.lifts){
+    const cur = logOf(x.pid).lifts[x.id];
+    if (!cur) add++;
+    else if ((x.entry.ts || 0) > (cur.ts || 0)) update++;
+    else skip++;
+  }
+  let tAdd = 0, tUpdate = 0, tSkip = 0;
+  for (const x of plan.ticks){
+    const cur = logOf(x.pid).ticks[x.k];
+    if (!cur) tAdd++;
+    else if ((x.t.ts || 0) > (cur.ts || 0)) tUpdate++;
+    else tSkip++;
+  }
+  return { add, update, skip, tAdd, tUpdate, tSkip };
+}
+function openRestoreSheet(){
+  const body = `
+    <p style="font-size:15px;line-height:1.65;color:var(--chalk);opacity:.92">
+      Pick a backup file (<b>.json</b>) that you downloaded from this app. It merges into what is already
+      here: anything you have that is <b>newer</b> is kept, anything missing is added, and nothing is ever
+      deleted.</p>
+    <div class="modal-sec">
+      <span class="lbl">Backup file</span>
+      <input type="file" id="restorefile" accept=".json,application/json"
+        style="width:100%;font-size:14px;color:var(--chalk);background:var(--base);border:1px solid var(--line);border-radius:3px;padding:12px">
+    </div>
+    <div id="restorepreview"></div>
+    <div class="cta-row"><button class="cta ghost" data-close>Close</button></div>
+    <p style="font-size:12.5px;color:var(--muted);line-height:1.6;margin-top:14px">
+      A backup taken on this phone contains both people's logs. Restoring is undoable for a few seconds
+      afterwards, like everything else.</p>`;
+  openOverlay(overlayShell('Restore from backup', 'merge, never overwrite', body, {center:true}));
+  bindOverlayClicks();
+  let plan = null;
+  document.getElementById('restorefile').addEventListener('change', ev => {
+    const f = ev.target.files && ev.target.files[0];
+    const box = document.getElementById('restorepreview');
+    if (!f) return;
+    box.innerHTML = `<div class="hint-row">Reading ${esc(f.name)}…</div>`;
+    const rd = new FileReader();
+    rd.onload = () => {
+      let obj = null;
+      try { obj = JSON.parse(rd.result); } catch(e){}
+      plan = analyseBackup(obj);
+      if (!plan){
+        box.innerHTML = `<div class="hint-row" style="border-color:var(--d3)">That file is not a Session backup — it should be the <b>.json</b> one, not the spreadsheet.</div>`;
+        return;
+      }
+      const st = previewBackup(plan);
+      const total = plan.lifts.length + plan.ticks.length;
+      const warn = plan.unknownPeople.length
+        ? `<div style="margin-top:10px;opacity:.85">Ignoring data for unknown people: ${esc(plan.unknownPeople.join(', '))}</div>` : '';
+      box.innerHTML = `
+        <div class="hint-row" style="border-style:solid">
+          <b>${total}</b> records found${plan.exported ? ` · exported ${esc(fmtGB(String(plan.exported).slice(0,10), true))}` : ''}<br><br>
+          <b>${st.add}</b> will be added · <b>${st.update}</b> will be updated (they are newer than what is here) ·
+          <b>${st.skip}</b> skipped (you already have a newer version)<br><br>
+          Ticks: <b>${st.tAdd}</b> added · <b>${st.tUpdate}</b> updated · <b>${st.tSkip}</b> skipped
+          ${warn}
+        </div>
+        <div class="cta-row" style="margin-top:14px">
+          <button class="cta primary" id="restorego" style="--pc:${personDotColor(me().id)}">Merge it in</button>
+        </div>`;
+      const go = document.getElementById('restorego');
+      if (go) go.addEventListener('click', () => doRestore(plan));
+    };
+    rd.onerror = () => { box.innerHTML = `<div class="hint-row" style="border-color:var(--d3)">Could not read that file.</div>`; };
+    rd.readAsText(f);
+  });
+}
+function doRestore(plan){
+  const st = previewBackup(plan);
+  const snap = snapshotBefore(S.people.map(p => p.id));
+  let changed = 0;
+  for (const x of plan.lifts){
+    const cur = logOf(x.pid).lifts[x.id];
+    if (!cur || (x.entry.ts || 0) > (cur.ts || 0)){ logOf(x.pid).lifts[x.id] = x.entry; changed++; }
+  }
+  for (const x of plan.ticks){
+    const cur = logOf(x.pid).ticks[x.k];
+    if (!cur || (x.t.ts || 0) > (cur.ts || 0)){ logOf(x.pid).ticks[x.k] = x.t; changed++; }
+  }
+  for (const p of S.people) saveLog(p.id, true);
+  // restored records can carry old timestamps, so make the next sync a full one
+  S.sync.upTs = 0;
+  S.sync.count = 0;
+  saveSettings();
+  registerUndo(snap);
+  closeOverlay();
+  toast(`Restored ${changed} of ${plan.lifts.length + plan.ticks.length} records`, null, undoLast);
+  render();
+}
+
+/* ---------- erase: a styled sheet with the facts, not a browser popup ---------- */
+function openEraseSheet(){
+  const counts = S.people.map(p => {
+    const l = liftsOf(p.id).length;
+    const t = Object.keys(logOf(p.id).ticks).length;
+    return { name:p.name, l, t };
+  });
+  const total = counts.reduce((n, c) => n + c.l, 0);
+  const body = `
+    <p style="font-size:15px;line-height:1.65;color:var(--chalk);opacity:.92">
+      This erases the copy of the data stored <b>on this phone only</b>.</p>
+    <div class="hint-row" style="border-style:solid;margin-top:16px">
+      ${counts.map(c => `<b>${esc(c.name)}</b>: ${c.l} logged lifts, ${c.t} days of ticks`).join('<br>')}
+      <br><br>${total} records in total.
+    </div>
+    <p style="font-size:13.5px;color:var(--muted);line-height:1.65;margin-top:16px">
+      It does <b>not</b> touch Kieran's phone. If the phones are still connected, this phone will pull the
+      history back from the shared copy the next time it syncs — so if you want it gone everywhere, disconnect
+      sync first (Settings → Sync).</p>
+    <div class="cta-row" style="margin-top:20px">
+      <button class="cta ghost" id="eraseexport">Export a backup first</button>
+      <button class="cta danger" id="erasego">Erase</button>
+    </div>
+    <div class="cta-row" style="margin-top:10px">
+      <button class="cta ghost" data-close>Cancel</button>
+    </div>
+    <div id="eraseconfirm" style="margin-top:16px"></div>`;
+  openOverlay(overlayShell('Erase local data', 'this phone only · not reversible', body, {center:true}));
+  bindOverlayClicks();
+  document.getElementById('eraseexport').addEventListener('click', () => exportData('json'));
+  let armed = false;
+  document.getElementById('erasego').addEventListener('click', () => {
+    if (!armed){
+      armed = true;
+      const btn = document.getElementById('erasego');
+      btn.textContent = 'Tap again to confirm';
+      document.getElementById('eraseconfirm').innerHTML =
+        '<div class="hint-row" style="border-color:var(--d3)">Last chance — this clears the data on this phone.</div>';
+      return;
+    }
+    wipeLocal();
+  });
+}
+
 function wipeLocal(){
   const keys = [];
   try { for (const k of Object.keys(localStorage)) if (k.startsWith('gym:') || /^session:/.test(k)) keys.push(k); } catch(e){}
@@ -2947,21 +3278,27 @@ async function doSync(manual, secretOverride){
   saveSettings();
   try {
     const secret = secretOverride || sha256('gym-pin:' + S.sync.pin.toLowerCase());
-    const room = wireSecret(secret);
-    // build payload: every local lift + tick across both people
-    const rows = [];
+    // Every 20th sync (and every manual one) sends everything, so a missed row can never be
+    // lost forever; in between we only send and ask for what has changed since last time.
+    const full = !!manual || ((S.sync.count || 0) % 20 === 0);
+    const upTs = full ? 0 : (S.sync.upTs || 0);
+    const downTs = full ? 0 : (S.sync.downTs || 0);
+
+    const all = [];
     for (const p of S.people){
-      for (const e of Object.values(logOf(p.id).lifts)) rows.push({ id:e.id, pid:p.id, ts:e.ts, data:e });
+      for (const e of Object.values(logOf(p.id).lifts)) all.push({ id:e.id, pid:p.id, ts:e.ts, data:e });
       for (const k of Object.keys(logOf(p.id).ticks)){
         const t = logOf(p.id).ticks[k];
         const [dow, date] = k.split(':');
-        rows.push({ id:'t:' + p.id + ':' + dow + ':' + date, pid:p.id, ts:t.ts, data:{ kind:'tick', pid:p.id, dow:+dow, date, items:t.items, ts:t.ts } });
+        all.push({ id:'t:' + p.id + ':' + dow + ':' + date, pid:p.id, ts:t.ts, data:{ kind:'tick', pid:p.id, dow:+dow, date, items:t.items, ts:t.ts } });
       }
     }
+    const rows = full ? all : all.filter(r => (r.ts || 0) > upTs);
+    const maxUp = all.reduce((m, r) => Math.max(m, r.ts || 0), 0);
     const res = await fetch(SUPABASE.url.replace(/\/$/,'') + '/rest/v1/rpc/sync_state', {
       method:'POST',
       headers:{ 'apikey': SUPABASE.anonKey, 'Authorization':'Bearer ' + SUPABASE.anonKey, 'Content-Type':'application/json' },
-      body: JSON.stringify({ p_secret: secret, p_rows: rows, p_since: 0 })
+      body: JSON.stringify({ p_secret: secret, p_rows: rows, p_since: downTs })
     });
     if (!res.ok){
       let msg = 'Sync failed (' + res.status + ')';
@@ -2999,6 +3336,11 @@ async function doSync(manual, secretOverride){
     if (changed){
       for (const p of S.people) saveLog(p.id, true);
     }
+    // remember how far we have got, so the next sync is a fraction of the work
+    const maxDown = (remote || []).reduce((m, r) => Math.max(m, r.ts || 0), 0);
+    S.sync.upTs = Math.max(S.sync.upTs || 0, maxUp);
+    S.sync.downTs = Math.max(S.sync.downTs || 0, maxDown);
+    S.sync.count = (S.sync.count || 0) + 1;
     S.sync.lastSync = now();
     S.sync.lastErr = '';
     await saveSettings();
@@ -3016,18 +3358,139 @@ async function doSync(manual, secretOverride){
   }
 }
 
+
+/* ============================================================
+   Boot, install and offline (Release 3)
+   ============================================================ */
+function firstPaint(){
+  const sk = document.getElementById('bootskeleton');
+  const sp = document.getElementById('splash');
+  if (sk) sk.classList.add('gone');
+  if (sp){
+    sp.classList.add('gone');
+    setTimeout(() => { if (sp.parentNode) sp.parentNode.removeChild(sp); }, 600);
+  }
+}
+
+/* ---- offline / online, said plainly ---- */
+let lastOnline = navigator.onLine !== false;
+function netNoteHTML(){
+  if (lastOnline) return '';
+  return `<span class="sync-line"><span class="dotlive"></span>Offline — everything still saves on this phone and syncs when you have signal.</span>`;
+}
+function watchConnection(){
+  const mark = () => {
+    const was = lastOnline;
+    lastOnline = navigator.onLine !== false;
+    if (was !== lastOnline) render();
+    if (lastOnline && syncConfigured() && S.sync.pin && !syncInFlight) doSync(false);
+  };
+  window.addEventListener('online', mark);
+  window.addEventListener('offline', mark);
+}
+
+/* ---- ask the browser to keep our data, and say whether it agreed ---- */
+async function storageStateLabel(){
+  try {
+    if (!navigator.storage || !navigator.storage.persisted) return 'not supported on this device';
+    const already = await navigator.storage.persisted();
+    if (already) return 'protected';
+    const granted = navigator.storage.persist ? await navigator.storage.persist() : false;
+    return granted ? 'protected' : 'not protected — install to home screen for the strongest protection';
+  } catch(e){ return 'unknown'; }
+}
+let storageLabelCache = null;
+function storageRowHTMLSync(){
+  const ok = storageLabelCache === 'protected';
+  const label = storageLabelCache || 'checking…';
+  return `<div class="sv ${ok ? 'ok' : ''}" style="margin-top:6px">Storage: <b>${esc(label)}</b></div>`;
+}
+async function storageRowHTML(){
+  if (!storageLabelCache) storageLabelCache = await storageStateLabel();
+  const ok = storageLabelCache === 'protected';
+  return `<div class="sv ${ok ? 'ok' : ''}" style="margin-top:6px">Storage: <b>${esc(storageLabelCache)}</b></div>`;
+}
+
+/* ---- install: how it is opened matters, so say so ---- */
+function isStandalone(){
+  try {
+    if (window.navigator && window.navigator.standalone === true) return true;
+    if (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) return true;
+  } catch(e){}
+  return false;
+}
+function installRowHTML(){
+  const standalone = isStandalone();
+  if (standalone) return `<div class="sv ok" style="margin-top:6px">Opened as an installed app ✓ — and that is what keeps iOS from clearing this phone's data after a quiet week.</div>`;
+  return `<div class="sv warn" style="margin-top:6px">Opened in a browser tab. Add it to your home screen
+    (Share → Add to Home Screen) so it opens full screen and so iOS does not clear the data after 7 days without a visit.</div>`;
+}
+
+/* ---- the phone's top bar follows the day's accent ---- */
+const THEME_COLOR = { 1:'#F5C518', 2:'#4C8DFF', 3:'#F0575C' };
+function paintThemeColor(){
+  const day = (view === 'session') ? currentDay() : null;
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.setAttribute('content', day ? (THEME_COLOR[day.n] || '#12161A') : '#12161A');
+}
+
+/* ---- service worker: cache the shell, and take updates on a fresh launch ---- */
+let reloadingForUpdate = false;
+function registerServiceWorker(){
+  if (!('serviceWorker' in navigator)) return;
+  if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') return;
+  window.addEventListener('load', async () => {
+    try {
+      const reg = await navigator.serviceWorker.register('sw.js', { scope:'./' });
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (reloadingForUpdate) return;
+        reloadingForUpdate = true;
+        location.reload();
+      });
+      // A fresh launch is the safe moment to adopt a downloaded update.
+      const adopt = () => {
+        if (reg.waiting && !document.getElementById('overlayroot').innerHTML){
+          reg.waiting.postMessage({ type:'SKIP_WAITING' });
+        }
+      };
+      adopt();
+      reg.addEventListener('updatefound', () => {
+        const nw = reg.installing;
+        if (nw) nw.addEventListener('statechange', () => { if (nw.state === 'installed') adopt(); });
+      });
+      reg.update().catch(() => {});
+    } catch(e){}
+  });
+}
+
+/* ---- a tab shortcut from the home screen can name the screen ---- */
+function applyStartTab(){
+  try {
+    const t = new URLSearchParams(location.search).get('tab');
+    if (t && NAV.some(n => n.v === t)) view = t;
+  } catch(e){}
+}
+
 /* ============================================================
    Boot
    ============================================================ */
 (async function boot(){
+  // Whatever happens below, the app must never be left behind the splash screen.
+  setTimeout(firstPaint, 4000);
   await loadSettings();
   await loadLogs();
   await migrateLegacy();
 
+  if (S.contrast === 'high') document.documentElement.classList.add('contrast-high');
   document.getElementById('switch').innerHTML = '';
+  applyStartTab();
   render();
+  firstPaint();
 
   document.getElementById('gearbtn').addEventListener('click', openSettings);
+  watchConnection();
+  registerServiceWorker();
+  if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
 
   if (!S.onboarded){
     onboard();
