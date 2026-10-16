@@ -3,7 +3,7 @@
 **Read this first when you pick this up.** It's the single page: what's decided, what's built, what's
 left, and where the detail lives.
 
-Last updated: **16 October 2026** · **Releases 1, 2 and 3 are built and tested, plus restore and sync hardening from Release 5.** 224 automated checks pass.
+Last updated: **16 October 2026** · **Releases 1, 2, 3 and 4 are built and tested, plus restore and sync hardening from Release 5.** 320 automated checks pass.
 
 ---
 
@@ -15,10 +15,11 @@ Last updated: **16 October 2026** · **Releases 1, 2 and 3 are built and tested,
 | **Release 1 — how you log** | ✅ Built and tested: last-set reps, undo, edit/delete, log-for-both, typo guard |
 | **Release 2 — the new programme** | ✅ Built and tested: the new exercises, automatic weekly rotation, substitutes, the pull-up ladder |
 | **Release 3 — it feels like an app** | ✅ Built and tested: splash screen, boot skeleton, home-screen install with proper icons, offline works with no signal at all, top bar follows the day |
+| **Release 4 — Progress & motivation** | ✅ Built and tested: four Progress views (lifts, PB wall, 12-week map, you two), the session-complete summary, the PB moment, named partner PBs, last-three-sessions, plate calculator, search, short-on-time trim, superset hand-off |
 | **Data safety** | ✅ Built and tested: restore from a backup, safer erase, sync that only sends what changed |
 | **Your data** | Untouched. Nothing rewritten, migrated or deleted — proven by a test that boots the app on a phone full of old data |
 | **On your phones?** | **Not yet** — `dmwebserv.github.io/gym` serves `main`. Everything is on the branch `arena/5722d17c-gym`, ready for a pull request |
-| **Next** | Release 4 (progress & motivation), then the rest of Release 5 |
+| **Next** | The remainder of Release 5, and the two deferred items listed in §9 |
 
 ## 2. Where everything is
 
@@ -130,6 +131,29 @@ X153 timed notification (see §6), X226 calendar events.
 - **Buzz on/off and Normal/Higher contrast** in Settings (contrast raises every faint grey at once
   — useful in a bright gym).
 
+**Release 4 — Progress and the session's moment**
+
+- **Progress is now four views** instead of one long list: **Lifts** (as before, plus this month vs last),
+  **PBs** (the whole wall, sortable by heaviest / newest / A–Z, with the next milestone counted out),
+  **Map** (twelve weeks of squares — one per session day, filled by how much you logged — a streak count,
+  and this week's exercises per muscle against what the plan asks), and **You two** (best sets side by side
+  on the lifts you both do, the lifts only one of you has logged, and what the other person did lately).
+  Retired lifts keep their PB, and **none of these screens writes a single byte** — proven by a test.
+- **Memories**: "on this day" from your own history, and a line counting back to the very first lift
+  you ever logged.
+- **A finished session gets a summary** — how many of how many, kilos moved, minutes, best set, PBs today,
+  and the difference against the last time you did that day.
+- **Beating a PB gets a moment**: a gold banner slides down with the weight and whose PB it is.
+- **Every row shows the other person's PB for that lift, named** — "Kieran's PB 40 ×8" — so it can never be
+  mistaken for yours.
+- **Gym-floor tools**: hold a weight pill for half a second and it logs **last time's** weight and reps and
+  ticks the exercise, with no sheet at all (a normal tap still opens the sheet) · the sheet lists your
+  **last three sessions** for that lift with the most recent highlighted · a **plate calculator** that works
+  per side from a standard set and refuses a weight it cannot make · **search** across everything you have
+  ever logged · **"Short on time?"** trims today to 25/35/45/60 minutes, big lifts first, one movement per
+  muscle, marking what it left out (today only) · **the superset hands over by itself** — save the biceps
+  set and the triceps sheet is already open, each keeping its own record.
+
 **Data safety (built early, because this is the one that matters)**
 
 - **Restore from a backup.** You could export but never import — that hole is closed. It **merges**:
@@ -193,8 +217,19 @@ no longer breaks if the browser lacks `matchMedia` (found by the tests).
 
 ## 10. How to pick this up
 
-Say any of: **"Read STATUS.md and start Release 4"**, or name a release, or a code from
+Say any of: **"Read STATUS.md and finish Release 5"**, or name a single item, or a code from
 `IMPROVEMENTS-3.md`. Everything needed is in these files; nothing has to be re-explained.
+
+### Deliberately not built yet, and why
+
+| Item | Why it is waiting |
+|---|---|
+| **Share cards** (X89 / X170 / X200) | You asked for a good-looking image, not a printout. Drawn on a canvas, which I cannot see from here — it needs your eyes on a real design before it ships |
+| **Plateau detection** (X69) | It needs months of real data before it can say anything honest. It would currently just guess |
+| **Photo notes** (X41) | A photo in `localStorage` would risk the very storage that holds your log (the limit is about 5 MB in total). It needs IndexedDB first — a real piece of work, not a quick add |
+| **Light theme** (X217) | The whole app is dark-first. A light theme is a full colour pass that has to be looked at, not unit-tested. Higher-contrast mode is built in the meantime |
+| **Swipe between days** (X23) / **drag to reorder** (X29) | Both fight with scrolling on a phone, and "do it later" already covers the real problem (a machine being busy) |
+| **Timed reminders** (X153 / X226) | Not possible for a web app — see §6 |
 
 ## 11. Guardrails I'm holding to (so they survive anyone touching this)
 
@@ -204,7 +239,7 @@ Say any of: **"Read STATUS.md and start Release 4"**, or name a release, or a co
 - **Never delete.** Deletions are tombstones that sync, so the other phone can't resurrect them.
 - **Single file, no build step, no dependencies.** It's why the app is instant and hand-editable.
 - **Any restore or import merges (newest wins) and never overwrites newer data.**
-- **Run `tests/` before merging anything that touches `index.html`.** Six files, 224 checks, about
-  30 seconds.
+- **Run `tests/` before merging anything that touches `index.html`.** Seven files, 320 checks, about
+  45 seconds.
 - **Nothing third-party loads at runtime** — not the fonts, not a script, not an icon. The sync room is
   the only network call the app ever makes, and it is never cached.

@@ -311,6 +311,62 @@ const txt = () => $('#app').textContent;
   ok(!!$('.l3'), 'with the last three sessions listed');
   q('closeOverlay()');
 
+
+  console.log('\n=== X46 — the superset hands over by itself ===');
+  {
+    // find a slot that is supersetted, wherever today falls in the week
+    const info = JSON.parse(q(`JSON.stringify((function(){
+      for (let d = 0; d < DAYS.length; d++){
+        for (let i = 0; i < DAYS[d].ex.length; i++){
+          const s = DAYS[d].ex[i];
+          if (s.supersetWith != null) return { dayN:DAYS[d].n, idx:i, pair:s.supersetWith, dow:DAYS[d].dow };
+        }
+      }
+      return null;
+    })())`));
+    ok(!!info, 'the plan still contains a superset pair');
+    const dayFor = n => q(`DAYS.find(d => d.n === ${n}).dow`);
+    // jump the app to that day's session, whatever today is
+    q(`view='session'; sessionKey=null; window.__forceDay = ${info.dayN};`);
+    q(`currentDay = (function(orig){ return function(){ const d = DAYS.find(x => x.n === window.__forceDay); return d || orig(); }; })(currentDay);`);
+    q('render();');
+    await wait(250);
+    const slotName = q(`currentDay().ex[${info.idx}].name`);
+    const pairName = q(`currentDay().ex[${info.pair}].name`);
+    tap($$('#list li.ex')[info.idx].querySelector('.pill'));
+    await wait(250);
+    ok(!!$('#winput'), `the sheet opens for ${slotName}`);
+    const wi = $('#winput');
+    wi.value = '30'; wi.dispatchEvent(new win.Event('input', { bubbles:true }));
+    const ri = $('#repsingle .setstepper input');
+    ri.value = '12'; ri.dispatchEvent(new win.Event('input', { bubbles:true }));
+    tap($('#savebtn'));
+    await wait(400);
+    ok(!!$('#overlayroot').innerHTML, 'saving one half of the superset opens the other half straight away');
+    ok(new RegExp(pairName.split(' ')[0]).test($('#overlayroot').textContent), `and it is ${pairName}`, $('#overlayroot').textContent.slice(0, 90).replace(/\s+/g,' '));
+    ok(!!$('.superset-note'), 'with a note explaining what just happened');
+    ok(/logged/.test($('.superset-note').textContent), 'naming what was logged and what is next');
+    const wi2 = $('#winput');
+    wi2.value = '25'; wi2.dispatchEvent(new win.Event('input', { bubbles:true }));
+    const ri2 = $('#repsingle .setstepper input');
+    ri2.value = '15'; ri2.dispatchEvent(new win.Event('input', { bubbles:true }));
+    tap($('#savebtn'));
+    await wait(400);
+    ok(!$('#overlayroot').innerHTML, 'saving the second half closes the sheets — no loop');
+    const both = q(`ticksFor('danny', currentDay().n, todayKey())`);
+    ok(both.includes(info.idx) && both.includes(info.pair), 'both halves are ticked', JSON.stringify(both));
+    const cA = q(`chosenCanonFor('danny', slotKeyOf(currentDay().n, ${info.idx}), currentDay().ex[${info.idx}])`);
+    const cB = q(`chosenCanonFor('danny', slotKeyOf(currentDay().n, ${info.pair}), currentDay().ex[${info.pair}])`);
+    ok(q(`(logOf('danny').lifts['l:danny:' + ${JSON.stringify(cA)} + ':' + todayKey()] || {}).weight`) === 30,
+       'each half keeps its own weight in its own record');
+    ok(q(`(logOf('danny').lifts['l:danny:' + ${JSON.stringify(cB)} + ':' + todayKey()] || {}).weight`) === 25,
+       'and the second is separate, not merged');
+    ok(cA !== cB, 'the two halves are different records', cA + ' vs ' + cB);
+    tap($$('#list li.ex')[0].querySelector('.pill'));
+    await wait(250);
+    q('closeOverlay()');
+  }
+
   console.log('\n' + pass + ' passed, ' + fail + ' failed');
   win.close();
   process.exit(fail ? 1 : 0);
