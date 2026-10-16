@@ -488,22 +488,8 @@
   .cta .sub{display:block;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;opacity:.6;margin-top:3px;}
 
   /* toast */
-  .toast{
-    position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom) + var(--tabh) + 14px);
-    z-index:80;max-width:calc(100% - 40px);
-    background:var(--pc,var(--accent));color:var(--base);
-    font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;letter-spacing:.08em;
-    padding:12px 18px;border-radius:4px;text-align:center;
-    box-shadow:0 8px 30px rgba(0,0,0,.4);
-    animation:rise .25s cubic-bezier(.2,.7,.3,1) both;
-    display:none;
-  }
-  .toast.show{display:block;}
-  .toast .undobtn{
-    background:none;border:1px solid currentColor;color:inherit;font-family:inherit;
-    font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
-    padding:5px 9px;border-radius:3px;margin-left:10px;cursor:pointer;vertical-align:middle;
-  }
+  /* the toast is defined near the end of this sheet — it spans the width now */
+
 
   /* progress tab */
   .sumline{
@@ -840,10 +826,10 @@
     font-size:13px;line-height:1.5;color:var(--chalk);opacity:.9;}
   .superset-note b{color:var(--pc,var(--accent));font-weight:600;}
 
-  @keyframes rise{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+  @keyframes rise{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
   @keyframes fade{from{opacity:0;}to{opacity:1;}}
   @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
-  .anim{animation:rise .4s cubic-bezier(.2,.7,.3,1) both;}
+  .anim{animation:rise .28s cubic-bezier(.32,.72,0,1) both;}
   @media (prefers-reduced-motion:reduce){
     .anim,.sheet,.overlay{animation:none!important;}
     *{transition:none!important;}
@@ -921,6 +907,63 @@
   .ladderstage{font-size:15px;line-height:1.6;color:var(--chalk);}
   .ladderstage b{color:var(--pc,var(--accent));}
   .setrows{display:flex;flex-direction:column;gap:10px;margin-top:10px;}
+
+  /* ============================================================
+     Feel: full-width notices, arranging, and smoother transitions
+     ============================================================ */
+  .toast{
+    position:fixed;z-index:80;background:var(--pc,var(--accent));color:var(--base);
+    font-family:'IBM Plex Mono',monospace;font-weight:600;
+    left:0;right:0;transform:none;max-width:none;bottom:calc(env(safe-area-inset-bottom) + var(--tabh));
+    border-radius:0;text-align:left;padding:15px max(var(--pad), env(safe-area-inset-right)) 15px max(var(--pad), env(safe-area-inset-left));
+    display:none;align-items:center;gap:14px;
+    font-size:12.5px;letter-spacing:.05em;
+    box-shadow:0 -10px 30px rgba(0,0,0,.45);
+    border-top:1px solid rgba(255,255,255,.14);
+    animation:toastin .26s cubic-bezier(.32,.72,0,1) both;
+  }
+  .toast.show{display:flex;}
+  .toast .tmsg{flex:1;min-width:0;line-height:1.45;}
+  .toast .undobtn{
+    flex:none;background:rgba(0,0,0,.14);border:1px solid rgba(0,0,0,.22);color:inherit;
+    font-family:inherit;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+    padding:9px 15px;border-radius:3px;margin-left:0;cursor:pointer;vertical-align:middle;
+  }
+  .toast .undobtn:active{background:rgba(0,0,0,.24);}
+  @keyframes toastin{from{transform:translateY(100%);}to{transform:none;}}
+  @media (prefers-reduced-motion:reduce){ .toast{animation:none;} }
+
+  /* arranging today's session */
+  .reorder-note{
+    margin-top:12px;padding:11px 13px;border:1px dashed var(--line);border-radius:3px;
+    font-size:13px;line-height:1.5;color:var(--chalk);opacity:.9;
+  }
+  .num{width:34px;}
+  .nudge{display:flex;flex-direction:column;gap:3px;align-items:center;}
+  .nudge button{
+    width:30px;height:24px;display:flex;align-items:center;justify-content:center;
+    background:var(--surface);border:1px solid #3B4653;border-radius:3px;
+    color:var(--chalk);font-size:11px;line-height:1;cursor:pointer;padding:0;appearance:none;
+  }
+  .nudge button:active{background:var(--pc,var(--accent));border-color:var(--pc,var(--accent));color:var(--base);}
+  .nudge button:focus-visible{outline:2px solid var(--chalk);outline-offset:1px;}
+  li.ex.just-moved{animation:flash .5s ease both;}
+  @keyframes flash{from{background:rgba(255,255,255,.07);}to{background:transparent;}}
+
+  /* transitions, so state changes read as movement rather than a redraw */
+  li.ex{transition:background-color .18s ease, border-color .18s ease, opacity .18s ease;}
+  li.ex .tk, li.ex .num .n{transition:opacity .18s ease, transform .18s ease;}
+  .pill, .qchip, .mini-btn, .cta, .views button, .switch button, .tabbar button,
+  .choicechips button, .nudge button, .lvl{
+    transition:background-color .16s ease, border-color .16s ease, color .16s ease, opacity .16s ease;
+  }
+  .progress .bar span{transition:width .28s cubic-bezier(.32,.72,0,1);}
+  .sheet{animation:sheetin .3s cubic-bezier(.32,.72,0,1) both;}
+  @keyframes sheetin{from{transform:translateY(18px);opacity:0;}to{transform:none;opacity:1;}}
+  @media (prefers-reduced-motion:reduce){
+    .sheet{animation:none;}
+    li.ex.just-moved{animation:none;}
+  }
 </style>
 </head>
 <body>
@@ -1241,10 +1284,32 @@ const isPerHand = slot => /dumbbell|lateral raise/i.test(slot.name || '');
 
 /* ---- Undo: memory only, deliberately gone on reload ---- */
 let undoStack = [];
-function snapshotBefore(pids){
+const UNDO_SETTINGS = ['dayOrder','swap','rotatePick','short','lastChoice'];
+function snapshotBefore(pids, withSettings){
   const s = {};
   for (const pid of pids) s[pid] = JSON.stringify(logOf(pid));
+  if (withSettings !== false) s.__settings = settingsUndoSnapshot();
   return s;
+}
+function settingsUndoSnapshot(){
+  const out = {};
+  for (const k of UNDO_SETTINGS) out[k] = S[k];
+  return JSON.stringify(out);
+}
+function restoreSettingsSnapshot(json){
+  try {
+    const o = JSON.parse(json) || {};
+    for (const k of UNDO_SETTINGS) if (k in o) S[k] = o[k];
+    saveSettings();
+  } catch(e){}
+}
+/* One small helper so every layout change gets the same treatment:
+   snapshot, change, tell the person, offer the way back. */
+function settingsUndo(fn, msg, colorVar){
+  const snap = snapshotBefore([], true);
+  fn();
+  render();
+  toast(msg, colorVar, undoLast);
 }
 function registerUndo(snap){
   undoStack.push(snap);
@@ -1256,7 +1321,8 @@ function registerUndo(snap){
 function undoLast(){
   const snap = undoStack.pop();
   if (!snap) return;
-  for (const pid of Object.keys(snap)){
+  if (snap.__settings) restoreSettingsSnapshot(snap.__settings);
+  for (const pid of Object.keys(snap).filter(k => k !== '__settings')){
     let before = { lifts:{}, ticks:{} };
     try { before = JSON.parse(snap[pid]); } catch(e){}
     const cur = logOf(pid);
@@ -1413,13 +1479,15 @@ function ladderOf(pid){
   const e = logOf(pid).lifts['x:' + pid + ':ladder'];
   return (e && !isDeleted(e)) ? e : null;
 }
-function setLadder(pid, patch){
+function setLadder(pid, patch, undoable){
   const cur = ladderOf(pid) || { id:'x:' + pid + ':ladder', kind:'ladder', pid, level:1, ts:0 };
   const next = Object.assign({}, cur, patch, { ts: now(), last: (patch && patch.markDone) ? todayKey() : cur.last });
   if (patch && patch.markDone) delete next.markDone;
+  const snap = undoable ? snapshotBefore([pid], true) : null;
   logOf(pid).lifts[next.id] = next;
   saveLog(pid, true);
   render();
+  if (snap) registerUndo(snap);
 }
 const me = () => S.people.find(p => p.id === S.sel) || S.people[0];
 const pcVar = p => `var(${p.color})`;
@@ -1601,8 +1669,10 @@ function toast(msg, colorVar, undoFn){
   buzz(14);
   const el = document.getElementById('toast');
   el.style.setProperty('--pc', colorVar || 'var(--accent)');
-  el.innerHTML = msg + (undoFn ? ' <button class="undobtn" type="button">Undo</button>' : '');
+  el.innerHTML = `<span class="tmsg">${msg}</span>` +
+    (undoFn ? '<button class="undobtn" type="button">Undo</button>' : '');
   el.classList.add('show');
+  el.classList.toggle('withundo', !!undoFn);
   clearTimeout(toastTimer);
   if (undoFn){
     const b = el.querySelector('.undobtn');
@@ -1698,11 +1768,18 @@ function renderTabs(){
 /* ============================================================
    Main render dispatcher
    ============================================================ */
+let lastViewKey = null;
+let renderAnimate = true;
 function render(){
   lastRenderedDay = todayKey();
   paintThemeColor();
   renderPersons();
   renderTabs();
+  /* The page only animates when you actually arrive somewhere new. Data changes
+     (a tick, a log, a moved row) update in place, because replaying the entrance
+     animation on every tap is what made the app feel jittery. */
+  renderAnimate = (view + '|' + selDayN + '|' + S.sel) !== lastViewKey;
+  lastViewKey = view + '|' + selDayN + '|' + S.sel;
   if (view === 'session'){ renderSwitch(); renderSession(); }
   else if (view === 'progress'){ document.getElementById('switch').innerHTML = ''; renderProgress(); }
   else { document.getElementById('switch').innerHTML = ''; renderTimer(); }
@@ -1854,7 +1931,12 @@ function dayRowHTML(day, idx, p, dayKey, keep){
 
   return `<li class="ex ${done?'done':''}${cut?' cut':''}" data-i="${idx}" role="button" tabindex="0"
       aria-label="${esc(e.name)}, ${esc(e.sets)}. Tap to log." aria-pressed="${done}">
-    <span class="num"><span class="n">${String(idx+1).padStart(2,'0')}</span><span class="tk">✓</span></span>
+    <span class="num">${
+      reorderMode
+        ? `<span class="nudge"><button data-nudge="-1" aria-label="Move ${esc(e.name)} up">▲</button>
+             <button data-nudge="1" aria-label="Move ${esc(e.name)} down">▼</button></span>`
+        : `<span class="n">${String(idx+1).padStart(2,'0')}</span>`
+    }<span class="tk">✓</span></span>
     <span class="mid">
       <span class="name">${esc(e.name)}${cut ? '<span class="cuttag">left out today</span>' : ''}</span>
       <span class="meta">${esc(e.muscle)}
@@ -1928,24 +2010,24 @@ function bindLadderPanel(p){
   }
   const done = root.querySelector('[data-ladder="done"]');
   if (done) done.addEventListener('click', () => {
-    setLadder(p.id, { markDone:true });
-    toast(`Ladder: ${esc(LADDER[Math.min(LADDER.length,(ladderOf(p.id)||{}).level||1)-1].t)} logged`, personDotColor(p.id));
+    setLadder(p.id, { markDone:true }, true);
+    toast(`Ladder: ${esc(LADDER[Math.min(LADDER.length,(ladderOf(p.id)||{}).level||1)-1].t)} logged`, personDotColor(p.id), undoLast);
   });
   const up = root.querySelector('[data-ladder="up"]');
   if (up) up.addEventListener('click', () => {
     const cur = (ladderOf(p.id) || {}).level || 1;
-    setLadder(p.id, { level: Math.min(LADDER.length, cur + 1) });
-    toast('Moved up — ' + esc(LADDER[Math.min(LADDER.length, cur + 1) - 1].t));
+    setLadder(p.id, { level: Math.min(LADDER.length, cur + 1) }, true);
+    toast('Moved up — ' + esc(LADDER[Math.min(LADDER.length, cur + 1) - 1].t), personDotColor(p.id), undoLast);
   });
   const down = root.querySelector('[data-ladder="down"]');
   if (down) down.addEventListener('click', () => {
     const cur = (ladderOf(p.id) || {}).level || 1;
-    setLadder(p.id, { level: Math.max(1, cur - 1) });
-    toast('Moved down a level');
+    setLadder(p.id, { level: Math.max(1, cur - 1) }, true);
+    toast('Moved down a level', personDotColor(p.id), undoLast);
   });
   root.querySelectorAll('[data-band] button').forEach(b => b.addEventListener('click', () => {
-    setLadder(p.id, { band:+b.dataset.b });
-    toast(BAND_LABEL[+b.dataset.b] ? 'Band: ' + BAND_LABEL[+b.dataset.b] : 'Band cleared');
+    setLadder(p.id, { band:+b.dataset.b }, true);
+    toast(BAND_LABEL[+b.dataset.b] ? 'Band: ' + BAND_LABEL[+b.dataset.b] : 'Band cleared', personDotColor(p.id), undoLast);
   }));
 }
 
@@ -1978,18 +2060,22 @@ function openSubsSheet(idx){
   const root = document.getElementById('ov');
   root.querySelectorAll('[data-sub]').forEach(b => b.addEventListener('click', () => {
     const s2 = subs.find(x => x.id === b.dataset.sub);
+    const snap = snapshotBefore([], true);
     setSwap(p.id, day.n, todayKey(), idx, { id:s2.id, name:s2.name });
     closeOverlay();
-    toast(`Swapped to ${esc(s2.name)} for today`);
+    registerUndo(snap);
+    toast(`Swapped to ${esc(s2.name)} for today`, personDotColor(p.id), undoLast);
     render();
     openLogSheet(idx);
   }));
   const later = root.querySelector('[data-later]');
   if (later) later.addEventListener('click', () => {
+    const snap = snapshotBefore([], true);
     moveToEnd(p.id, day.n, todayKey(), idx, day.ex.length);
     closeOverlay();
-    toast(`${esc(slot.name)} moved to the end of today's session`);
+    registerUndo(snap);
     render();
+    toast(`${esc(slot.name)} moved to the end`, personDotColor(p.id), undoLast);
   });
 }
 
@@ -2077,7 +2163,7 @@ function renderSession(){
   const scrollToTop = lastKey !== sessionKey;
 
   document.getElementById('app').innerHTML = `
-    <div class="anim" id="sessionRoot">
+    <div${renderAnimate ? ' class="anim"' : ''} id="sessionRoot">
       <div class="eyebrow"><span class="who">${esc(p.name)}</span> &nbsp;·&nbsp; ${eyebrow}</div>
       <h1>Day <span class="idx">${day.n}</span></h1>
       <div class="focus">${esc(day.title)}</div>
@@ -2105,7 +2191,9 @@ function renderSession(){
         <button class="mini-btn" id="platebtn" type="button">Plate calculator</button>
         <button class="mini-btn" id="searchbtn2" type="button">Search my log</button>
         <button class="mini-btn ${trim ? 'accent' : ''}" id="shortbtn" type="button">${trim ? `Trimmed to ${trim.mins} min` : 'Short on time?'}</button>
+        <button class="mini-btn ${reorderMode ? 'accent' : ''}" id="reorderbtn" type="button">${reorderMode ? 'Done arranging' : 'Rearrange'}</button>
       </div>
+      ${reorderMode ? `<div class="reorder-note">Arrange today — ▲ ▼ move a row, and this never changes your plan.</div>` : ''}
 
       <div class="block">
         <div class="block-label">Finisher</div>
@@ -2139,7 +2227,7 @@ function renderSession(){
     const li = ev.target.closest('li.ex');
     if (li && pill) ev.stopPropagation();
     if (Date.now() < suppressTapUntil) return;      // a long press just handled this row
-    if (li) openLogSheet(+li.dataset.i);
+    if (li && !ev.target.closest('.nudge')) openLogSheet(+li.dataset.i);
   });
   list.addEventListener('keydown', ev => {
     if (ev.key !== 'Enter' && ev.key !== ' ') return;
@@ -2148,11 +2236,16 @@ function renderSession(){
   });
   document.getElementById('platebtn').addEventListener('click', openPlateSheet);
   document.getElementById('shortbtn').addEventListener('click', openShortSheet);
+  document.getElementById('reorderbtn').addEventListener('click', toggleReorder);
+  bindReorderButtons();
   document.getElementById('searchbtn2').addEventListener('click', openSearchSheet);
   document.getElementById('reset').addEventListener('click', () => {
     if (!done.length) return;
     if (!confirm(`Clear ${p.name}'s ticks for today? (Lift logs are kept.)`)) return;
+    const snap = snapshotBefore([p.id], true);
     setTicks(day.n, date, []);
+    registerUndo(snap);
+    toast(`Cleared today's ticks`, personDotColor(p.id), undoLast);
   });
   bindSyncButtons();
   bindLadderPanel(p);
@@ -2374,8 +2467,10 @@ function openLogSheet(idx){
 
   if (slot.opts){
     root.querySelectorAll('[data-choices] button').forEach(b => b.addEventListener('click', () => {
+      const choiceSnap = snapshotBefore([], true);
       if (slot.rotate) setRotatePick(p.id, slotKey, b.dataset.c);
       else { S.lastChoice[p.id] = S.lastChoice[p.id] || {}; S.lastChoice[p.id][slotKey] = b.dataset.c; saveSettings(); }
+      registerUndo(choiceSnap);
       if (isBWChoice(slot, b.dataset.c) !== isBW){ openLogSheet(idx); return; }
       const c = b.dataset.c;
       root.querySelectorAll('[data-choices] button').forEach(x =>
@@ -2479,9 +2574,11 @@ function openLogSheet(idx){
   });
   const unsub = document.getElementById('unsub');
   if (unsub) unsub.addEventListener('click', () => {
+    const snap = snapshotBefore([], true);
     setSwap(p.id, day.n, date, idx, null);
     closeOverlay();
-    toast('Back to ' + esc(slot.name));
+    registerUndo(snap);
+    toast('Back to ' + esc(slot.name), personDotColor(p.id), undoLast);
     render();
   });
 
@@ -2808,7 +2905,7 @@ function renderProgress(){
       ${backupNudgeHTML()}
     </div>`;
 
-  document.getElementById('app').innerHTML = `<div class="anim">${body}</div>`;
+  document.getElementById('app').innerHTML = `<div${renderAnimate ? ' class="anim"' : ''}>${body}</div>`;
   document.querySelectorAll('.pr-row').forEach(r => r.addEventListener('click', () => openHistory(r.dataset.ex)));
   document.querySelectorAll('[data-pv]').forEach(b => b.addEventListener('click', () => {
     progressView = b.dataset.pv; render();
@@ -3377,7 +3474,7 @@ function renderTimer(){
   const mm = String(Math.floor(left/60)).padStart(2,'0'), ss = String(left%60).padStart(2,'0');
   const hasPreset = !!Timer.preset;
   document.getElementById('app').innerHTML = `
-    <div class="anim">
+    <div${renderAnimate ? ' class="anim"' : ''}>
       <div class="eyebrow">REST <span class="live">TIMER</span></div>
       <h1 class="small">Between <span class="idx">sets</span></h1>
       <div class="timer-card">
@@ -3944,6 +4041,73 @@ function openEraseSheet(){
 }
 
 
+
+/* ============================================================
+   Arranging today's session
+   Tapping is used rather than dragging on purpose: a drag has to
+   fight the page scroll, the day swipe and the long-press-to-repeat,
+   and it goes wrong in exactly the moment you are rushing. Two taps
+   move a row, the move animates, and one tap takes it back.
+   ============================================================ */
+let reorderMode = false;
+function currentOrder(p, day, date){
+  return orderFor(p.id, day.n, date, day.ex.length).slice();
+}
+function rowsHTML(order, day, p, date, trimmed){
+  return order.map(i => dayRowHTML(day, i, p, date, trimmed)).join('');
+}
+/* Rebuild the list while sliding the rows that moved, so the eye can follow. */
+function paintList(order, day, p, date, trimmed){
+  const list = document.getElementById('list');
+  if (!list) return;
+  const before = new Map();
+  for (const li of list.children) before.set(li.dataset.i, li.getBoundingClientRect().top);
+  list.innerHTML = rowsHTML(order, day, p, date, trimmed);
+  if (typeof list.animate !== 'function' && !(list.children[0] && list.children[0].animate)) return;
+  for (const li of list.children){
+    const was = before.get(li.dataset.i);
+    if (was == null) continue;
+    const dy = was - li.getBoundingClientRect().top;
+    if (!dy) continue;
+    try { li.animate([{ transform:`translateY(${dy}px)` }, { transform:'none' }],
+      { duration:230, easing:'cubic-bezier(.2,.8,.25,1)' }); } catch(e){}
+  }
+}
+function nudgeRow(idx, dir){
+  const p = me(), day = currentDay(), date = todayKey();
+  const order = currentOrder(p, day, date);
+  const from = order.indexOf(idx);
+  const to = from + dir;
+  if (from < 0 || to < 0 || to >= order.length) return;
+  const snap = snapshotBefore([], true);
+  order.splice(to, 0, order.splice(from, 1)[0]);
+  S.dayOrder = S.dayOrder || {};
+  S.dayOrder[p.id] = S.dayOrder[p.id] || {};
+  S.dayOrder[p.id][day.n + ':' + date] = order;
+  saveSettings();
+  registerUndo(snap);
+  buzz(10);
+  const trim = shortFor(p.id, day.n, date);
+  paintList(order, day, p, date, trim ? trim.keep : null);
+  bindReorderButtons();
+  const li = document.querySelector(`#list li.ex[data-i="${idx}"]`);
+  if (li) li.classList.add('just-moved');
+  toast(`${esc(day.ex[idx].name)} moved to ${to + 1} of ${order.length}`, personDotColor(p.id), undoLast);
+}
+function bindReorderButtons(){
+  const root = document.getElementById('app');
+  root.querySelectorAll('[data-nudge]').forEach(b => b.addEventListener('click', ev => {
+    ev.stopPropagation();                        // never let it also open the log sheet
+    const li = b.closest('li.ex');
+    if (li) nudgeRow(+li.dataset.i, +b.dataset.nudge);
+  }));
+}
+function toggleReorder(){
+  reorderMode = !reorderMode;
+  render();
+  if (reorderMode) toast('Tap ▲ ▼ to move a row — today only');
+}
+
 /* ============================================================
    X23 — swipe the session left or right to change day
    A deliberate horizontal swipe only: it must never fire while you
@@ -4009,6 +4173,7 @@ function bindLongPress(){
   let timer = null, moved = false, fired = false;
   const drop = () => { if (timer){ clearTimeout(timer); timer = null; } };
   list.addEventListener('pointerdown', ev => {
+    if (ev.target.closest('.nudge')) return;     // arranging, not logging
     const li = ev.target.closest('li.ex');
     if (!li) return;
     moved = false; fired = false;
@@ -4106,9 +4271,11 @@ function openShortSheet(){
         <button class="cta primary" id="shortgo" style="--pc:${personDotColor(p.id)}">Trim today's session</button>
       </div>`;
     document.getElementById('shortgo').addEventListener('click', () => {
+      const snap = snapshotBefore([], true);
       setShortFor(p.id, day.n, date, t.keep, m);
       closeOverlay();
-      toast(`Today trimmed to ${kept.length} exercises`, personDotColor(p.id));
+      registerUndo(snap);
+      toast(`Today trimmed to ${kept.length} exercises`, personDotColor(p.id), undoLast);
     });
   };
   document.querySelectorAll('#shortmins [data-mins]').forEach(b => b.addEventListener('click', () => {
