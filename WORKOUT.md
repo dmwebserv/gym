@@ -1,7 +1,7 @@
 # The plan — final (v1)
 
-**App:** Release 1 (logging changes) is built. **This plan goes onto the phone in Release 2** — the app
-still shows the old exercise list until then.
+**App:** this plan is now **built into the app** (Release 2), along with Release 1 (last-set reps, undo,
+edit/delete, log-for-both). It reaches your phones when the branch is merged to `main`.
 **On screen:** `preview/new-plan.html` — the whole plan rendered with the app's real styling.
 
 ---
@@ -120,6 +120,10 @@ screen space. Open it when you want to practise or log a set.
 
 **Optional accessories, any session:** inverted rows 2 × 8–10 — **you have a Smith machine, so set the bar low
 in it and you're set** (the single best builder of a first pull-up) — and jump-to-top holds 3 × 10s.
+
+**In the app:** the ladder is a collapsible panel at the bottom of every session, closed by default so it
+takes no screen space. Tap it when you want to practise or log; the app keeps your level, moves you up
+when you ask it to, and records band levels by name rather than pretending to measure a band in kilos.
 
 **Also unlocked by the Smith machine:** on barbell weeks you can bench in it without needing a spotter, which
 matters most on the Flat and Incline Bench. Your choice — free weights first if you prefer, Smith when you're

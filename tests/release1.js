@@ -218,38 +218,97 @@ const q = js => win.eval(js);
   tap($$('#tabnav button').find(b => b.dataset.v === 'session'));
   await wait(100);
   tap($$('#switch button').find(b => b.dataset.n === '2'));
-  await wait(120);
+  await wait(140);
   const wed = $$('#list li.ex');
-  ok(wed.length === 9, 'Wednesday still has its 9 exercises', 'got ' + wed.length);
-  ok(wed.some(r => /BW/.test(r.querySelector('.pill').textContent)), 'bodyweight rows still present');
-  const plankIdx = q("DAYS.find(d=>d.n===2).ex.findIndex(e=>e.bw)");
-  tap(wed[plankIdx]);
-  await wait(120);
-  ok(!!$('#tickbtn'), 'a bodyweight row is still tick-only (no weight box)');
-  tap($('#tickbtn'));
-  await wait(150);
-  ok(log('danny').ticks['2:' + today].items.includes(plankIdx), 'bodyweight tick still records');
+  ok(wed.length === q('DAYS.find(d=>d.n===2).ex.length'), 'Wednesday renders every exercise in the plan', 'got ' + wed.length);
+  ok(/1\/4|2\/4|3\/4|4\/4/.test(doc.body.textContent), 'chest badge now reads out of 4 (pec fly added)');
+  ok(/CALVES/i.test(doc.body.textContent), 'calves are in the plan');
 
-  const optIdx = q("DAYS.find(d=>d.n===2).ex.findIndex(e=>!!e.opts)");
-  tap($$('#list li.ex')[optIdx].querySelector('.pill'));
-  await wait(120);
-  const chip = $('[data-choices] button[data-c="hack-squat"]');
-  ok(!!chip, 'the "which one today?" chips still appear');
-  if (chip){
-    tap(chip);
-    await wait(100);
-    ok(q("S.lastChoice['danny']['2:" + optIdx + "']") === 'hack-squat', 'variant choice still remembered');
-    ok(/hack-squat/.test($('#lastrow').innerHTML) === false, 'switching variant refreshes the sheet in place');
-  }
+  // the alternating slot offers both and switches for today only
+  const rowIdx = q("DAYS.find(d=>d.n===2).ex.findIndex(e=>e.canon==='row')");
+  const rowRow = () => $$('#list li.ex').find(r => +r.dataset.i === rowIdx);
+  tap(rowRow().querySelector('.pill'));
+  await wait(140);
+  ok(!!$('[data-choices]'), 'the alternating row offers both variants');
+  ok(/alternates these for you/i.test($('.choicehint').textContent), 'and says the app alternates them');
+  const other = $('[data-choices] button:not([aria-pressed="true"])');
+  const otherId = other.dataset.c;
+  tap(other);
+  await wait(140);
+  ok(q(`(S.rotatePick['danny']['2:${rowIdx}']||{}).c`) === otherId, 'switching stores a one-day pick, not a permanent one');
+  ok(q(`(S.rotatePick['danny']['2:${rowIdx}']||{}).d`) === today, "the pick is stamped with today's date so it expires");
+  ok(/→/.test(rowRow().textContent), 'the row names the variant when it is not the default');
   tap($('[data-close]'));
-  await wait(80);
+  await wait(100);
+
+  // bodyweight is now per-variant: pull-up practice has no weight
+  tap($$('#switch button').find(b => b.dataset.n === '3'));
+  await wait(140);
+  const pullIdx = q("DAYS.find(d=>d.n===3).ex.findIndex(e=>e.canon==='pull-work')");
+  q(`setRotatePick('danny','3:${pullIdx}','pullup')`);
+  win.eval('render()');
+  await wait(140);
+  tap($$('#list li.ex').find(r => +r.dataset.i === pullIdx).querySelector('.pill, *'));
+  await wait(140);
+  ok(!!$('#tickbtn') && !$('#winput'), 'pull-up practice is tick-only — no weight box', ($('#winput') ? 'has weight box' : 'ok'));
+  tap($('#tickbtn'));
+  await wait(160);
+  ok(log('danny').ticks['3:' + today].items.includes(pullIdx), 'pull-up practice ticks off without a bogus lift entry');
+  ok(!Object.values(log('danny').lifts).some(e => e.ex === 'pullup'), 'and writes no lift record (so no fake PB)');
+
+  // the ladder lives at the bottom of every session and is excluded from Progress
+  ok(!!$('.ladderbox'), 'the pull-up ladder panel is on the session screen');
+  ok(!$('.ladderbox').open, 'and it is collapsed by default (no screen space taken)');
+  tap($('[data-ladder="done"]'));
+  await wait(200);
+  ok(!!log('danny').lifts['x:danny:ladder'], 'marking practise logs a ladder record');
+  ok(log('danny').lifts['x:danny:ladder'].kind === 'ladder', 'tagged as a ladder record, not a lift');
+  tap($$('#tabnav button').find(b => b.dataset.v === 'progress'));
+  await wait(180);
+  ok(!/ladder/i.test($('#app').textContent), 'the ladder record does NOT appear in Progress',
+     ($('#app').textContent.match(/ladder/i) || [''])[0]);
+
+  // "machine taken?" — swap, log under the substitute's own name, and put it back
+  tap($$('#tabnav button').find(b => b.dataset.v === 'session'));
+  await wait(140);
+  tap($$('#switch button').find(b => b.dataset.n === '2'));
+  await wait(140);
+  const legIdx = q("DAYS.find(d=>d.n===2).ex.findIndex(e=>e.canon==='hack-squat')");
+  tap($$('#list li.ex').find(r => +r.dataset.i === legIdx).querySelector('.pill'));
+  await wait(140);
+  ok(!!$('#subsbtn'), 'the sheet offers "Machine taken?"');
+  tap($('#subsbtn'));
+  await wait(140);
+  ok(/Machine taken\?/.test($('.modal-title').textContent), 'the substitutes sheet opens');
+  const subBtn = $$('#ov [data-sub]')[0];
+  const subId = subBtn.dataset.sub;
+  tap(subBtn);
+  await wait(220);
+  ok(q(`(S.swap['danny']||{})['2:${today}:${legIdx}'] && S.swap['danny']['2:${today}:${legIdx}'].id`) === subId, 'the swap is recorded for today');
+  ok(!!$('#unsub'), 'the sheet says it is logging the substitute and offers to put it back');
+  input($('#winput'), '40');
+  input($('#repsingle .setstepper input'), '10');
+  tap($('#savebtn'));
+  await wait(220);
+  ok(!!log('danny').lifts['l:danny:' + subId + ':' + today], 'logged under the substitute, not the original lift');
+  ok(!log('danny').lifts['l:danny:hack-squat:' + today], "the original lift's history is untouched");
+
+  // "do it later" moves the row to the end of today only
+  const before = $$('#list li.ex').map(r => +r.dataset.i);
+  q(`moveToEnd('danny', 2, todayKey(), ${legIdx}, 11)`);
+  win.eval('render()');
+  await wait(160);
+  const after = $$('#list li.ex').map(r => +r.dataset.i);
+  ok(after[after.length - 1] === legIdx, '"do it later" moves the exercise to the end');
+  ok(after.length === before.length, 'and every exercise is still on screen');
+  ok(after.slice(0, -1).join() === before.filter(i => i !== legIdx).join(), 'with the rest of the order unchanged');
 
   // the timer still works
   tap($$('#tabnav button').find(b => b.dataset.v === 'timer'));
-  await wait(100);
+  await wait(140);
   ok(!!$('#tstart'), 'timer tab renders');
   tap($('#tstart'));
-  await wait(120);
+  await wait(160);
   ok(q('Timer.total') > 0, 'timer starts', q('Timer.total'));
 
   // ---------- 11. sync payload ----------
