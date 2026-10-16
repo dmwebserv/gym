@@ -7,12 +7,40 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Session">
 <meta name="theme-color" content="#12161A">
-<link rel="apple-touch-icon" href="icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="pwa-192.png">
+<link rel="apple-touch-icon" sizes="192x192" href="pwa-192.png">
+<link rel="apple-touch-icon" sizes="512x512" href="pwa-512.png">
 <link rel="icon" type="image/png" href="icon.png">
+<link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)" href="splash-750x1334.png">
+<link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2)" href="splash-828x1792.png">
+<link rel="apple-touch-startup-image" media="(device-width: 540px) and (device-height: 960px) and (-webkit-device-pixel-ratio: 2)" href="splash-1080x1920.png">
+<link rel="apple-touch-startup-image" media="(device-width: 585px) and (device-height: 1266px) and (-webkit-device-pixel-ratio: 2)" href="splash-1170x2532.png">
+<link rel="apple-touch-startup-image" media="(device-width: 589px) and (device-height: 1278px) and (-webkit-device-pixel-ratio: 2)" href="splash-1179x2556.png">
+<link rel="apple-touch-startup-image" media="(device-width: 642px) and (device-height: 1389px) and (-webkit-device-pixel-ratio: 2)" href="splash-1284x2778.png">
+<link rel="apple-touch-startup-image" media="(device-width: 645px) and (device-height: 1398px) and (-webkit-device-pixel-ratio: 2)" href="splash-1290x2796.png">
+<link rel="apple-touch-startup-image" media="(device-width: 562px) and (device-height: 1218px) and (-webkit-device-pixel-ratio: 2)" href="splash-1125x2436.png">
+<link rel="apple-touch-startup-image" media="(device-width: 621px) and (device-height: 1344px) and (-webkit-device-pixel-ratio: 2)" href="splash-1242x2688.png">
 <title>Session</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<!-- Fonts are self-hosted: no third-party request, and they work with no signal -->
+<link rel="preload" href="fonts/archivo-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/ibm-plex-mono-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+  @font-face{font-family:Archivo;font-style:normal;font-weight:400;font-display:swap;
+    src:url(fonts/archivo-latin-400-normal.woff2) format('woff2');}
+  @font-face{font-family:Archivo;font-style:normal;font-weight:600;font-display:swap;
+    src:url(fonts/archivo-latin-600-normal.woff2) format('woff2');}
+  @font-face{font-family:Archivo;font-style:normal;font-weight:700;font-display:swap;
+    src:url(fonts/archivo-latin-700-normal.woff2) format('woff2');}
+  @font-face{font-family:Archivo;font-style:normal;font-weight:900;font-display:swap;
+    src:url(fonts/archivo-latin-900-normal.woff2) format('woff2');}
+  @font-face{font-family:'IBM Plex Mono';font-style:normal;font-weight:400;font-display:swap;
+    src:url(fonts/ibm-plex-mono-latin-400-normal.woff2) format('woff2');}
+  @font-face{font-family:'IBM Plex Mono';font-style:normal;font-weight:500;font-display:swap;
+    src:url(fonts/ibm-plex-mono-latin-500-normal.woff2) format('woff2');}
+  @font-face{font-family:'IBM Plex Mono';font-style:normal;font-weight:600;font-display:swap;
+    src:url(fonts/ibm-plex-mono-latin-600-normal.woff2) format('woff2');}
+</style>
 <style>
   :root{
     --base:#12161A;
@@ -37,7 +65,7 @@
     font-family:'Archivo',system-ui,sans-serif;
     font-size:16px;
     line-height:1.45;
-    padding:max(env(safe-area-inset-top),14px) var(--pad) calc(env(safe-area-inset-bottom) + var(--tabh) + 34px);
+    padding:max(env(safe-area-inset-top),14px) max(var(--pad), env(safe-area-inset-right)) calc(env(safe-area-inset-bottom) + var(--tabh) + 34px) max(var(--pad), env(safe-area-inset-left));
     max-width:620px;
     margin:0 auto;
     overscroll-behavior-y:contain;
@@ -246,10 +274,17 @@
     white-space:nowrap;
   }
   .pbline b{color:var(--pc,var(--accent));font-weight:600;}
-  .pbline.blank{opacity:.55;}
+  .pbline.blank{opacity:.72;}
+  .pill .xr{font-size:12.5px;opacity:.72;margin-left:4px;letter-spacing:0;}
+  .pill.logged .xr{opacity:.9;}
+  .choicehint{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--muted);margin-top:8px;letter-spacing:.02em;line-height:1.5;}
+  .bothnote{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--muted);margin-top:9px;line-height:1.55;}
+  .datein{background:var(--base);border:1px solid var(--line);border-radius:3px;color:var(--chalk);
+    font-family:'IBM Plex Mono',monospace;font-size:14px;padding:9px 11px;outline:none;}
+  .datein:focus{border-color:var(--accent);}
 
   /* completed */
-  li.ex.done{opacity:.4;}
+  li.ex.done{opacity:.52;}
   li.ex.done .name{text-decoration:line-through;text-decoration-thickness:1.5px;font-weight:600;}
   li.ex.done .num .n{display:none;}
   li.ex.done .num .tk{display:inline;opacity:1;font-size:16px;}
@@ -297,7 +332,7 @@
   .tabbar{
     position:fixed;left:0;right:0;bottom:0;z-index:40;
     display:flex;justify-content:center;gap:6px;
-    padding:8px var(--pad) calc(env(safe-area-inset-bottom) + 8px);
+    padding:8px max(var(--pad), env(safe-area-inset-right)) calc(env(safe-area-inset-bottom) + 8px) max(var(--pad), env(safe-area-inset-left));
     background:rgba(18,22,26,.92);
     backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
     border-top:1px solid var(--line);
@@ -314,7 +349,7 @@
     background:transparent;border:none;border-radius:6px;
     color:var(--muted);
     font-family:'IBM Plex Mono',monospace;
-    font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;
+    font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
     padding:7px 0 5px;cursor:pointer;
     transition:color .15s,background .15s;
   }
@@ -464,6 +499,11 @@
     display:none;
   }
   .toast.show{display:block;}
+  .toast .undobtn{
+    background:none;border:1px solid currentColor;color:inherit;font-family:inherit;
+    font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
+    padding:5px 9px;border-radius:3px;margin-left:10px;cursor:pointer;vertical-align:middle;
+  }
 
   /* progress tab */
   .sumline{
@@ -473,7 +513,7 @@
     flex:1;min-width:110px;border:1px solid var(--line);border-radius:4px;padding:12px 13px;
   }
   .statcard .v{font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:600;color:var(--pc,var(--accent));line-height:1;}
-  .statcard .k{font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase;margin-top:7px;display:block;line-height:1.5;}
+  .statcard .k{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase;margin-top:7px;display:block;line-height:1.5;}
   .pr-group{margin-top:22px;}
   .pr-group .glabel{
     font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.2em;color:var(--muted);
@@ -488,21 +528,22 @@
   .pr-row:active{opacity:.6;}
   .pr-row .rn{flex:1;min-width:0;}
   .pr-row .rn .nm{font-size:16.5px;font-weight:700;letter-spacing:-.015em;line-height:1.25;display:block;}
-  .pr-row .rn .mus{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-top:3px;display:block;}
+  .pr-row .rn .mus{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-top:3px;display:block;}
   .pr-row .pbv{text-align:right;flex:none;}
   .pr-row .pbv .w{font-family:'IBM Plex Mono',monospace;font-size:18px;font-weight:600;color:var(--pc,var(--accent));white-space:nowrap;}
   .pr-row .pbv .d{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);white-space:nowrap;margin-top:2px;}
   .spark{flex:none;width:74px;height:28px;}
   .spark svg{width:100%;height:100%;display:block;}
   .empty{padding:30px 6px;text-align:center;color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:12.5px;letter-spacing:.04em;line-height:1.8;}
-  .hist-item{padding:13px 0;border-bottom:1px solid var(--line);}
+  .hist-item{padding:13px 0;border-bottom:1px solid var(--line);cursor:pointer;transition:opacity .15s;}
   .hist-item:last-child{border-bottom:none;}
+  .hist-item:active{opacity:.6;}
   .hist-item .hrow{display:flex;align-items:baseline;justify-content:space-between;gap:10px;}
   .hist-item .hdate{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;}
   .hist-item .hw{font-family:'IBM Plex Mono',monospace;font-size:17px;font-weight:600;}
   .hist-item .hw.pb-mark{color:var(--accent);}
-  .hist-item .hw .tag{font-size:9.5px;letter-spacing:.1em;color:var(--accent);vertical-align:middle;}
-  .hist-item .hreps{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted);margin-top:3px;}
+  .hist-item .hw .tag{font-size:10.5px;letter-spacing:.1em;color:var(--accent);vertical-align:middle;}
+  .hist-item .hreps{font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--muted);margin-top:3px;}
 
   /* timer */
   .timer-card{margin-top:26px;text-align:center;}
@@ -574,7 +615,7 @@
   .onb-card:focus-visible{outline:2px solid var(--chalk);outline-offset:2px;}
   .onb-card .ava{width:54px;height:54px;border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:900;color:var(--base);}
   .onb-card .nm{display:block;font-size:16px;font-weight:700;}
-  .onb-card .who{display:block;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase;margin-top:4px;}
+  .onb-card .who{display:block;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase;margin-top:4px;}
 
   footer{
     margin-top:34px;padding-top:16px;border-top:1px solid var(--line);
@@ -582,7 +623,222 @@
     color:var(--muted);line-height:1.75;
   }
   footer .sync-line{margin-top:8px;display:flex;align-items:center;gap:7px;}
-  footer .sync-line button{border:none;background:none;color:var(--accent);font-family:inherit;font-size:10px;letter-spacing:.04em;cursor:pointer;padding:0;text-decoration:underline;}
+  footer .sync-line button{border:none;background:none;color:var(--accent);font-family:inherit;font-size:11px;letter-spacing:.04em;cursor:pointer;padding:0;text-decoration:underline;}
+
+
+  /* ---- boot splash + skeleton ---- */
+  #splash{
+    position:fixed;inset:0;z-index:200;background:var(--base);
+    display:flex;align-items:center;justify-content:center;
+    transition:opacity .45s ease, visibility .45s ease;
+  }
+  #splash.gone{opacity:0;visibility:hidden;pointer-events:none;}
+  .splash-inner{display:flex;flex-direction:column;align-items:center;gap:16px;}
+  .splash-inner img{width:72px;height:72px;border-radius:16px;opacity:.96;}
+  .splash-word{
+    font-family:'IBM Plex Mono',monospace;font-size:15px;font-weight:600;
+    letter-spacing:.42em;color:var(--chalk);text-indent:.42em;
+  }
+  .splash-rule{width:56px;height:3px;border-radius:2px;background:var(--accent);}
+  #bootskeleton{max-width:620px;margin:0 auto;}
+  #bootskeleton.gone{display:none;}
+  .sk-row{display:flex;gap:8px;margin-bottom:12px;}
+  .sk-box{height:42px;border-radius:3px;background:var(--surface);border:1px solid var(--line);}
+  .sk-a{flex:1;} .sk-b{width:46px;flex:none;}
+  .sk-switch{display:flex;gap:6px;margin-bottom:26px;}
+  .sk-pill{flex:1;height:38px;border-radius:3px;background:var(--surface);border:1px solid var(--line);}
+  .sk-line{height:12px;border-radius:3px;background:var(--surface);margin-bottom:10px;}
+  .sk-tall{height:44px;margin-bottom:14px;}
+  .sk-w30{width:30%;} .sk-w40{width:40%;} .sk-w70{width:70%;}
+  .sk-block{height:74px;border-radius:4px;background:var(--surface);border:1px solid var(--line);margin-bottom:10px;}
+  .sk-note{
+    font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.14em;
+    color:var(--muted);text-transform:uppercase;text-align:center;margin-top:18px;
+  }
+  @media (prefers-reduced-motion:reduce){ #splash{transition:none;} }
+
+  /* Higher contrast: one switch, applied everywhere muted text or hairlines are used. */
+  .contrast-high{
+    --muted:#AEBAC6;
+    --line:#3C4956;
+  }
+  .contrast-high .pbline.blank{opacity:.9;}
+  .contrast-high .restline{opacity:1;}
+  .contrast-high li.ex.done{opacity:.66;}
+  .contrast-high .block p{opacity:1;}
+
+  /* ============================================================
+     Release 4 — progress, celebration, the two of you
+     ============================================================ */
+  /* PB banner: slides down over the top for a moment, then leaves */
+  #pbbanner{position:fixed;left:0;right:0;top:0;z-index:150;pointer-events:none;
+    transform:translateY(-110%);transition:transform .38s cubic-bezier(.2,.9,.25,1);}
+  #pbbanner.show{transform:translateY(0);}
+  #pbbanner .pbin{
+    margin:max(env(safe-area-inset-top),8px) 10px 0;padding:13px 16px;border-radius:6px;
+    background:linear-gradient(180deg,#F5C518,#E8B609);color:#15190F;
+    display:flex;align-items:center;gap:12px;box-shadow:0 12px 30px rgba(0,0,0,.45);
+  }
+  #pbbanner .pbstar{font-size:26px;line-height:1;flex:none;
+    animation:pop .5s cubic-bezier(.2,1.6,.3,1) both;}
+  #pbbanner .pbtxt{display:flex;flex-direction:column;gap:3px;min-width:0;}
+  #pbbanner .pbtxt b{font-family:'IBM Plex Mono',monospace;font-size:19px;font-weight:600;letter-spacing:-.01em;}
+  #pbbanner .pbtxt span{font-size:12.5px;opacity:.82;letter-spacing:.01em;}
+  @keyframes pop{from{transform:scale(.4) rotate(-25deg);}to{transform:scale(1) rotate(0);}}
+  @media (prefers-reduced-motion:reduce){ #pbbanner{transition:none;} #pbbanner .pbstar{animation:none;} }
+
+  /* session summary */
+  .summary{
+    margin-top:20px;border:1px solid var(--line);border-left:3px solid var(--pc,var(--accent));
+    background:var(--surface);border-radius:4px;padding:16px 18px;
+  }
+  .summary .shead{display:flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;
+    font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--pc,var(--accent));font-weight:600;}
+  .summary .sdot{width:7px;height:7px;border-radius:50%;background:var(--pc,var(--accent));}
+  .summary .srow{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:12px;
+    font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--chalk);}
+  .summary .srow b{color:var(--pc,var(--accent));font-size:15px;}
+  .summary .sbest{margin-top:11px;font-size:13.5px;color:var(--chalk);opacity:.9;}
+  .summary .sbest b{font-family:'IBM Plex Mono',monospace;font-weight:600;}
+  .summary .spb{margin-top:9px;font-size:13.5px;color:var(--accent);}
+  .summary .sdelta{margin-top:9px;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.02em;color:var(--muted);}
+  .summary .sdelta.up{color:#7FD18B;} .summary .sdelta.down{color:var(--d3);}
+
+  /* the small view switch, shared by Progress and the PB sort */
+  .views{display:flex;gap:6px;margin-top:20px;}
+  .views button{
+    flex:1;background:var(--surface);border:1px solid var(--line);border-radius:3px;
+    color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.08em;
+    text-transform:uppercase;padding:11px 4px;cursor:pointer;appearance:none;
+  }
+  .views button[aria-pressed="true"]{background:var(--pc,var(--accent));border-color:var(--pc,var(--accent));color:var(--base);font-weight:600;}
+  .views button:focus-visible{outline:2px solid var(--chalk);outline-offset:2px;}
+  .views.small button{font-size:10.5px;padding:8px 4px;letter-spacing:.06em;}
+
+  /* month comparison */
+  .cmpline{display:flex;align-items:baseline;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);}
+  .cmpline:last-child{border-bottom:none;}
+  .cmpline .nm{flex:1;min-width:0;font-size:14.5px;font-weight:600;letter-spacing:-.01em;}
+  .cmpline .was{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--muted);text-decoration:line-through;}
+  .cmpline .to{font-family:'IBM Plex Mono',monospace;font-size:14px;color:var(--chalk);}
+  .cmpline .dl{font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--muted);min-width:46px;text-align:right;}
+  .cmpline .dl.up{color:#7FD18B;} .cmpline .dl.down{color:var(--d3);}
+
+  /* the PB wall */
+  .wallrow{display:grid;grid-template-columns:auto 1fr auto;grid-template-areas:"m n w" ". d w";
+    gap:2px 10px;align-items:center;padding:11px 0;border-bottom:1px solid var(--line);}
+  .wallrow:last-child{border-bottom:none;}
+  .wallrow .wm{grid-area:m;font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--muted);white-space:nowrap;}
+  .wallrow .wn{grid-area:n;font-size:15.5px;font-weight:700;letter-spacing:-.015em;}
+  .wallrow .wd{grid-area:d;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--muted);}
+  .wallrow .ww{grid-area:w;font-family:'IBM Plex Mono',monospace;font-size:19px;font-weight:600;
+    color:var(--pc,var(--accent));white-space:nowrap;text-align:right;}
+  .wallrow .ww .u{font-size:10px;color:var(--muted);margin-left:2px;}
+  .wallrow .ww .xr{font-size:12.5px;opacity:.72;margin-left:5px;}
+
+  .nudge{display:flex;align-items:center;gap:14px;margin-top:18px;padding:14px 16px;
+    border:1px dashed var(--line);border-radius:4px;}
+  .nudge .nb{font-family:'IBM Plex Mono',monospace;font-size:20px;font-weight:600;color:var(--pc,var(--accent));flex:none;}
+  .nudge .nt{font-size:13.5px;color:var(--chalk);opacity:.88;line-height:1.5;}
+  .nudge .nt b{color:var(--chalk);}
+
+  /* the twelve-week grid */
+  .hmgrid{margin-top:14px;display:flex;flex-direction:column;gap:4px;}
+  .hmweek{display:flex;align-items:center;gap:6px;}
+  .hmweek .hw{font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:var(--muted);width:16px;flex:none;text-align:right;}
+  .hmc{width:100%;max-width:26px;height:20px;border-radius:2px;background:var(--surface);
+    border:1px solid var(--line);flex:1;display:inline-block;}
+  .hmc.l0{}
+  /* Built in two steps on purpose: a plain colour first (older Safari), the blend after */
+  .hmc.l1{background:#2F3A44;border-color:transparent;}
+  .hmc.l2{background:#5A6470;border-color:transparent;}
+  .hmc.l3{background:var(--pc,var(--accent));border-color:transparent;}
+  .hmc.l1{background:color-mix(in srgb, var(--pc,var(--accent)) 30%, var(--surface));}
+  .hmc.l2{background:color-mix(in srgb, var(--pc,var(--accent)) 60%, var(--surface));}
+  .hmc.future{opacity:.28;border-style:dashed;}
+  .hmkey{display:flex;align-items:center;gap:8px;margin-top:12px;font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;}
+  .hmkey .hmc{width:16px;height:16px;flex:none;}
+
+  /* muscle frequency this week */
+  .mfreq{display:flex;align-items:center;gap:10px;padding:7px 0;}
+  .mfreq .fm{flex:none;width:104px;font-size:12.5px;color:var(--chalk);opacity:.85;}
+  .mfreq .fbar{flex:1;height:8px;border-radius:4px;background:var(--surface);border:1px solid var(--line);overflow:hidden;}
+  .mfreq .fbar span{display:block;height:100%;background:var(--pc,var(--accent));border-radius:4px;}
+  .mfreq .fv{flex:none;font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--muted);width:42px;text-align:right;}
+
+  /* the two of you */
+  .vsrow{padding:12px 0;border-bottom:1px solid var(--line);}
+  .vsrow:last-child{border-bottom:none;}
+  .vsrow .vn{display:block;font-size:15px;font-weight:700;letter-spacing:-.015em;margin-bottom:8px;}
+  .vsrow .vcol{display:block;position:relative;margin:5px 0;}
+  .vsrow .vbar{position:absolute;left:0;top:0;bottom:0;opacity:.28;border-radius:2px;}
+  .vsrow .vv{position:relative;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--chalk);
+    padding:5px 8px;white-space:nowrap;}
+  .vsrow .vv .u{font-size:10px;color:var(--muted);margin-left:2px;}
+  .two-lists{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:12px;}
+  .two-lists .tl{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--muted);display:block;margin-bottom:8px;}
+  .tinyrow{font-size:13px;padding:4px 0;color:var(--chalk);opacity:.88;}
+  .tinyrow.muted{opacity:.5;}
+  .feedrow{display:flex;align-items:baseline;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);}
+  .feedrow:last-child{border-bottom:none;}
+  .feedrow .fpdot{width:7px;height:7px;border-radius:50%;flex:none;align-self:center;}
+  .feedrow .ftxt{flex:1;min-width:0;font-size:14px;color:var(--chalk);opacity:.9;}
+  .feedrow .ftxt b{font-weight:700;opacity:1;}
+  .feedrow .fpb{font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.15em;color:var(--accent);margin-left:4px;}
+  .feedrow .fwhen{flex:none;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--muted);white-space:nowrap;}
+  .pbline.partner{display:flex;align-items:center;justify-content:flex-end;gap:5px;
+    font-size:10px;max-width:100%;overflow:hidden;text-overflow:ellipsis;}
+  .pbline .pdot{width:6px;height:6px;border-radius:50%;flex:none;}
+
+
+  /* X38 — the last three sessions, inside the log sheet */
+  .l3{display:flex;flex-direction:column;gap:0;margin-top:12px;border-top:1px solid var(--line);}
+  .l3label{font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--muted);padding:10px 0 6px;}
+  .l3row{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:7px 0;
+    border-bottom:1px solid var(--line);}
+  .l3row:last-of-type{border-bottom:none;}
+  .l3row .l3w{font-family:'IBM Plex Mono',monospace;font-size:16px;font-weight:600;color:var(--chalk);}
+  .l3row.now .l3w{color:var(--pc,var(--accent));}
+  .l3row .l3w .u{font-size:10px;color:var(--muted);margin-left:2px;font-weight:400;}
+  .l3row .l3w .l3x{font-size:12.5px;opacity:.72;margin-left:5px;}
+  .l3row .l3d{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--muted);white-space:nowrap;}
+  .l3row .l3pb{color:var(--accent);letter-spacing:.12em;font-size:9.5px;}
+  .l3same{font-size:12px;color:var(--muted);padding:9px 0 2px;font-style:italic;}
+
+
+  /* X144 — plate calculator */
+  .stepper-row{display:flex;align-items:center;gap:10px;margin-top:10px;}
+  .stepper-row input{flex:1;text-align:center;background:var(--base);border:1px solid var(--line);border-radius:3px;
+    color:var(--chalk);font-family:'IBM Plex Mono',monospace;font-size:26px;font-weight:600;padding:12px;min-width:0;}
+  .stepper-row .step{flex:none;width:52px;height:52px;border-radius:3px;background:var(--surface);
+    border:1px solid var(--line);color:var(--chalk);font-size:22px;line-height:1;cursor:pointer;}
+  .stepper-row .step:active{background:var(--line);}
+  .plate-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;}
+  .plate{display:flex;flex-direction:column;align-items:center;gap:2px;min-width:52px;padding:9px 10px;
+    border:1px solid var(--line);border-radius:3px;background:var(--surface);}
+  .plate b{font-family:'IBM Plex Mono',monospace;font-size:15px;font-weight:600;color:var(--chalk);}
+  .plate span{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--muted);}
+  .plate.bar{border-color:var(--pc,var(--accent));}
+  .plate.bar b{color:var(--pc,var(--accent));}
+  .plate.none{font-size:12px;color:var(--muted);}
+
+
+  /* X25 / X79 — long-press hint and the time-trimmed session */
+  li.ex.cut{opacity:.55;}
+  li.ex.cut .num{opacity:.6;}
+  .cuttag{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--muted);border:1px solid var(--line);border-radius:2px;padding:2px 5px;margin-left:7px;vertical-align:middle;}
+  .taphint{position:relative;}
+
+
+  /* X46 — the superset hand-off note, shown when the paired sheet opens by itself */
+  .superset-note{margin:0 0 14px;padding:11px 13px;border:1px dashed var(--line);border-radius:3px;
+    font-size:13px;line-height:1.5;color:var(--chalk);opacity:.9;}
+  .superset-note b{color:var(--pc,var(--accent));font-weight:600;}
 
   @keyframes rise{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
   @keyframes fade{from{opacity:0;}to{opacity:1;}}
@@ -600,6 +856,29 @@
 </head>
 <body>
 
+<!-- Boot splash: covers the moment between launch and your data being ready, so it
+     never looks like an empty page. Fades out on the first render. -->
+<div id="splash" aria-hidden="true">
+  <div class="splash-inner">
+    <img src="pwa-192.png" alt="" width="72" height="72">
+    <div class="splash-word">SESSION</div>
+    <div class="splash-rule"></div>
+  </div>
+</div>
+
+<!-- Boot skeleton: the shell, so the layout never jumps while the log loads -->
+<div id="bootskeleton" aria-hidden="true">
+  <div class="sk-row"><div class="sk-box sk-a"></div><div class="sk-box sk-b"></div></div>
+  <div class="sk-switch"><div class="sk-pill"></div><div class="sk-pill"></div><div class="sk-pill"></div></div>
+  <div class="sk-line sk-w40"></div>
+  <div class="sk-line sk-w70 sk-tall"></div>
+  <div class="sk-line sk-w30"></div>
+  <div class="sk-block"></div>
+  <div class="sk-block"></div>
+  <div class="sk-block"></div>
+  <div class="sk-note">Opening your log…</div>
+</div>
+
 <header id="topbar">
   <div class="toprow">
     <div class="persons" id="persons" aria-label="Who is training"></div>
@@ -607,13 +886,15 @@
   </div>
   <nav class="switch" id="switch" aria-label="Choose session"></nav>
 </header>
-<main id="app" aria-live="polite"></main>
+<main id="app"></main>
 
 <div class="tabbar" aria-label="App sections">
   <nav id="tabnav"></nav>
 </div>
 
 <div id="overlayroot"></div>
+<!-- X158: a personal best gets one clear moment, over the top of anything else -->
+<div id="pbbanner" aria-live="polite"></div>
 <div class="toast" id="toast" role="status"></div>
 
 <script>
@@ -644,6 +925,8 @@ const PEOPLE_DEF = [
 ];
 
 const UNIT = 'kg';
+const APP_VERSION = '5.0';
+const EXPORT_SCHEMA = 2;
 const MAXW = 500;
 
 const DAYS = [
@@ -652,60 +935,159 @@ const DAYS = [
     warmup:'3–5 minutes treadmill or bike, then light warm-up sets for your first exercise.',
     finisher:'10 minutes incline treadmill at a brisk walking pace.',
     ex:[
-      {name:'Leg Press',                 sets:'3 × 8–10',   muscle:'Quads',      c:[1,3], also:'glutes',            type:'compound', canon:'leg-press'},
-      {name:'Dumbbell Bench Press',      sets:'3 × 8–10',   muscle:'Chest',      c:[1,3], also:'triceps, front delts', type:'compound', canon:'db-bench'},
-      {name:'Lat Pulldown',              sets:'3 × 8–12',   muscle:'Lats',       c:[1,2], also:'biceps',            type:'compound', canon:'lat-pulldown'},
-      {name:'Romanian Deadlift',         sets:'3 × 8–10',   muscle:'Hamstrings', c:[1,3], also:'glutes, lower back',type:'compound', canon:'rdl'},
-      {name:'Lateral Raises',            sets:'3 × 12–15',  muscle:'Side delts', c:[1,2], also:'',                  type:'isolation', canon:'lat-raise'},
-      {name:'Cable Triceps Pushdown',    sets:'2 × 10–15',  muscle:'Triceps',    c:[1,2], also:'',                  type:'isolation', canon:'tri-pushdown'},
-      {name:'Dumbbell Biceps Curls',     sets:'2 × 10–15',  muscle:'Biceps',     c:[1,2], also:'',                  type:'isolation', canon:'db-curl'}
+      {name:'Leg Press',              sets:'3 × 8–10',  muscle:'Quads',       type:'compound',  canon:'leg-press',
+        also:'glutes', subs:[{id:'hack-squat',name:'Hack Squat'},{id:'leg-extension',name:'Leg Extension'}]},
+      {name:'Flat Bench Press',       sets:'3 × 8–10',  muscle:'Chest',       type:'compound',  canon:'flat-bench', rotate:true,
+        also:'triceps, front delts', opts:[{id:'db-bench',name:'Dumbbell Bench Press'},{id:'bar-bench',name:'Barbell Bench Press'}],
+        subs:[{id:'smith-bench',name:'Smith Machine Bench Press'},{id:'chest-press-machine',name:'Chest Press Machine'}]},
+      {name:'Lat Pulldown',           sets:'3 × 8–12',  muscle:'Lats',        type:'compound',  canon:'lat-pulldown',
+        also:'biceps', subs:[{id:'straight-arm-pulldown',name:'Straight-Arm Pulldown'}]},
+      {name:'Romanian Deadlift',      sets:'3 × 8–10',  muscle:'Hamstrings',  type:'compound',  canon:'rdl', perHand:false,
+        also:'glutes, lower back', subs:[{id:'db-rdl',name:'Dumbbell RDL'},{id:'leg-curl',name:'Leg Curl'}]},
+      {name:'Dumbbell Lateral Raises',sets:'3 × 12–15', muscle:'Side delts',  type:'isolation', canon:'lat-raise', perHand:true,
+        also:'', subs:[{id:'cable-lat-raise',name:'Cable Lateral Raise'}]},
+      {name:'Cable Triceps Pushdown', sets:'2 × 10–15', muscle:'Triceps',     type:'isolation', canon:'tri-pushdown',
+        also:'', subs:[{id:'overhead-rope-ext',name:'Overhead Rope Extension'},{id:'skullcrusher',name:'Skullcrusher'}]},
+      {name:'Dumbbell Biceps Curls',  sets:'2 × 10–15', muscle:'Biceps',      type:'isolation', canon:'db-curl', perHand:true,
+        also:'', subs:[{id:'cable-curl',name:'Cable Curl'},{id:'preacher-curl',name:'Preacher Curl'}]}
     ]
   },
   {
-    n:2, dow:3, label:'WED', title:'Full Body + Conditioning', accent:'--d2', mins:'60–75 min',
+    n:2, dow:3, label:'WED', title:'Full Body + Conditioning', accent:'--d2', mins:'75–85 min',
     warmup:'3–5 minutes treadmill, bike or cross trainer, then light warm-up sets.',
     finisher:'8–10 minutes bike or cross trainer: 1 minute moderate, 30 seconds harder.',
     ex:[
-      {name:'Goblet Squat or Hack Squat',sets:'3 × 8–12',   muscle:'Quads',      c:[2,3], also:'glutes',            type:'compound', canon:'squat', opts:[
-        {id:'goblet-squat', name:'Goblet Squat'}, {id:'hack-squat', name:'Hack Squat'}]},
-      {name:'Incline Dumbbell Press',    sets:'3 × 8–12',   muscle:'Chest',      c:[2,3], also:'upper chest, triceps', type:'compound', canon:'incline-db-press'},
-      {name:'Seated Cable Row',          sets:'3 × 8–12',   muscle:'Mid back',   c:[1,2], also:'biceps, rear delts',type:'compound', canon:'cable-row'},
-      {name:'Hip Thrust',                sets:'3 × 8–12',   muscle:'Glutes',     c:[1,1], also:'hamstrings',        type:'compound', canon:'hip-thrust'},
-      {name:'Shoulder Press',            sets:'2 × 8–12',   muscle:'Front delts',c:[1,1], also:'triceps',           type:'compound', canon:'shoulder-press'},
-      {name:'Leg Curl',                  sets:'2 × 10–15',  muscle:'Hamstrings', c:[2,3], also:'',                  type:'isolation', canon:'leg-curl'},
-      {name:'Plank',                     sets:'2 × 30–45s', muscle:'Core',       c:[1,3], also:'',                  type:'core', canon:'plank', bw:true},
-      {name:'Cable Crunch',              sets:'2 × 12–15',  muscle:'Core',       c:[2,3], also:'',                  type:'core', canon:'cable-crunch'},
-      {name:'Dead Bug',                  sets:'2 × 8–10 ea',muscle:'Core',       c:[3,3], also:'',                  type:'core', canon:'dead-bug', bw:true}
+      {name:'Hack Squat',             sets:'3 × 8–12',  muscle:'Quads',       type:'compound',  canon:'hack-squat',
+        also:'glutes', subs:[{id:'leg-press',name:'Leg Press'},{id:'goblet-squat',name:'Goblet Squat'}]},
+      {name:'Incline Bench Press',    sets:'3 × 8–12',  muscle:'Chest',       type:'compound',  canon:'incline-bench', rotate:true,
+        also:'upper chest, triceps', opts:[{id:'incline-db-press',name:'Incline Dumbbell Press'},{id:'incline-bar-press',name:'Incline Barbell Press'}],
+        subs:[{id:'chest-press-machine',name:'Chest Press Machine'},{id:'smith-bench',name:'Smith Machine Bench Press'}]},
+      {name:'Seated Cable Row or Machine Row', sets:'3 × 8–12', muscle:'Mid back', type:'compound', canon:'row', rotate:true,
+        also:'biceps, rear delts', opts:[{id:'cable-row',name:'Seated Cable Row'},{id:'machine-row',name:'Machine Row'}],
+        subs:[{id:'straight-arm-pulldown',name:'Straight-Arm Pulldown'}]},
+      {name:'Leg Curl',               sets:'2 × 10–15', muscle:'Hamstrings',  type:'isolation', canon:'leg-curl',
+        also:'', subs:[{id:'rdl',name:'Romanian Deadlift'}]},
+      {name:'Shoulder Press',         sets:'2 × 8–12',  muscle:'Front delts', type:'compound',  canon:'shoulder-press',
+        also:'triceps', subs:[{id:'db-shoulder-press',name:'Dumbbell Shoulder Press'}]},
+      {name:'Pec Fly',                sets:'3 × 10–15', muscle:'Chest',       type:'isolation', canon:'pec-fly',
+        also:'front delts', subs:[{id:'cable-fly',name:'Cable Fly'}]},
+      {name:'Cable Lateral Raise',    sets:'3 × 12–15', muscle:'Side delts',  type:'isolation', canon:'cable-lat-raise',
+        also:'', subs:[{id:'lat-raise',name:'Dumbbell Lateral Raise'}]},
+      {name:'Face Pull',              sets:'3 × 12–15', muscle:'Rear delts',  type:'isolation', canon:'face-pull', rotate:true,
+        also:'upper back', opts:[{id:'face-pull',name:'Face Pull'},{id:'reverse-pec-deck',name:'Reverse Pec Deck'}],
+        subs:[{id:'band-pull-apart',name:'Band Pull-Apart'}]},
+      {name:'Calf Raise',             sets:'3 × 10–15', muscle:'Calves',      type:'isolation', canon:'calf-raise',
+        also:'', subs:[{id:'leg-press-calf',name:'Leg Press Calf Raise'},{id:'seated-calf-raise',name:'Seated Calf Raise'}]},
+      {name:'Biceps Curls',           sets:'2 × 12–15', muscle:'Biceps',      type:'isolation', canon:'db-curl', perHand:true,
+        also:'', supersetWith:10, subs:[{id:'cable-curl',name:'Cable Curl'}]},
+      {name:'Triceps Pushdowns',      sets:'2 × 12–15', muscle:'Triceps',     type:'isolation', canon:'tri-pushdown',
+        also:'', supersetWith:9, subs:[{id:'overhead-rope-ext',name:'Overhead Rope Extension'}]}
     ]
   },
   {
-    n:3, dow:5, label:'FRI', title:'Full Body + Higher Reps', accent:'--d3', mins:'60–75 min',
+    n:3, dow:5, label:'FRI', title:'Full Body + Higher Reps', accent:'--d3', mins:'75–85 min',
     warmup:'3–5 minutes treadmill or bike, then light warm-up sets.',
     finisher:'10–15 minutes incline treadmill or cross trainer at a steady challenging pace.',
     ex:[
-      {name:'Squat or Leg Press',        sets:'3 × 10–12',  muscle:'Quads',      c:[3,3], also:'glutes',            type:'compound', canon:'squat-or-leg-press', opts:[
-        {id:'squat', name:'Squat'}, {id:'leg-press', name:'Leg Press'}]},
-      {name:'Chest Press Machine',       sets:'3 × 8–12',   muscle:'Chest',      c:[3,3], also:'triceps',           type:'compound', canon:'chest-press-machine'},
-      {name:'Lat Pulldown or Assisted Pull-up', sets:'3 × 8–12', muscle:'Lats',  c:[2,2], also:'biceps',            type:'compound', canon:'lat-pulldown-or-pullup', opts:[
-        {id:'lat-pulldown', name:'Lat Pulldown'}, {id:'pullup', name:'Assisted Pull-up'}]},
-      {name:'Dumbbell Romanian Deadlift',sets:'3 × 10–12',  muscle:'Hamstrings', c:[3,3], also:'glutes',            type:'compound', canon:'db-rdl'},
-      {name:'Cable Row',                 sets:'2 × 10–12',  muscle:'Mid back',   c:[2,2], also:'biceps',            type:'compound', canon:'cable-row'},
-      {name:'Lateral Raises',            sets:'2 × 12–15',  muscle:'Side delts', c:[2,2], also:'',                  type:'isolation', canon:'lat-raise'},
-      {name:'Biceps Curls',              sets:'2 × 12–15',  muscle:'Biceps',     c:[2,2], also:'',                  type:'isolation', canon:'db-curl'},
-      {name:'Triceps Pushdowns',         sets:'2 × 12–15',  muscle:'Triceps',    c:[2,2], also:'',                  type:'isolation', canon:'tri-pushdown'}
+      {name:'Leg Press',              sets:'3 × 10–12', muscle:'Quads',       type:'compound',  canon:'leg-press',
+        also:'glutes', subs:[{id:'hack-squat',name:'Hack Squat'},{id:'leg-extension',name:'Leg Extension'}]},
+      {name:'Chest Press Machine',    sets:'3 × 8–12',  muscle:'Chest',       type:'compound',  canon:'chest-press-machine',
+        also:'triceps', subs:[{id:'flat-bench',name:'Flat Bench Press'},{id:'smith-bench',name:'Smith Machine Bench Press'}]},
+      {name:'Lat Pulldown or Pull-up Practice', sets:'3 × 8–12', muscle:'Lats', type:'compound', canon:'pull-work', rotate:true,
+        also:'biceps', opts:[{id:'lat-pulldown',name:'Lat Pulldown'},{id:'pullup',name:'Pull-up Practice',bw:true}]},
+      {name:'Romanian Deadlift',      sets:'3 × 10–12', muscle:'Hamstrings',  type:'compound',  canon:'rdl-alt', rotate:true,
+        also:'glutes', opts:[{id:'db-rdl',name:'Dumbbell RDL'},{id:'rdl',name:'Barbell RDL'}],
+        subs:[{id:'leg-curl',name:'Leg Curl'}]},
+      {name:'Seated Cable Row or Machine Row', sets:'2 × 10–12', muscle:'Mid back', type:'compound', canon:'row', rotate:true,
+        also:'biceps', opts:[{id:'cable-row',name:'Seated Cable Row'},{id:'machine-row',name:'Machine Row'}]},
+      {name:'Dumbbell Lateral Raises',sets:'2 × 12–15', muscle:'Side delts',  type:'isolation', canon:'lat-raise', perHand:true,
+        also:'', subs:[{id:'cable-lat-raise',name:'Cable Lateral Raise'}]},
+      {name:'Calf Raise',             sets:'3 × 10–15', muscle:'Calves',      type:'isolation', canon:'calf-raise',
+        also:'', subs:[{id:'leg-press-calf',name:'Leg Press Calf Raise'}]},
+      {name:'Biceps Curls',           sets:'2 × 12–15', muscle:'Biceps',      type:'isolation', canon:'db-curl', perHand:true,
+        also:'', subs:[{id:'cable-curl',name:'Cable Curl'}]},
+      {name:'Triceps Pushdowns',      sets:'2 × 12–15', muscle:'Triceps',     type:'isolation', canon:'tri-pushdown',
+        also:'', subs:[{id:'overhead-rope-ext',name:'Overhead Rope Extension'}]},
+      {name:'Reverse Pec Deck',       sets:'2 × 12–15', muscle:'Rear delts',  type:'isolation', canon:'reverse-pec-deck', rotate:true,
+        also:'upper back', opts:[{id:'reverse-pec-deck',name:'Reverse Pec Deck'},{id:'face-pull',name:'Face Pull'}]},
+      {name:"Farmer's Carry",         sets:'3 × 30–40m', muscle:'Core',       type:'compound',  canon:'farmers-carry', perHand:true,
+        also:'grip, traps, forearms', subs:[]}
     ]
   }
 ];
 
 const CANON_LABEL = {
-  'leg-press':'Leg Press','squat':'Squat','goblet-squat':'Goblet Squat','hack-squat':'Hack Squat',
-  'db-bench':'Dumbbell Bench Press','incline-db-press':'Incline Dumbbell Press','lat-pulldown':'Lat Pulldown',
-  'pullup':'Assisted Pull-up','rdl':'Romanian Deadlift','db-rdl':'Dumbbell Romanian Deadlift',
-  'lat-raise':'Lateral Raise','tri-pushdown':'Triceps Pushdown','db-curl':'Biceps Curl',
-  'chest-press-machine':'Chest Press Machine','cable-row':'Cable Row','hip-thrust':'Hip Thrust',
-  'shoulder-press':'Shoulder Press','leg-curl':'Leg Curl','cable-crunch':'Cable Crunch',
-  'plank':'Plank','dead-bug':'Dead Bug','squat-or-leg-press':'Squat or Leg Press','lat-pulldown-or-pullup':'Lat Pulldown or Assisted Pull-up'
+  'leg-press':'Leg Press','squat':'Squat','goblet-squat':'Goblet Squat','hack-squat':'Hack Squat','leg-extension':'Leg Extension',
+  'db-bench':'Dumbbell Bench Press','bar-bench':'Barbell Bench Press','smith-bench':'Smith Machine Bench Press',
+  'flat-bench':'Flat Bench Press','incline-bench':'Incline Bench Press',
+  'incline-db-press':'Incline Dumbbell Press','incline-bar-press':'Incline Barbell Press',
+  'lat-pulldown':'Lat Pulldown','pullup':'Pull-up Practice','pull-work':'Lat Pulldown or Pull-up Practice',
+  'straight-arm-pulldown':'Straight-Arm Pulldown',
+  'rdl':'Romanian Deadlift','db-rdl':'Dumbbell Romanian Deadlift','rdl-alt':'Romanian Deadlift',
+  'lat-raise':'Dumbbell Lateral Raise','cable-lat-raise':'Cable Lateral Raise',
+  'tri-pushdown':'Triceps Pushdown','overhead-rope-ext':'Overhead Rope Extension','skullcrusher':'Skullcrusher',
+  'db-curl':'Biceps Curl','cable-curl':'Cable Curl','preacher-curl':'Preacher Curl',
+  'chest-press-machine':'Chest Press Machine','cable-row':'Seated Cable Row','machine-row':'Machine Row','row':'Row',
+  'hip-thrust':'Hip Thrust','shoulder-press':'Shoulder Press','db-shoulder-press':'Dumbbell Shoulder Press',
+  'leg-curl':'Leg Curl','cable-crunch':'Cable Crunch','pec-fly':'Pec Fly','cable-fly':'Cable Fly',
+  'face-pull':'Face Pull','reverse-pec-deck':'Reverse Pec Deck','band-pull-apart':'Band Pull-Apart',
+  'calf-raise':'Calf Raise','leg-press-calf':'Leg Press Calf Raise','seated-calf-raise':'Seated Calf Raise',
+  "farmers-carry":"Farmer's Carry",'plank':'Plank','dead-bug':'Dead Bug','squat-or-leg-press':'Squat or Leg Press',
+  'lat-pulldown-or-pullup':'Lat Pulldown or Assisted Pull-up'
 };
+
+/* Muscles for lifts that are no longer in the plan (hip thrust, plank, crunch, dead bug) and
+   for every variant, so nothing in your history loses its label. */
+const MUSCLE_FALLBACK = {
+  'hip-thrust':'Glutes','plank':'Core','cable-crunch':'Core','dead-bug':'Core',
+  'leg-press':'Quads','hack-squat':'Quads','goblet-squat':'Quads','squat':'Quads','leg-extension':'Quads',
+  'squat-or-leg-press':'Quads','rdl':'Hamstrings','db-rdl':'Hamstrings','leg-curl':'Hamstrings',
+  'db-bench':'Chest','bar-bench':'Chest','smith-bench':'Chest','flat-bench':'Chest','incline-bench':'Chest',
+  'incline-db-press':'Chest','incline-bar-press':'Chest','chest-press-machine':'Chest','pec-fly':'Chest','cable-fly':'Chest',
+  'lat-pulldown':'Lats','pullup':'Lats','pull-work':'Lats','lat-pulldown-or-pullup':'Lats','straight-arm-pulldown':'Lats',
+  'cable-row':'Mid back','machine-row':'Mid back','row':'Mid back',
+  'lat-raise':'Side delts','cable-lat-raise':'Side delts',
+  'face-pull':'Rear delts','reverse-pec-deck':'Rear delts','band-pull-apart':'Rear delts',
+  'shoulder-press':'Front delts','db-shoulder-press':'Front delts',
+  'tri-pushdown':'Triceps','overhead-rope-ext':'Triceps','skullcrusher':'Triceps',
+  'db-curl':'Biceps','cable-curl':'Biceps','preacher-curl':'Biceps',
+  'calf-raise':'Calves','leg-press-calf':'Calves','seated-calf-raise':'Calves',
+  'farmers-carry':'Core · grip · traps'
+};
+
+/* The 1/3 badges, derived from the plan itself: primary muscle, counted in plan order.
+   Nothing is hard-coded, so they can never drift out of sync with the programme again. */
+const BADGE = (() => {
+  const total = {}, seen = {}, out = {};
+  for (const d of DAYS) for (const e of d.ex) total[e.muscle] = (total[e.muscle] || 0) + 1;
+  for (const d of DAYS) d.ex.forEach((e, i) => {
+    seen[e.muscle] = (seen[e.muscle] || 0) + 1;
+    out[d.n + ':' + i] = { i: seen[e.muscle], n: total[e.muscle] };
+  });
+  return out;
+})();
+
+/* The pull-up ladder — built for a gym with no assisted machine (bands and negatives instead). */
+const LADDER = [
+  { t:'Dead hang',                target:'3 × 20–30s', d:'Grip and shoulder resilience, and being comfortable in the bottom position you cannot yet pull out of.' },
+  { t:'Scapular pull-ups',        target:'3 × 5–8',    d:'The missing link: hang, then pull your shoulder blades down without bending the elbows. That first inch is what almost nobody trains.' },
+  { t:'Negatives',                target:'3 × 3 @ 5s', d:'Get up there and lower for a true 5 seconds — count it out, do not drop.' },
+  { t:'Negatives',                target:'3 × 5 @ 5s', d:'Same, more volume. Hit this twice in a row and move yourself up.' },
+  { t:'Bottom-half reps',         target:'3 × 3',      d:'Dead hang → pull to 90° → lower. Trains the exact range that is currently missing.' },
+  { t:'Band-assisted pull-ups',   target:'3 × 3–5',    d:'Bands, since there is no assist machine. Heavy band first, then lighter as you get stronger.' },
+  { t:'Full pull-up',             target:'1 rep',      d:'Then 2, then 3, then 5. You are closer than you think.' }
+];
+
+/* Substitutes per lift, for the "machine taken?" flow. */
+const SUBS = (() => {
+  const out = {};
+  for (const d of DAYS) for (const e of d.ex){
+    const list = (e.subs || []).slice();
+    if (e.opts) for (const o of e.opts) if (o.id !== e.opts[0].id) list.unshift({ id:o.id, name:o.name });
+    if (list.length) out[e.canon] = list;
+  }
+  return out;
+})();
 
 /* ============================================================
    Storage. Tries the host's storage first (so nothing breaks if
@@ -733,13 +1115,106 @@ const esc = s => String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>'
 const uid = p => p + '_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,8);
 const todayKey = () => new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD local
 const fmtGB = (d, withYear) => {
-  const dt = new Date(d + 'T00:00:00');
+  const dt = new Date(String(d) + 'T00:00:00');
+  if (isNaN(dt.getTime())) return String(d == null ? '' : d);   // never print "Invalid Date"
   return dt.toLocaleDateString('en-GB', withYear ? {day:'numeric',month:'short',year:'numeric'} : {day:'numeric',month:'short'});
 };
 const pad = n => String(n).padStart(2,'0');
 const wFmt = w => { const x = Math.round(w*100)/100; return Number.isInteger(x) ? String(x) : String(x); };
 const setCount = d => d.ex.reduce((t,e) => t + parseInt(e.sets,10), 0);
 const now = () => Date.now();
+
+/* ============================================================
+   Release 1 helpers — additive only. Old records (reps:[10,10,10],
+   no repsMode) keep working exactly as they are; nothing is rewritten.
+   ============================================================ */
+function isDeleted(e){ return !!(e && e.deleted); }
+/* the reps that matter: the last one you entered (last set) */
+function lastReps(e){
+  if (!e || !Array.isArray(e.reps)) return null;
+  for (let i = e.reps.length - 1; i >= 0; i--){
+    const v = parseInt(e.reps[i], 10);
+    if (v > 0) return v;
+  }
+  return null;
+}
+function repsModeOf(e){ return (e && e.repsMode) || 'all'; }
+function repsLabel(e){ const r = lastReps(e); return r ? ('× ' + r) : ''; }
+/* The headline is always the last set, so a record means the same thing whether it
+   was logged before this change or after it. Only genuinely multi-set records get
+   a second line, and it says how many sets it holds rather than pretending to be one. */
+function repsDetail(e){
+  if (!e || !Array.isArray(e.reps) || !e.reps.length) return '';
+  const filled = e.reps.filter(r => parseInt(r, 10) > 0);
+  if (repsModeOf(e) === 'last' || filled.length <= 1) return '';
+  return `${filled.length} sets recorded · ${e.reps.map(r => r || '·').join(' · ')}`;
+}
+/* today's live entry for a lift (ignores deleted tombstones) */
+function liveLift(pid, canon, date){
+  const e = logOf(pid).lifts['l:' + pid + ':' + canon + ':' + date];
+  return (e && !isDeleted(e)) ? e : null;
+}
+/* tolerate "27,5", " 27.5 kg ", and a stray second decimal point */
+function parseWeight(v){
+  if (v == null) return null;
+  let s = String(v).trim().replace(/\s+/g,'').replace(/,/g,'.').replace(/[^0-9.]/g,'');
+  if (!s) return null;
+  const parts = s.split('.');
+  if (parts.length > 2) s = parts[0] + '.' + parts[1];
+  const n = parseFloat(s);
+  return (isFinite(n) && n > 0) ? n : null;
+}
+function parseRepInput(v){
+  const n = parseInt(String(v == null ? '' : v).replace(/[^0-9]/g,''), 10);
+  return (isFinite(n) && n > 0) ? Math.min(n, 100) : null;
+}
+const isPerHand = slot => /dumbbell|lateral raise/i.test(slot.name || '');
+
+/* ---- Undo: memory only, deliberately gone on reload ---- */
+let undoStack = [];
+function snapshotBefore(pids){
+  const s = {};
+  for (const pid of pids) s[pid] = JSON.stringify(logOf(pid));
+  return s;
+}
+function registerUndo(snap){
+  undoStack.push(snap);
+  if (undoStack.length > 5) undoStack.shift();
+}
+/* Puts the previous state back *and* re-stamps it, so the undo travels to the
+   other phone (sync is newest-wins). A record the action created becomes a
+   tombstone rather than simply vanishing, so it can't be pulled back down. */
+function undoLast(){
+  const snap = undoStack.pop();
+  if (!snap) return;
+  for (const pid of Object.keys(snap)){
+    let before = { lifts:{}, ticks:{} };
+    try { before = JSON.parse(snap[pid]); } catch(e){}
+    const cur = logOf(pid);
+    const outLifts = {};
+    const ids = new Set(Object.keys(before.lifts||{}).concat(Object.keys(cur.lifts||{})));
+    for (const id of ids){
+      const bE = (before.lifts||{})[id] || null;
+      const cE = (cur.lifts||{})[id] || null;
+      if (JSON.stringify(bE) === JSON.stringify(cE)){ if (cE) outLifts[id] = cE; continue; }
+      if (bE) outLifts[id] = Object.assign({}, bE, { ts: now() });
+      else outLifts[id] = { id, kind:'lift', pid, deleted:true, ts: now() };
+    }
+    cur.lifts = outLifts;
+    const outTicks = {};
+    const tks = new Set(Object.keys(before.ticks||{}).concat(Object.keys(cur.ticks||{})));
+    for (const k of tks){
+      const bT = (before.ticks||{})[k] || null;
+      const cT = (cur.ticks||{})[k] || null;
+      if (JSON.stringify(bT) === JSON.stringify(cT)){ if (cT) outTicks[k] = cT; continue; }
+      outTicks[k] = { items: bT ? (bT.items||[]).slice() : [], ts: now() };
+    }
+    cur.ticks = outTicks;
+    saveLog(pid, true);
+  }
+  toast('Undone');
+  render();
+}
 
 // deterministic sha-256 hex (compact, public-domain style implementation)
 const sha256 = (() => {
@@ -798,6 +1273,7 @@ function parsePresc(s){
    ============================================================ */
 let S = null;                       // settings (see defaults)
 let view = 'session';
+let lastRenderedDay = '';
 let selDayN = null;                 // selected program day number
 let sessionKey = '';                // for scroll preservation within a view
 const logs = {};                    // pid → { lifts:{id:entry}, ticks:{'dow:date':{items:[],ts}} }
@@ -805,15 +1281,76 @@ let toastTimer = null;
 
 function settingsDefault(){
   return {
-    v:3,
+    v:5,
     onboarded:false,
     owner:PEOPLE_DEF[0].id,
     sel:PEOPLE_DEF[0].id,
     people: PEOPLE_DEF.map(p => ({id:p.id,name:p.name,color:p.color,initial:p.initial})),
     legacyMigrated:false,
-    lastChoice:{},                  // pid → slotKey → optionId
-    sync:{ pin:'', room:'', lastSync:0, lastErr:'', busy:false }
+    lastChoice:{},                  // pid → slotKey → optionId (slots that do NOT alternate)
+    rotatePick:{},                  // pid → slotKey → {c, d} — a one-day override on an alternating slot
+    swap:{},                        // pid → 'dayN:date:idx' → {id, name} — "machine taken?" for today only
+    dayOrder:{},                    // pid → 'dayN:date' → [slot indexes] — "do it later", today only
+    lastBackup:0,
+    haptics:true,
+    contrast:'normal',
+    short:{},
+    repsCleanedAt:0,
+    sync:{ pin:'', room:'', lastSync:0, lastErr:'', busy:false, upTs:0, downTs:0, count:0 }
   };
+}
+/* ---------- per-day helpers (all local, none of it touches your records) ---------- */
+function swapKey(dayN, date, idx){ return dayN + ':' + date + ':' + idx; }
+function swapFor(pid, dayN, date, idx){
+  const m = S.swap && S.swap[pid];
+  return (m && m[swapKey(dayN, date, idx)]) || null;
+}
+function setSwap(pid, dayN, date, idx, val){
+  S.swap = S.swap || {};
+  S.swap[pid] = S.swap[pid] || {};
+  const k = swapKey(dayN, date, idx);
+  if (val) S.swap[pid][k] = val; else delete S.swap[pid][k];
+  saveSettings();
+}
+function orderFor(pid, dayN, date, len){
+  const key = dayN + ':' + date;
+  const o = S.dayOrder && S.dayOrder[pid] && S.dayOrder[pid][key];
+  const nat = [...Array(len).keys()];
+  if (!o || !o.length) return nat;
+  const seen = o.filter(i => i >= 0 && i < len);
+  return seen.concat(nat.filter(i => !seen.includes(i)));
+}
+function moveToEnd(pid, dayN, date, idx, len){
+  const cur = orderFor(pid, dayN, date, len).filter(i => i !== idx);
+  S.dayOrder = S.dayOrder || {};
+  S.dayOrder[pid] = S.dayOrder[pid] || {};
+  S.dayOrder[pid][dayN + ':' + date] = cur.concat([idx]);
+  saveSettings();
+}
+/* one-day override on an alternating slot; expires tomorrow on its own */
+function rotatePickFor(pid, slotKey){
+  const m = S.rotatePick && S.rotatePick[pid] && S.rotatePick[pid][slotKey];
+  if (!m) return null;
+  return m.d === todayKey() ? m.c : null;
+}
+function setRotatePick(pid, slotKey, canon, date){
+  S.rotatePick = S.rotatePick || {};
+  S.rotatePick[pid] = S.rotatePick[pid] || {};
+  S.rotatePick[pid][slotKey] = { c:canon, d:date || todayKey() };
+  saveSettings();
+}
+/* the pull-up ladder lives in the log as its own record, so it syncs like anything else */
+function ladderOf(pid){
+  const e = logOf(pid).lifts['x:' + pid + ':ladder'];
+  return (e && !isDeleted(e)) ? e : null;
+}
+function setLadder(pid, patch){
+  const cur = ladderOf(pid) || { id:'x:' + pid + ':ladder', kind:'ladder', pid, level:1, ts:0 };
+  const next = Object.assign({}, cur, patch, { ts: now(), last: (patch && patch.markDone) ? todayKey() : cur.last });
+  if (patch && patch.markDone) delete next.markDone;
+  logOf(pid).lifts[next.id] = next;
+  saveLog(pid, true);
+  render();
 }
 const me = () => S.people.find(p => p.id === S.sel) || S.people[0];
 const pcVar = p => `var(${p.color})`;
@@ -825,9 +1362,11 @@ function logOf(pid){
 }
 function tickKey(dow, date){ return dow + ':' + date; }
 
-/* all lift entries for a person, newest first */
+/* all logged lifts for a person, newest first (deleted ones and non-lift records hidden) */
 function liftsOf(pid){
-  return Object.values(logOf(pid).lifts).sort((a,b) => b.ts - a.ts);
+  return Object.values(logOf(pid).lifts)
+    .filter(e => !isDeleted(e) && (e.kind === undefined || e.kind === 'lift'))
+    .sort((a,b) => b.ts - a.ts);
 }
 function liftsByCanon(pid, canon){
   return liftsOf(pid).filter(e => e.ex === canon);
@@ -861,16 +1400,57 @@ function lastChoiceFor(pid, slotKey, slot){
   return slot.opts ? slot.opts[0].id : null;
 }
 /* the canon this person is actually doing for this slot:
-   last explicit pick, else the option they lifted most recently,
-   else the first option. Keeps "Squat or Leg Press" honest. */
-function chosenCanonFor(pid, slotKey, slot){
+   1. a substitute picked today because the machine was taken
+   2. an explicit pick (remembered forever on fixed slots, for today only on alternating ones)
+   3. on an alternating slot: whichever variant they did NOT do last time
+   4. otherwise the one they lifted most recently, else the first option */
+function chosenCanonFor(pid, slotKey, slot, date){
+  const d = date || todayKey();
+  const slotIdx = +(slotKey.split(':')[1]);
+  const sw = swapFor(pid, +(slotKey.split(':')[0]), d, slotIdx);
+  if (sw && sw.id) return sw.id;
   if (!slot.opts || !slot.opts.length) return slot.canon;
   const canons = slotCanons(slot);
+  if (slot.rotate){
+    const pick = rotatePickFor(pid, slotKey);
+    if (pick && canons.includes(pick)) return pick;
+    const recs = liftsOf(pid).filter(e => canons.includes(e.ex));
+    if (recs.length){
+      const alternate = canons.find(c => c !== recs[0].ex);   // offer the other one
+      if (alternate) return alternate;
+    }
+    return slot.opts[0].id;
+  }
   const stored = S.lastChoice[pid] && S.lastChoice[pid][slotKey];
-  if (stored && canons.includes(stored)) return stored; // an explicit pick wins
+  if (stored && canons.includes(stored)) return stored;
   const recs = liftsOf(pid).filter(e => canons.includes(e.ex));
-  const latest = recs.length ? recs[0].ex : null;       // liftsOf is newest-first
-  return latest || slot.opts[0].id;
+  return recs.length ? recs[0].ex : slot.opts[0].id;
+}
+/* the label for a canon, whichever way it was reached */
+function labelForCanon(canon, slot){
+  const o = slot && slot.opts && slot.opts.find(x => x.id === canon);
+  if (o) return o.name;
+  const sub = slot && (slot.subs || []).find(x => x.id === canon);
+  if (sub) return sub.name;
+  return CANON_LABEL[canon] || (slot ? slot.name : canon);
+}
+/* the fewest words that distinguish this variant from the other option */
+function variantTag(slot, canon){
+  if (!slot || !slot.opts || slot.opts.length < 2) return '';
+  const me = slot.opts.find(o => o.id === canon);
+  if (!me) return '';
+  const others = slot.opts.filter(o => o.id !== canon)
+    .map(o => o.name.toLowerCase().split(/\s+/));
+  const words = me.name.split(/\s+/);
+  const tag = words.filter(w => !others.some(list => list.includes(w.toLowerCase())));
+  return (tag.length ? tag : words).join(' ');
+}
+
+/* is this lift, as chosen today, a bodyweight one? */
+function isBWChoice(slot, canon){
+  if (slot.bw) return true;
+  const o = slot.opts && slot.opts.find(x => x.id === canon);
+  return !!(o && o.bw);
 }
 function slotLastLift(pid, slot, slotKey){
   const canons = slotCanons(slot);
@@ -944,13 +1524,22 @@ async function migrateLegacy(){
 /* ============================================================
    Toast
    ============================================================ */
-function toast(msg, colorVar){
+function buzz(ms){
+  if (S && S.haptics === false) return;
+  try { if (navigator.vibrate) navigator.vibrate(ms || 12); } catch(e){}
+}
+function toast(msg, colorVar, undoFn){
+  buzz(14);
   const el = document.getElementById('toast');
   el.style.setProperty('--pc', colorVar || 'var(--accent)');
-  el.innerHTML = msg;
+  el.innerHTML = msg + (undoFn ? ' <button class="undobtn" type="button">Undo</button>' : '');
   el.classList.add('show');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.classList.remove('show'), 2600);
+  if (undoFn){
+    const b = el.querySelector('.undobtn');
+    if (b) b.addEventListener('click', () => { el.classList.remove('show'); undoFn(); });
+  }
+  toastTimer = setTimeout(() => el.classList.remove('show'), undoFn ? 6500 : 2600);
 }
 
 /* ============================================================
@@ -1040,11 +1629,35 @@ function renderTabs(){
    Main render dispatcher
    ============================================================ */
 function render(){
+  lastRenderedDay = todayKey();
+  paintThemeColor();
   renderPersons();
   renderTabs();
   if (view === 'session'){ renderSwitch(); renderSession(); }
   else if (view === 'progress'){ document.getElementById('switch').innerHTML = ''; renderProgress(); }
   else { document.getElementById('switch').innerHTML = ''; renderTimer(); }
+}
+function setContrast(mode){
+  S.contrast = mode === 'high' ? 'high' : 'normal';
+  document.documentElement.classList.toggle('contrast-high', S.contrast === 'high');
+  saveSettings();
+}
+function whatsNewHTML(){
+  return `
+    <div class="set-row">
+      <span class="sk">What's new — v${esc(APP_VERSION)}</span>
+      <div class="sv" style="line-height:1.75">
+        <b style="color:var(--chalk)">Logging:</b> one box for the reps in your last set (it used to record
+        numbers you never typed), undo on everything, and you can now edit or delete any past record.<br>
+        <b style="color:var(--chalk)">The plan:</b> the new Monday/Wednesday/Friday, with the dumbbell ⇄ barbell
+        and cable ⇄ machine alternation worked out for you, "machine taken?" substitutes, and the pull-up
+        ladder at the bottom of every session.<br>
+        <b style="color:var(--chalk)">Safety:</b> restore from a backup, a nudge if it has been a month, and a
+        button to clean up the rep numbers the old version invented.<br>
+        <b style="color:var(--chalk)">This release:</b> the app opens with a splash and works with no signal at
+        all — it is installed, so it also keeps your data safer.
+      </div>
+    </div>`;
 }
 function setPersonAccent(){
   const p = me();
@@ -1088,7 +1701,7 @@ const REFERENCE = `
     <div class="ref-row"><span class="k">Compound lifts — leg press, squat, bench, RDL, rows</span><span class="v">90–120s</span></div>
     <div class="ref-row"><span class="k">Isolation — curls, raises, pushdowns</span><span class="v">45–75s</span></div>
     <div class="ref-row"><span class="k">Core</span><span class="v">30–60s</span></div>
-    <p style="margin-top:14px">When you can hit the <strong>top</strong> of the rep range on <strong>every</strong> set with solid form and still have 1–3 reps in reserve, add the smallest increment available next session.</p>
+    <p style="margin-top:14px">When you hit the <strong>top</strong> of the rep range on your <strong>last set</strong> with solid form and still have 1–3 reps in reserve, add the smallest increment available next session.</p>
   </div>
 </details>
 
@@ -1106,51 +1719,78 @@ const REFERENCE = `
   </div>
 </details>`;
 
-function dayRowHTML(day, idx, p, dayKey){
+function dayRowHTML(day, idx, p, dayKey, keep){
   const e = day.ex[idx];
-  const final = e.c[0] === e.c[1] && e.c[1] > 1;
+  const cut = Array.isArray(keep) && !keep.includes(idx);
+  const badge = BADGE[day.n + ':' + idx] || { i:1, n:1 };
+  const final = badge.i === badge.n && badge.n > 1;
   const slotKey = slotKeyOf(day.n, idx);
   const chosen = chosenCanonFor(p.id, slotKey, e);
   const todayLift = todayLiftFor(p.id, day, idx);
   const done = ticksFor(p.id, day.n, todayKey()).includes(idx);
-  const isBW = !!e.bw;
+  const isBW = isBWChoice(e, chosen);
+  const swapped = !!swapFor(p.id, day.n, todayKey(), idx);
 
   let pillHTML, pbHTML = '';
   if (isBW){
     pillHTML = `<span class="pill" aria-hidden="true">BW</span>`;
-    pbHTML = `<span class="pbline blank">bodyweight</span>`;
+    pbHTML = `<span class="pbline blank">no weight to log</span>`;
   } else {
     const st = personStats(p.id, chosen);
     const pb = st && st.pb;
-    const lastW = (st && st.last) ? st.last.weight : null;
-    const displayW = todayLift ? todayLift.weight : (lastW != null ? lastW : null);
+    const ref = todayLift || (st ? st.last : null);   // today's entry, else last time
+    const displayW = ref ? ref.weight : null;
+    const displayR = lastReps(ref);
     const logged = !!todayLift;
     pillHTML = `
-      <button class="pill ${logged?'logged':(displayW!=null?'has':'')}" data-i="${idx}" aria-label="Log weight for ${esc(e.name)}">
-        ${displayW != null ? wFmt(displayW) : '—'}<span class="u">${UNIT}</span>
+      <button class="pill ${logged?'logged':(displayW!=null?'has':'')}" data-i="${idx}" aria-label="Log weight and reps for ${esc(e.name)}">
+        ${displayW != null ? wFmt(displayW) : '—'}<span class="u">${UNIT}</span>${displayR ? `<span class="xr">×${displayR}</span>` : ''}
       </button>`;
     if (pb){
       const pbDate = fmtGB(pb.date, true);
-      pbHTML = `<span class="pbline">PB <b>${wFmt(pb.weight)}</b> · ${esc(pbDate)}</span>`;
+      const pbReps = lastReps(pb);
+      pbHTML = `<span class="pbline">PB <b>${wFmt(pb.weight)}</b>${pbReps ? ` ×${pbReps}` : ''} · ${esc(pbDate)}</span>`;
     } else {
       pbHTML = `<span class="pbline blank">no PB yet</span>`;
     }
+    /* X183 — the other person's PB for the same lift, named so it is never mistaken for yours */
+    for (const other of S.people){
+      if (other.id === p.id) continue;
+      const theirs = pbOf(other.id, chosen);
+      if (theirs) pbHTML += `<span class="pbline partner" title="${esc(other.name)}'s personal best for this lift"><span class="pdot" style="background:${personDotColor(other.id)}"></span>${esc(other.name)}'s PB <b>${wFmt(theirs.weight)}</b>${lastReps(theirs) ? ` ×${lastReps(theirs)}` : ''}</span>`;
+    }
   }
 
-  const doing = e.opts ? (() => {
-    const c = e.opts.find(o=>o.id===chosen);
-    return c && c.id !== e.opts[0].id ? ` <span class="choice" style="color:${personDotColor(p.id)}">→ ${esc(c.name)}</span>` : '';
-  })() : '';
+  /* which variant is live today: always named, never left to memory */
+  let doing = '';
+  if (e.opts){
+    const c = e.opts.find(o => o.id === chosen);
+    const isFirst = c && e.opts[0] && c.id === e.opts[0].id;
+    const tag = variantTag(e, chosen);
+    if (swapped){
+      doing = ` <span class="choice" style="color:${personDotColor(p.id)}">→ ${esc(labelForCanon(chosen, e))}</span>`;
+    } else if (c && (e.rotate || !isFirst)){
+      doing = ` <span class="choice" style="color:${personDotColor(p.id)}">→ ${esc(tag)}</span>`;
+    }
+  } else if (swapped){
+    doing = ` <span class="choice" style="color:${personDotColor(p.id)}">→ ${esc(labelForCanon(chosen, e))}</span>`;
+  }
 
-  return `<li class="ex ${done?'done':''}" data-i="${idx}" role="button" tabindex="0"
+  const perHand = e.perHand && !isBW;
+  const line2 = [
+    perHand ? 'per dumbbell' : '',
+    e.supersetWith != null ? 'superset' : ''
+  ].filter(Boolean).join(' · ');
+
+  return `<li class="ex ${done?'done':''}${cut?' cut':''}" data-i="${idx}" role="button" tabindex="0"
       aria-label="${esc(e.name)}, ${esc(e.sets)}. Tap to log." aria-pressed="${done}">
     <span class="num"><span class="n">${String(idx+1).padStart(2,'0')}</span><span class="tk">✓</span></span>
     <span class="mid">
-      <span class="name">${esc(e.name)}</span>
+      <span class="name">${esc(e.name)}${cut ? '<span class="cuttag">left out today</span>' : ''}</span>
       <span class="meta">${esc(e.muscle)}
-        <span class="count${final?' final':''}">${e.c[0]}/${e.c[1]}</span>${
+        <span class="count${final?' final':''}">${badge.i}/${badge.n}</span>${
           e.also ? ` <span class="also">· also ${esc(e.also)}</span>` : ''}${doing}</span>
-      <span class="restline">${REST[e.type]}</span>
+      <span class="restline">${REST[e.type]}${line2 ? ' · ' + line2 : ''}</span>
     </span>
     <span class="side">
       <span class="prescribe">${esc(e.sets)}</span>
@@ -1160,14 +1800,165 @@ function dayRowHTML(day, idx, p, dayKey){
   </li>`;
 }
 
+/* ============================================================
+   Pull-up ladder — a collapsible panel at the bottom of every
+   session, closed by default so it costs no screen space.
+   ============================================================ */
+const BAND_LABEL = { 0:'no band', 1:'heavy band', 2:'medium band', 3:'light band' };
+function ladderPanelHTML(p){
+  const rec = ladderOf(p.id);
+  const lvl = Math.min(LADDER.length, Math.max(1, (rec && rec.level) || 1));
+  const cur = LADDER[lvl - 1];
+  const band = (rec && rec.band) || 0;
+  const doneToday = rec && rec.last === todayKey();
+  const bandNote = lvl === 6 ? ` · ${BAND_LABEL[band]}` : '';
+  const levels = LADDER.map((x, i) => {
+    const on = i === lvl - 1;
+    return `<div class="lvl${on?' now':''}"><span class="n">${i+1}</span><span class="b">
+      <span class="t">${esc(x.t)} <span style="color:var(--muted);font-size:13px">${esc(x.target)}</span></span>
+      <span class="d">${esc(x.d)}</span></span></div>`;
+  }).join('');
+  return `
+  <div class="block">
+    <div class="block-label">Pull-ups</div>
+    <details class="ladderbox">
+      <summary>Pull-up ladder — level ${lvl} of ${LADDER.length}${bandNote}</summary>
+      <div class="ladderbody">
+        <p style="font-size:14.5px;color:var(--muted);line-height:1.6">
+          <b style="color:var(--chalk)">Your level: ${esc(cur.t)} — ${esc(cur.target)}.</b>
+          ${doneToday ? ' Practised today ✓' : ''}</p>
+        <div style="margin-top:12px">${levels}</div>
+        ${lvl === 6 ? `<div class="setrow" style="margin-top:12px"><span class="s">Band</span>
+          <div class="choicechips" data-band>${[1,2,3].map(b =>
+            `<button data-b="${b}" aria-pressed="${band===b}">${BAND_LABEL[b].replace(' band','')}</button>`).join('')}</div></div>` : ''}
+        <div class="cta-row" style="margin-top:16px">
+          <button class="cta primary" data-ladder="done" style="--pc:${personDotColor(p.id)}">${doneToday ? 'Practised today ✓' : 'Mark practised today'}<span class="sub">logs it, no weight needed</span></button>
+        </div>
+        <div class="cta-row" style="margin-top:10px">
+          <button class="cta ghost" data-ladder="up" ${lvl>=LADDER.length?'disabled':''}>Move up a level</button>
+          <button class="cta ghost" data-ladder="down" ${lvl<=1?'disabled':''}>Move down</button>
+        </div>
+        <p style="font-size:12.5px;color:var(--muted);line-height:1.6;margin-top:14px">
+          Optional, any session: inverted rows 2 × 8–10 (bar low in the Smith machine) and jump-to-top holds 3 × 10s.
+          The Timer tab counts your 5-second negatives.</p>
+      </div>
+    </details>
+  </div>`;
+}
+function bindLadderPanel(p){
+  const root = document.getElementById('app');
+  const done = root.querySelector('[data-ladder="done"]');
+  if (done) done.addEventListener('click', () => {
+    setLadder(p.id, { markDone:true });
+    toast(`Ladder: ${esc(LADDER[Math.min(LADDER.length,(ladderOf(p.id)||{}).level||1)-1].t)} logged`, personDotColor(p.id));
+  });
+  const up = root.querySelector('[data-ladder="up"]');
+  if (up) up.addEventListener('click', () => {
+    const cur = (ladderOf(p.id) || {}).level || 1;
+    setLadder(p.id, { level: Math.min(LADDER.length, cur + 1) });
+    toast('Moved up — ' + esc(LADDER[Math.min(LADDER.length, cur + 1) - 1].t));
+  });
+  const down = root.querySelector('[data-ladder="down"]');
+  if (down) down.addEventListener('click', () => {
+    const cur = (ladderOf(p.id) || {}).level || 1;
+    setLadder(p.id, { level: Math.max(1, cur - 1) });
+    toast('Moved down a level');
+  });
+  root.querySelectorAll('[data-band] button').forEach(b => b.addEventListener('click', () => {
+    setLadder(p.id, { band:+b.dataset.b });
+    toast(BAND_LABEL[+b.dataset.b] ? 'Band: ' + BAND_LABEL[+b.dataset.b] : 'Band cleared');
+  }));
+}
+
+/* ============================================================
+   "Machine taken?" — substitutes, or move it to the end
+   ============================================================ */
+function openSubsSheet(idx){
+  const p = me();
+  const day = currentDay();
+  const slot = day.ex[idx];
+  const subs = (SUBS[slot.canon] || []);
+  const body = `
+    <p style="font-size:15px;line-height:1.65;color:var(--chalk);opacity:.92">
+      Something else for <b>${esc(slot.name)}</b>? A substitute is logged under its own name, so your
+      ${esc(slot.name)} history and PB stay exactly as they are.</p>
+    ${subs.length ? `<div class="modal-sec"><span class="lbl">Same job, different machine</span>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        ${subs.map(x => `<button class="cta ghost" data-sub="${x.id}" style="text-align:left;font-weight:600">${esc(x.name)}</button>`).join('')}
+      </div></div>` : ''}
+    <div class="modal-sec"><span class="lbl">Or</span>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <button class="cta ghost" data-later style="text-align:left;font-weight:600">Do it later — move to the end of today's session</button>
+      </div>
+    </div>
+    <p style="font-size:12.5px;color:var(--muted);line-height:1.6;margin-top:16px">
+      Leaving it unticked for today is fine too — nothing is recorded as skipped, and tomorrow starts fresh.</p>
+    <div class="cta-row"><button class="cta ghost" data-close>Cancel</button></div>`;
+  openOverlay(overlayShell('Machine taken?', esc(day.title), body, {center:true}));
+  bindOverlayClicks();
+  const root = document.getElementById('ov');
+  root.querySelectorAll('[data-sub]').forEach(b => b.addEventListener('click', () => {
+    const s2 = subs.find(x => x.id === b.dataset.sub);
+    setSwap(p.id, day.n, todayKey(), idx, { id:s2.id, name:s2.name });
+    closeOverlay();
+    toast(`Swapped to ${esc(s2.name)} for today`);
+    render();
+    openLogSheet(idx);
+  }));
+  const later = root.querySelector('[data-later]');
+  if (later) later.addEventListener('click', () => {
+    moveToEnd(p.id, day.n, todayKey(), idx, day.ex.length);
+    closeOverlay();
+    toast(`${esc(slot.name)} moved to the end of today's session`);
+    render();
+  });
+}
+
 function todayLiftFor(pid, day, idx){
   const slot = day.ex[idx];
   const slotKey = slotKeyOf(day.n, idx);
   const canon = chosenCanonFor(pid, slotKey, slot);
-  if (slot.bw) return null;
-  const d = todayKey();
-  const e = logOf(pid).lifts['l:' + pid + ':' + canon + ':' + d];
-  return e || null;
+  if (isBWChoice(slot, canon)) return null;
+  return liveLift(pid, canon, todayKey());
+}
+
+function backupNudgeHTML(){
+  const days = S.lastBackup ? Math.floor((now() - S.lastBackup) / 86400000) : null;
+  if (days != null && days < 30) return '';
+  const text = days == null
+    ? 'No backup yet — Settings → Data &amp; backup gives you a file copy.'
+    : `Last backup ${days} days ago — worth a fresh one.`;
+  return `<span class="sync-line"><span class="dotlive"></span>${text}</span>`;
+}
+
+/* Blank the reps that the old version invented (it stored the top of the rep range on every
+   save). Weights, dates, PBs and every other field are left exactly as they are, a backup is
+   offered first, and nothing happens unless you press the button. */
+function cleanOldReps(){
+  const ids = [];
+  const cut = S.repsCleanedAt || 1759600000000; // records logged before Release 1
+  for (const p of S.people) for (const id of Object.keys(logOf(p.id).lifts)){
+    const e = logOf(p.id).lifts[id];
+    if (!e || e.kind !== 'lift' || e.deleted) continue;
+    if (e.repsMode === 'last') continue;
+    if (!Array.isArray(e.reps) || !e.reps.some(r => parseInt(r, 10) > 0)) continue;
+    ids.push({ pid:p.id, id });
+  }
+  if (!ids.length){ toast('Nothing to clean — no auto-filled reps left'); return; }
+  if (!confirm(`Blank the auto-filled reps on ${ids.length} old ${ids.length === 1 ? 'record' : 'records'}?\n\nWeights, dates and PBs are not touched, and you can export a backup first from the Settings sheet.`)) return;
+  if (!confirm('Export a backup first if you have not already. Go ahead now?')) return;
+  const snap = snapshotBefore(S.people.map(p => p.id));
+  for (const x of ids){
+    const e = logOf(x.pid).lifts[x.id];
+    logOf(x.pid).lifts[x.id] = Object.assign({}, e, { reps:null, ts: now() });
+    delete logOf(x.pid).lifts[x.id].repsMode;
+  }
+  for (const p of S.people) saveLog(p.id, true);
+  registerUndo(snap);
+  S.repsCleanedAt = now();
+  saveSettings();
+  toast(`Cleaned ${ids.length} records — weights and PBs untouched`, null, undoLast);
+  render();
 }
 
 function renderSession(){
@@ -1196,7 +1987,10 @@ function renderSession(){
 
   const date = todayKey();
   const done = ticksFor(p.id, day.n, date);
-  const rows = day.ex.map((e,i) => dayRowHTML(day, i, p, date)).join('');
+  const order = orderFor(p.id, day.n, date, day.ex.length);
+  const trim = shortFor(p.id, day.n, date);
+  const trimmed = trim ? trim.keep : null;
+  const rows = order.map(i => dayRowHTML(day, i, p, date, trimmed)).join('');
 
   const prevScroll = window.scrollY;
   const lastKey = sessionKey;
@@ -1209,6 +2003,7 @@ function renderSession(){
       <h1>Day <span class="idx">${day.n}</span></h1>
       <div class="focus">${esc(day.title)}</div>
       <div class="stats">${day.ex.length} exercises &nbsp;·&nbsp; ${setCount(day)} working sets &nbsp;·&nbsp; ${day.mins}</div>
+      ${done.length === day.ex.length ? sessionSummaryHTML(p.id, day, date) : ''}
       ${rest}
 
       <div class="block">
@@ -1218,7 +2013,7 @@ function renderSession(){
 
       <div class="block">
         <div class="block-label">The session</div>
-        <div class="taphint">Tap an exercise to log your weight</div>
+        <div class="taphint">Tap an exercise to log weight and reps</div>
         <div class="progress">
           <div class="bar"><span id="barfill"></span></div>
           <div class="ptext" id="ptext"></div>
@@ -1227,10 +2022,18 @@ function renderSession(){
         <ol id="list">${rows}</ol>
       </div>
 
+      <div class="cta-row" style="margin-top:18px">
+        <button class="mini-btn" id="platebtn" type="button">Plate calculator</button>
+        <button class="mini-btn" id="searchbtn2" type="button">Search my log</button>
+        <button class="mini-btn ${trim ? 'accent' : ''}" id="shortbtn" type="button">${trim ? `Trimmed to ${trim.mins} min` : 'Short on time?'}</button>
+      </div>
+
       <div class="block">
         <div class="block-label">Finisher</div>
         <p>${esc(day.finisher)}</p>
       </div>
+
+      ${ladderPanelHTML(p)}
 
       <div class="block">
         <div class="block-label">Reference</div>
@@ -1238,9 +2041,11 @@ function renderSession(){
       </div>
 
       <footer>
-        Tap a weight pill to log what you lifted — it ticks the exercise off too.
-        Below every pill is your <b style="color:var(--accent)">PB</b> for that lift.
+        Tap a weight pill to log what you lifted — weight and last-set reps — and it ticks the exercise off too.
+        The number under the pill is your last set; below that is your <b style="color:var(--accent)">PB</b> for that lift.
         ${syncFooterHTML()}
+        ${netNoteHTML()}
+        ${backupNudgeHTML()}
         <br><br>
         General fitness plan for healthy adults. Swap exercises if the kit is taken,
         something hurts, or an old injury says no.
@@ -1254,6 +2059,7 @@ function renderSession(){
     const pill = ev.target.closest('.pill');
     const li = ev.target.closest('li.ex');
     if (li && pill) ev.stopPropagation();
+    if (Date.now() < suppressTapUntil) return;      // a long press just handled this row
     if (li) openLogSheet(+li.dataset.i);
   });
   list.addEventListener('keydown', ev => {
@@ -1261,12 +2067,17 @@ function renderSession(){
     const li = ev.target.closest('li.ex');
     if (li){ ev.preventDefault(); openLogSheet(+li.dataset.i); }
   });
+  document.getElementById('platebtn').addEventListener('click', openPlateSheet);
+  document.getElementById('shortbtn').addEventListener('click', openShortSheet);
+  document.getElementById('searchbtn2').addEventListener('click', openSearchSheet);
   document.getElementById('reset').addEventListener('click', () => {
     if (!done.length) return;
     if (!confirm(`Clear ${p.name}'s ticks for today? (Lift logs are kept.)`)) return;
     setTicks(day.n, date, []);
   });
   bindSyncButtons();
+  bindLadderPanel(p);
+  bindLongPress();
   if (scrollToTop) window.scrollTo(0,0);
   else window.scrollTo(0, prevScroll);
 }
@@ -1330,7 +2141,7 @@ function bindSyncButtons(){
 }
 
 /* ============================================================
-   Log sheet
+   Log sheet  (Release 1: last-set reps, undo, log-for-both, typo guard)
    ============================================================ */
 function openLogSheet(idx){
   const p = me();
@@ -1339,39 +2150,55 @@ function openLogSheet(idx){
   const slotKey = slotKeyOf(day.n, idx);
   const date = todayKey();
   const doneNow = ticksFor(p.id, day.n, date).includes(idx);
-  const isBW = !!slot.bw;
   const chosen = chosenCanonFor(p.id, slotKey, slot);
-  const lift = logOf(p.id).lifts['l:' + p.id + ':' + chosen + ':' + date] || null;
+  const isBW = isBWChoice(slot, chosen);
+  const swapped = !!swapFor(p.id, day.n, date, idx);
+  const subLabel = swapped ? labelForCanon(chosen, slot) : null;
+  const lift = liveLift(p.id, chosen, date);
   const st = personStats(p.id, chosen);
   const pb = st ? st.pb : null;
   const last = st ? st.last : null;
   const presc = parsePresc(slot.sets);
   const colorVar = personDotColor(p.id);
+  const ref = lift || last;                      // what the sheet pre-fills from
+  const refReps = lastReps(ref);
+  const partner = S.people.find(x => x.id !== p.id) || null;
+  const canBoth = !!partner && !isBW;
+  const unitHint = isPerHand(slot) ? `${UNIT} per dumbbell` : `${UNIT} per working set`;
 
-  const sheetId = 'logsheet';
   const body = `
     ${slot.opts ? `<div class="modal-sec" style="margin-top:14px"><span class="lbl">Which one today?</span>
       <div class="choicechips" data-choices>${slot.opts.map(o =>
-        `<button data-c="${o.id}" aria-pressed="${chosen===o.id}">${esc(o.name)}</button>`).join('')}</div></div>` : ''}
+        `<button data-c="${o.id}" aria-pressed="${chosen===o.id}">${esc(o.name)}</button>`).join('')}</div>
+      <div class="choicehint">${slot.rotate
+        ? `Today: <b style="color:var(--chalk)">${esc(labelForCanon(chosen, slot))}</b>. The app alternates these for you each week — tapping the other one switches it for today.`
+        : 'Your choice is remembered and offered again next time.'}</div></div>` : ''}
+
+    ${subLabel ? `<div class="hint-row" style="border-style:solid;margin-top:14px">
+      Machine was taken — logging this as <b>${esc(subLabel)}</b> today.
+      Your ${esc(slot.name)} history and PB are untouched.
+      <button class="mini-btn" id="unsub" style="margin-top:10px;display:block">Put it back</button></div>` : ''}
 
     <div class="presc-line">
       <span>Set: <b>${esc(slot.sets)}</b></span>
       <span>Rest: <b>${REST[slot.type]}</b></span>
+      ${slot.supersetWith != null ? `<span>Superset: <b>with #${slot.supersetWith + 1}</b></span>` : ''}
     </div>
 
-    <div class="hint-row" id="lastrow">${lastHintHTML(last, pb, lift, isBW)}</div>
+    <div class="hint-row" id="lastrow">${lastHintHTML(last, pb, lift, isBW, p.id, chosen)}</div>
 
     ${isBW ? `
       <div class="modal-sec">
-        <p style="font-size:15px;color:var(--chalk);opacity:.9;line-height:1.6">Bodyweight exercise — nothing to log. Tap <b>Done</b> when you've finished your sets.</p>
+        <p style="font-size:15px;color:var(--chalk);opacity:.9;line-height:1.6">Nothing to weigh here — tap <b>Done</b> when you've finished your sets. Your pull-up ladder is at the bottom of the session.</p>
       </div>`
     : `
     <div class="modal-sec" id="wsec">
       <div class="winput-wrap">
         <input class="winput" id="winput" type="text" inputmode="decimal" autocomplete="off"
-          value="${lift ? wFmt(lift.weight) : (last ? wFmt(last.weight) : '')}"
+          enterkeyhint="next"
+          value="${ref ? wFmt(ref.weight) : ''}"
           placeholder="—" aria-label="Weight in ${UNIT}">
-        <span class="wunit">${UNIT} per working set</span>
+        <span class="wunit">${unitHint}</span>
       </div>
       <div class="quickchips">
         <button class="qchip small" data-add="-2.5">−2.5</button>
@@ -1381,110 +2208,202 @@ function openLogSheet(idx){
       </div>
 
       <div class="reps-block" id="repsblock">
-        <div class="reps-title"><span>Reps per set <span style="text-transform:none;letter-spacing:.02em;color:var(--muted)">(optional)</span></span>
-          <button class="toggle" id="repstoggle">${lift && lift.reps ? 'hide' : 'edit'}</button></div>
-        ${repRowsHTML(lift, presc)}
+        <div class="reps-title">
+          <span>Reps · last set</span>
+          <button class="toggle" id="repstoggle">log every set</button>
+        </div>
+        <div class="setrows" id="repsingle">
+          <div class="setrow"><span class="s">Last set</span>
+            <div class="setstepper">
+              <button data-d="-1" aria-label="fewer reps">−</button>
+              <input type="text" inputmode="numeric" value="${refReps != null ? refReps : ''}"
+                placeholder="${presc ? presc.max : '—'}" aria-label="Reps in the last set">
+              <button data-d="1" aria-label="more reps">+</button>
+            </div>
+          </div>
+        </div>
+        <div class="setrows" id="repsmulti" style="display:none">${multiRepRowsHTML(lift, presc)}</div>
+        <div class="choicehint" id="rephint">Only the last set is saved — that's the one that counts.</div>
       </div>
+
+      ${canBoth ? `
+      <div class="reps-block" style="margin-top:18px">
+        <div class="reps-title"><span>Who is this for?</span></div>
+        <div class="choicechips" data-both>
+          <button data-bothv="0" aria-pressed="true">Just ${esc(p.name)}</button>
+          <button data-bothv="1" aria-pressed="false">${esc(p.name)} + ${esc(partner.name)}</button>
+        </div>
+        <div class="bothnote" id="bothnote" style="display:none">
+          Saves the same weight and reps for both of you — each against their own exercise choice — and ticks it off for both.
+        </div>
+      </div>` : ''}
     </div>`}
+
+    <div class="cta-row" style="margin-top:18px">
+      <button class="cta ghost" id="subsbtn">Machine taken?</button>
+      ${slot.supersetWith != null ? '<button class="cta ghost" id="ssbtn">Superset with #' + (slot.supersetWith + 1) + '</button>' : ''}
+    </div>
 
     <div class="cta-row">
       ${isBW
-        ? `<button class="cta primary" id="tickbtn" style="--pc:${colorVar}">${doneNow ? 'Untick this exercise' : 'Tick it done'}<span class="sub">bodyweight — nothing to log</span></button>`
+        ? `<button class="cta primary" id="tickbtn" style="--pc:${colorVar}">${doneNow ? 'Untick this exercise' : 'Tick it done'}<span class="sub">${slot.bw ? 'bodyweight — nothing to log' : 'no weight to log — tick when done'}</span></button>`
         : lift
-          ? `<button class="cta primary" id="savebtn" style="--pc:${colorVar}">Update to ${wFmt(lift.weight)} ${UNIT}<span class="sub">saves &amp; keeps it ticked</span></button>
+          ? `<button class="cta primary" id="savebtn" style="--pc:${colorVar}">Update</button>
              <button class="cta ghost" data-close>Close</button>`
-          : `<button class="cta primary" id="savebtn" style="--pc:${colorVar}">Log ${UNIT}<span class="sub">saves &amp; ticks it off</span></button>
+          : `<button class="cta primary" id="savebtn" style="--pc:${colorVar}">Log</button>
              <button class="cta ghost" id="tickbtn">${doneNow ? 'Untick' : 'Done without a weight'}</button>`}
     </div>
-    <p id="note" style="text-align:center;margin-top:14px;font-size:12.5px;color:var(--muted);line-height:1.5">
-      ${lift ? `Logged today at <b style="color:var(--chalk)">${wFmt(lift.weight)} ${UNIT}</b>${lift.reps ? ' · ' + lift.reps.join('/') + ' reps' : ''} — updating replaces it.`
-        : doneNow ? 'This exercise is ticked today without a weight.' : 'Tap Log to record the weight, or Done to just tick it.'}
-    </p>`;
+    <p id="note" style="text-align:center;margin-top:14px;font-size:12.5px;color:var(--muted);line-height:1.5">${noteText(lift, doneNow)}</p>`;
 
-  const title = `${esc(slot.name)}`;
-  const sub = `${esc(p.name)} · ${isBW ? 'bodyweight' : esc(slot.sets)}`;
-  openOverlay(overlayShell(title, sub, body, {center:true}));
+  openOverlay(overlayShell(`${esc(slot.name)}`, `${esc(p.name)} · ${isBW ? 'bodyweight' : esc(slot.sets)}`, body, {center:true}));
   bindOverlayClicks();
-  document.querySelectorAll('#overlayroot [data-close]').forEach(b => b.addEventListener('click', closeOverlay));
 
   const root = document.getElementById('ov');
   root.style.setProperty('--pc', colorVar);
 
   let curLift = lift, curLast = last, curPb = pb;
+  let both = false;
   const autoVal = () => curLift ? wFmt(curLift.weight) : (curLast ? wFmt(curLast.weight) : '');
   let autoRef = autoVal();
 
-  // Update the identity-dependent parts in place — no full sheet rebuild,
-  // so switching between e.g. Goblet Squat and Hack Squat is instant.
-  const refreshIdentity = () => {
-    const lr = document.getElementById('lastrow');
-    if (lr) lr.innerHTML = lastHintHTML(curLast, curPb, curLift, isBW);
-    const note = document.getElementById('note');
-    if (note){
-      note.innerHTML = curLift
-        ? `Logged today at <b style="color:var(--chalk)">${wFmt(curLift.weight)} ${UNIT}</b>${curLift.reps ? ' · ' + curLift.reps.join('/') + ' reps' : ''} — updating replaces it.`
-        : (doneNow ? 'This exercise is ticked today without a weight.' : 'Tap Log to record the weight, or Done to just tick it.');
-    }
-    const lb = root.querySelector('[data-last]');
-    if (lb && !isBW){
-      lb.dataset.has = curLast ? '1' : '';
-      lb.textContent = curLast ? `last ${wFmt(curLast.weight)}` : '';
-      lb.style.display = curLast ? '' : 'none';
-    }
-    if (!isBW) updateSaveBtn();
-  };
+  const multiOn = () => { const m = document.getElementById('repsmulti'); return !!m && m.style.display !== 'none'; };
+  function singleRep(){
+    const el = document.querySelector('#repsingle .setstepper input');
+    return el ? parseRepInput(el.value) : null;
+  }
+  function lastEnteredRep(){
+    const inputs = [...document.querySelectorAll('#repsmulti .setstepper input')];
+    for (let i = inputs.length - 1; i >= 0; i--){ const v = parseRepInput(inputs[i].value); if (v) return v; }
+    return null;
+  }
+  function updateSaveBtn(){
+    const el = document.getElementById('winput');
+    const b = document.getElementById('savebtn');
+    if (!el || !b) return;
+    const w = parseWeight(el.value);
+    const r = multiOn() ? lastEnteredRep() : singleRep();
+    const base = curLift ? 'Update to' : 'Log';
+    const wTxt = w != null ? `${wFmt(w)} ${UNIT}` : UNIT;
+    const sub = both
+      ? `for ${esc(p.name)} + ${esc(partner.name)}`
+      : (curLift ? 'saves &amp; keeps it ticked' : 'saves &amp; ticks it off');
+    b.innerHTML = `${base} ${wTxt}${r ? ' × ' + r : ''}<span class="sub">${sub}</span>`;
+    b.classList.toggle('can', w != null);
+    b.style.opacity = w != null ? 1 : .45;
+  }
 
   if (slot.opts){
     root.querySelectorAll('[data-choices] button').forEach(b => b.addEventListener('click', () => {
-      S.lastChoice[p.id] = S.lastChoice[p.id] || {};
-      S.lastChoice[p.id][slotKey] = b.dataset.c;
-      saveSettings();
+      if (slot.rotate) setRotatePick(p.id, slotKey, b.dataset.c);
+      else { S.lastChoice[p.id] = S.lastChoice[p.id] || {}; S.lastChoice[p.id][slotKey] = b.dataset.c; saveSettings(); }
+      if (isBWChoice(slot, b.dataset.c) !== isBW){ openLogSheet(idx); return; }
       const c = b.dataset.c;
       root.querySelectorAll('[data-choices] button').forEach(x =>
         x.setAttribute('aria-pressed', String(x.dataset.c === c)));
       const wi = document.getElementById('winput');
-      if (wi && !isBW){
-        const typed = wi.value.trim();
-        // only overwrite the pre-fill if the user hasn't typed their own number
-        if (!typed || typed === autoRef) wi.value = '';
-      }
-      curLift = logOf(p.id).lifts['l:' + p.id + ':' + c + ':' + date] || null;
+      const typedW = wi ? wi.value.trim() : '';
+      const ri = document.querySelector('#repsingle .setstepper input');
+      const typedR = ri ? String(ri.value).trim() : '';
+      const repsWereAuto = ri ? (typedR === '' || typedR === String(refReps != null ? refReps : '')) : true;
+      curLift = liveLift(p.id, c, date);
       const st2 = personStats(p.id, c);
       curLast = st2 ? st2.last : null;
       curPb = st2 ? st2.pb : null;
       autoRef = autoVal();
-      const wi2 = document.getElementById('winput');
-      if (wi2 && !isBW && !wi2.value.trim()) wi2.value = autoRef;
-      refreshIdentity();
+      if (wi && !isBW && (!typedW || typedW === autoRef)) wi.value = '';
+      if (wi && !isBW && !wi.value.trim()) wi.value = autoRef;
+      if (ri && repsWereAuto){
+        const r2 = lastReps(curLift || curLast);
+        ri.value = r2 != null ? r2 : '';
+      }
+      const lr = document.getElementById('lastrow');
+      if (lr) lr.innerHTML = lastHintHTML(curLast, curPb, curLift, isBW, p.id, chosenCanonFor(p.id, slotKeyOf(day.n, idx), slot));
+      const note = document.getElementById('note');
+      if (note) note.innerHTML = noteText(curLift, doneNow);
+      const lb = root.querySelector('[data-last]');
+      if (lb){
+        lb.textContent = curLast ? `last ${wFmt(curLast.weight)}` : '';
+        lb.style.display = curLast ? '' : 'none';
+      }
+      if (!isBW) updateSaveBtn();
     }));
   }
 
   if (!isBW){
     const inp = document.getElementById('winput');
-    inp.addEventListener('input', () => updateSaveBtn());
+    inp.addEventListener('input', updateSaveBtn);
     root.querySelectorAll('[data-add]').forEach(b => b.addEventListener('click', () => {
-      const cur = parseFloat(inp.value);
-      const v = (isFinite(cur) ? cur : 0) + parseFloat(b.dataset.add);
+      const cur = parseWeight(inp.value);
+      const v = (cur != null ? cur : 0) + parseFloat(b.dataset.add);
       inp.value = v > 0 ? wFmt(v) : '';
       updateSaveBtn();
     }));
     const lastBtn = root.querySelector('[data-last]');
-    if (lastBtn) lastBtn.addEventListener('click', () => { inp.value = curLast ? wFmt(curLast.weight) : ''; updateSaveBtn(); });
-    document.getElementById('repstoggle').addEventListener('click', () => {
-      const rows = document.querySelector('#repsblock .setrows');
-      const showing = rows.style.display !== 'none';
-      rows.style.display = showing ? 'none' : '';
-      document.getElementById('repstoggle').textContent = showing ? 'edit' : 'hide';
+    if (lastBtn) lastBtn.addEventListener('click', () => {
+      inp.value = curLast ? wFmt(curLast.weight) : '';
+      updateSaveBtn();
     });
-    root.querySelectorAll('.setstepper button').forEach(b => b.addEventListener('click', () => {
-      const step = +b.dataset.d;
-      const input = b.parentElement.querySelector('input');
-      let v = parseInt(input.value,10) || 0;
-      v = Math.max(0, Math.min(60, v + step));
-      input.value = v;
+
+    /* one number by default, every set on request (the old way is still here) */
+    document.getElementById('repstoggle').addEventListener('click', () => {
+      const single = document.getElementById('repsingle');
+      const multi = document.getElementById('repsmulti');
+      const goingMulti = single.style.display !== 'none';
+      single.style.display = goingMulti ? 'none' : '';
+      multi.style.display = goingMulti ? '' : 'none';
+      document.getElementById('repstoggle').textContent = goingMulti ? 'log one set' : 'log every set';
+      document.getElementById('rephint').textContent = goingMulti
+        ? 'Each set is saved as you enter it.'
+        : "Only the last set is saved — that's the one that counts.";
+      if (goingMulti){
+        const v = singleRep();
+        const inputs = [...multi.querySelectorAll('.setstepper input')];
+        if (v) inputs.forEach(el => { if (!parseRepInput(el.value)) el.value = v; });
+      } else {
+        const el = single.querySelector('.setstepper input');
+        const v = lastEnteredRep();
+        if (el && v) el.value = v;
+      }
+      updateSaveBtn();
+    });
+    root.querySelectorAll('#repsingle .setstepper button, #repsmulti .setstepper button').forEach(b =>
+      b.addEventListener('click', () => {
+        const input = b.parentElement.querySelector('input');
+        const step = +b.dataset.d;
+        const cur = parseRepInput(input.value) || 0;
+        const next = Math.max(0, Math.min(100, cur + step));
+        input.value = next > 0 ? next : '';
+        updateSaveBtn();
+      }));
+    root.querySelectorAll('#repsingle .setstepper input, #repsmulti .setstepper input').forEach(el =>
+      el.addEventListener('input', updateSaveBtn));
+
+    const rb = root.querySelector('[data-both]');
+    if (rb) rb.querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
+      both = b.dataset.bothv === '1';
+      rb.querySelectorAll('button').forEach(x =>
+        x.setAttribute('aria-pressed', String((x.dataset.bothv === '1') === both)));
+      document.getElementById('bothnote').style.display = both ? 'block' : 'none';
+      updateSaveBtn();
     }));
+
     updateSaveBtn();
   }
+
+  const subsbtn = document.getElementById('subsbtn');
+  if (subsbtn) subsbtn.addEventListener('click', () => { closeOverlay(); openSubsSheet(idx); });
+  const ssbtn = document.getElementById('ssbtn');
+  if (ssbtn) ssbtn.addEventListener('click', () => {
+    const o = currentDay().ex[slot.supersetWith];
+    toast(`Superset ${esc(CANON_LABEL[chosen] || slot.name)} with ${esc((o && o.name) || 'the next exercise')} — alternate them, rest at the end`);
+  });
+  const unsub = document.getElementById('unsub');
+  if (unsub) unsub.addEventListener('click', () => {
+    setSwap(p.id, day.n, date, idx, null);
+    closeOverlay();
+    toast('Back to ' + esc(slot.name));
+    render();
+  });
 
   const tickbtn = document.getElementById('tickbtn');
   if (tickbtn) tickbtn.addEventListener('click', () => {
@@ -1492,103 +2411,301 @@ function openLogSheet(idx){
     closeOverlay();
     toast(doneNow ? 'Unticked' : 'Ticked off — no weight logged', colorVar);
   });
-  if (!isBW){
-    document.getElementById('savebtn').addEventListener('click', () => saveLogSheet(idx));
+  if (!isBW) document.getElementById('savebtn').addEventListener('click', () => saveLogSheet(idx, { both }));
+}
+function noteText(lift, doneNow){
+  if (lift){
+    const r = lastReps(lift);
+    return `Logged today at <b style="color:var(--chalk)">${wFmt(lift.weight)} ${UNIT}${r ? ' × ' + r : ''}</b> — saving replaces it.`;
   }
-
-  function updateSaveBtn(){
-    const el = document.getElementById('winput');
-    const b = document.getElementById('savebtn');
-    if (!el || !b) return;
-    const w = parseFloat(el.value);
-    const base = lift ? 'Update to' : 'Log';
-    const wTxt = isFinite(w) && w > 0 ? `${wFmt(w)} ${UNIT}` : UNIT;
-    b.innerHTML = `${base} ${wTxt}<span class="sub">${lift ? 'saves &amp; keeps it ticked' : 'saves &amp; ticks it off'}</span>`;
-    b.classList.toggle('can', isFinite(w) && w > 0);
-    if (b.classList.contains('can')) b.style.opacity = 1; else b.style.opacity = .45;
-  }
+  return doneNow ? 'This exercise is ticked today without a weight.' : 'Tap Log to record it, or Done to just tick it off.';
 }
 
-function repRowsHTML(lift, presc){
+function multiRepRowsHTML(lift, presc){
   const sets = presc ? presc.sets : 3;
-  const max = presc ? presc.max : 12;
-  const cur = lift && lift.reps ? lift.reps : Array(sets).fill(max);
+  const cur = (lift && Array.isArray(lift.reps)) ? lift.reps : [];
   let rows = '';
   for (let i=0;i<sets;i++){
+    const v = (cur[i] != null && cur[i] > 0) ? cur[i] : '';
     rows += `<div class="setrow"><span class="s">Set ${i+1}</span>
       <div class="setstepper"><button data-d="-1" aria-label="fewer reps">−</button>
-      <input type="text" inputmode="numeric" value="${cur[i]}" aria-label="Reps in set ${i+1}">
+      <input type="text" inputmode="numeric" value="${v}" aria-label="Reps in set ${i+1}">
       <button data-d="1" aria-label="more reps">+</button></div></div>`;
   }
-  return `<div class="setrows" ${lift && lift.reps ? '' : 'style="display:none"'} data-open="${lift && lift.reps ? '1':'0'}">${rows}</div>`;
+  return `<div class="setrows">${rows}</div>`;
 }
 
-function lastHintHTML(last, pb, lift, isBW){
+function lastHintHTML(last, pb, lift, isBW, pid, canon){
   if (isBW) return 'Nothing to weigh — just tick it off when your sets are done.';
   let parts = [];
   if (last){
-    const repTxt = last.reps ? last.reps.map(r => r || '·').join('·') : 'target';
-    parts.push(`Last: <b>${wFmt(last.weight)} ${UNIT}</b>${last.reps ? ' · ' + repTxt : ''} <span style="opacity:.6">· ${fmtGB(last.date)}</span>`);
+    const r = lastReps(last);
+    parts.push(`Last: <b>${wFmt(last.weight)} ${UNIT}</b>${r ? ' × ' + r : ''} <span style="opacity:.6">· ${fmtGB(last.date)}</span>`);
   } else {
     parts.push('No weight logged for this lift yet — start it off!');
   }
   if (pb){
-    parts.push(`PB: <b style="color:var(--pc)">${wFmt(pb.weight)} ${UNIT}</b> <span style="opacity:.6">· ${fmtGB(pb.date,true)}</span>`);
+    const r = lastReps(pb);
+    parts.push(`PB: <b style="color:var(--pc)">${wFmt(pb.weight)} ${UNIT}</b>${r ? ' × ' + r : ''} <span style="opacity:.6">· ${fmtGB(pb.date,true)}</span>`);
   }
   const beat = last && pb && lift && lift.weight > pb.weight;
-  const cls = beat ? 'pb-new' : '';
-  return `<div class="${cls}">${parts.join('<br>')}</div>`;
+  // X38 — the last three times, so you can pick your next weight without leaving the sheet
+  const recent = (pid && canon)
+    ? liftsOf(pid).filter(e => e.ex === canon).sort((a, b) => (b.ts || 0) - (a.ts || 0)).slice(0, 3)
+    : [];
+  let history = '';
+  if (recent.length){
+    history = `<div class="l3">
+      <span class="l3label">Last ${recent.length === 1 ? 'session' : recent.length + ' sessions'}</span>
+      ${recent.map((e, i) => {
+        const r = lastReps(e);
+        const pbMark = pb && e.id === pb.id ? ' <span class="l3pb">PB</span>' : '';
+        return `<span class="l3row${i === 0 ? ' now' : ''}">
+          <span class="l3w">${wFmt(e.weight)}<span class="u">${UNIT}</span>${r ? `<span class="l3x">×${r}</span>` : ''}</span>
+          <span class="l3d">${esc(fmtGB(e.date, true))}${pbMark}</span></span>`;
+      }).join('')}
+      ${recent.length > 1 && recent[0].weight === recent[1].weight && recent[1].weight === (recent[2] || {}).weight
+        ? '<span class="l3same">Same weight three times — add a little, or add a rep.</span>' : ''}
+    </div>`;
+  }
+  return `<div class="${beat ? 'pb-new' : ''}">${parts.join('<br>')}</div>${history}`;
 }
 
-function saveLogSheet(idx){
+/* Reads the sheet, guards against typos, then writes. */
+function saveLogSheet(idx, opts){
+  opts = opts || {};
   const p = me();
   const day = currentDay();
   const slot = day.ex[idx];
   const slotKey = slotKeyOf(day.n, idx);
+  const multiIsOn = (() => { const m = document.getElementById('repsmulti'); return !!m && m.style.display !== 'none'; })();
+
+  let w = opts.w, reps = opts.reps, repsMode = opts.repsMode;
+  if (w == null){
+    w = parseWeight(document.getElementById('winput').value);
+    if (multiIsOn){
+      const vals = [...document.querySelectorAll('#repsmulti .setstepper input')].map(r => parseRepInput(r.value));
+      if (vals.some(v => v != null)){ reps = vals; repsMode = 'all'; }
+    } else {
+      const v = singleRepFromSheet();
+      if (v){ reps = [v]; repsMode = 'last'; }
+    }
+  }
+  if (w == null || w > MAXW){ toast('Enter a valid weight first'); return; }
+
+  const targets = [p].concat(opts.both ? S.people.filter(x => x.id !== p.id) : []);
+
+  if (!opts.confirmed){
+    const risky = [];
+    for (const t of targets){
+      const tc = chosenCanonFor(t.id, slotKey, slot);
+      const tst = personStats(t.id, tc);
+      if (tst && tst.pb && w > tst.pb.weight * 2 && (w - tst.pb.weight) >= 10)
+        risky.push({ name:t.name, pb:tst.pb });
+    }
+    if (risky.length){ confirmRiskyWeight(idx, { w, reps, repsMode, both: !!opts.both }, risky); return; }
+  }
+  writeLift(idx, targets, { w, reps, repsMode });
+}
+function singleRepFromSheet(){
+  const el = document.querySelector('#repsingle .setstepper input');
+  return el ? parseRepInput(el.value) : null;
+}
+function confirmRiskyWeight(idx, payload, risky){
+  const slot = currentDay().ex[idx];
+  const r = risky[0];
+  const body = `
+    <p style="font-size:15px;line-height:1.65;color:var(--chalk);opacity:.92">
+      <b>${wFmt(payload.w)} ${UNIT}</b> is more than double ${risky.length > 1 ? 'a' : esc(r.name) + "'s"} PB for
+      ${esc(slot.name)} (${wFmt(r.pb.weight)} ${UNIT}, ${fmtGB(r.pb.date, true)}).
+    </p>
+    <p style="font-size:14px;color:var(--muted);line-height:1.6;margin-top:10px">
+      A weight like that is the one mistake that permanently distorts your PB and trend, so this is the last check before it saves.</p>
+    <div class="cta-row">
+      <button class="cta ghost" data-close>Go back</button>
+      <button class="cta primary" id="riskyes">Yes, log it</button>
+    </div>`;
+  openOverlay(overlayShell('That looks heavy', 'double-check before it saves', body, {center:true}));
+  bindOverlayClicks();
+  document.getElementById('riskyes').addEventListener('click', () => {
+    closeOverlay();
+    saveLogSheet(idx, Object.assign({}, payload, { confirmed:true }));
+  });
+}
+
+/* The single write path for a logged lift — used by the sheet, the typo-confirm
+   and "log for both". Nothing here removes or rewrites anything that exists. */
+function writeLift(idx, targets, payload){
+  const day = currentDay();
+  const slot = day.ex[idx];
+  const slotKey = slotKeyOf(day.n, idx);
   const date = todayKey();
-  let canon = chosenCanonFor(p.id, slotKey, slot);
-  if (slot.opts){
-    const pressed = document.querySelector('#ov [data-choices] button[aria-pressed="true"]');
-    if (pressed && slot.opts.some(o => o.id === pressed.dataset.c)) canon = pressed.dataset.c;
+  const { w, repsMode } = payload;
+  const reps = Array.isArray(payload.reps) ? payload.reps
+             : (payload.reps == null ? null : [payload.reps]);
+  const snap = snapshotBefore(targets.map(t => t.id));
+  const before = {};
+  for (const t of targets){
+    before[t.id] = personStats(t.id, chosenCanonFor(t.id, slotKey, slot));
   }
-  const opt = slot.opts ? slot.opts.find(o => o.id === canon) : null;
-  const label = opt ? opt.name : slot.name;
-  const w = parseFloat(document.getElementById('winput').value);
-  if (!isFinite(w) || w <= 0 || w > MAXW){ toast('Enter a valid weight first'); return; }
-
-  // optional reps
-  let reps = null;
-  const rows = document.querySelectorAll('#repsblock .setstepper input');
-  if (rows.length){
-    const vals = [...rows].map(r => parseInt(r.value,10) || 0);
-    reps = vals;
+  const labelFor = canon => labelForCanon(canon, slot);
+  for (const t of targets){
+    const canon = chosenCanonFor(t.id, slotKey, slot);
+    const eid = 'l:' + t.id + ':' + canon + ':' + date;
+    const entry = { id:eid, kind:'lift', pid:t.id, ex:canon, name:labelFor(canon), date,
+                    weight:w, reps:reps ? reps.slice() : null, ts:now(), day: day.n };
+    if (reps && repsMode) entry.repsMode = repsMode;
+    logOf(t.id).lifts[eid] = entry;
+    const done = ticksFor(t.id, day.n, date);
+    if (!done.includes(idx)){
+      logOf(t.id).ticks[tickKey(day.n, date)] = { items:done.concat([idx]).sort((a,b)=>a-b), ts:now() };
+    }
+    saveLog(t.id, true);
   }
-
-  const oldPb = personStats(p.id, canon);
-  const eid = 'l:' + p.id + ':' + canon + ':' + date;
-  const entry = {
-    id:eid, kind:'lift', pid:p.id, ex:canon, name:label,
-    date, weight:w, reps, ts:now(),
-    day: day.n
-  };
-  logOf(p.id).lifts[eid] = entry;
-  saveLog(p.id, true);
-
-  // tick it off
-  const done = ticksFor(p.id, day.n, date);
-  if (!done.includes(idx)){
-    const t = logOf(p.id).ticks;
-    t[tickKey(day.n, date)] = { items:done.concat([idx]).sort((a,b)=>a-b), ts:now() };
-  }
-  saveLog(p.id, true);
-
   closeOverlay();
+  registerUndo(snap);
 
-  const isNewPb = !(oldPb && oldPb.pb && oldPb.pb.weight >= w);
-  toast(isNewPb
-    ? `🏆 NEW PB — ${wFmt(w)} ${UNIT} on ${esc(label)}`
-    : `Logged ${wFmt(w)} ${UNIT} · ${esc(label)}`, personDotColor(p.id));
+  const main = targets[0];
+  const mainCanon = chosenCanonFor(main.id, slotKey, slot);
+  const r = lastReps({ reps });
+  const pbNames = targets.filter(t => {
+    const b = before[t.id];
+    return !(b && b.pb && b.pb.weight >= w);
+  }).map(t => t.name);
+
+  // X46: if this slot is supersetted, the next sheet is already open — biceps, then triceps
+  const pairIdx = slot.supersetWith;
+  let openPair = null;
+  if (pairIdx != null && day.ex[pairIdx]){
+    const stillToDo = targets.some(t => !ticksFor(t.id, day.n, date).includes(pairIdx));
+    if (stillToDo) openPair = pairIdx;
+  }
+
+  let msg = `Logged ${wFmt(w)} ${UNIT}${r ? ' × ' + r : ''} · ${esc(labelFor(mainCanon))}`;
+  if (targets.length > 1) msg += ' — both of you';
+  if (pbNames.length) msg += ` 🏆 PB${pbNames.length > 1 ? ' for both' : ' for ' + esc(pbNames[0])}`;
+  toast(msg, personDotColor(main.id), undoLast);
+  // X158 — a real PB gets the moment it deserves, but only in the tab that did it
+  if (pbNames.length){
+    const pbList = targets.filter(t => pbNames.includes(t.name)).map(t => ({
+      name:t.name, entry:{ weight:w, reps:reps || null }
+    }));
+    celebratePB(pbList);
+  }
   render();
+  if (openPair != null){
+    const pairSlot = day.ex[openPair];
+    openLogSheet(openPair);
+    const banner = document.querySelector('#overlayroot .sheet');
+    if (banner){
+      const note = document.createElement('div');
+      note.className = 'superset-note';
+      note.innerHTML = `Superset — the other half is already on screen. <b>${esc(labelFor(mainCanon))}</b> logged; now <b>${esc(pairSlot.name)}</b>.`;
+      banner.insertBefore(note, banner.children[1] || null);
+    }
+  }
+}
+
+/* ---- edit / delete a past record ---- */
+function openEditSheet(entryId){
+  const p = me();
+  const e = logOf(p.id).lifts[entryId];
+  if (!e || isDeleted(e)){ toast('That record is no longer here'); return; }
+  const colorVar = personDotColor(p.id);
+  const r = lastReps(e);
+  const body = `
+    <div class="modal-sec" style="margin-top:6px">
+      <span class="lbl">Weight</span>
+      <div class="winput-wrap" style="margin-top:2px">
+        <input class="winput" id="ewin" type="text" inputmode="decimal" value="${wFmt(e.weight)}" aria-label="Weight in ${UNIT}">
+        <span class="wunit">${UNIT}</span>
+      </div>
+      <div class="quickchips">
+        <button class="qchip small" data-add="-2.5">−2.5</button>
+        <button class="qchip" data-add="2.5">+2.5</button>
+        <button class="qchip" data-add="5">+5</button>
+      </div>
+    </div>
+    <div class="modal-sec">
+      <span class="lbl">Reps · last set</span>
+      <div class="setrow"><span class="s">${repsModeOf(e) === 'last' ? 'Last set' : 'Last set (of ' + ((e.reps||[]).length || 1) + ' sets)'}</span>
+        <div class="setstepper">
+          <button data-rd="-1" aria-label="fewer reps">−</button>
+          <input id="ewreps" type="text" inputmode="numeric" value="${r != null ? r : ''}" placeholder="—" aria-label="Reps in the last set">
+          <button data-rd="1" aria-label="more reps">+</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-sec">
+      <span class="lbl">Date</span>
+      <div class="setrow"><span class="s">Logged</span>
+        <input class="datein" id="ewdate" type="date" value="${esc(e.date)}" aria-label="Date logged"></div>
+      <div class="choicehint">Changing the date moves the record and leaves a hidden marker on the old day, so the other phone follows.</div>
+    </div>
+    <div class="cta-row">
+      <button class="cta primary" id="esave" style="--pc:${colorVar}">Save changes</button>
+      <button class="cta ghost" data-close>Cancel</button>
+    </div>
+    <div class="cta-row" style="margin-top:10px">
+      <button class="cta danger" id="edel">Delete this record</button>
+    </div>`;
+  openOverlay(overlayShell(`${esc(e.name || e.ex)}`, `edit a past record · ${esc(p.name)}`, body, {center:true}));
+  bindOverlayClicks();
+  const root = document.getElementById('ov');
+  root.querySelectorAll('[data-add]').forEach(b => b.addEventListener('click', () => {
+    const inp = document.getElementById('ewin');
+    const cur = parseWeight(inp.value);
+    const v = (cur != null ? cur : 0) + parseFloat(b.dataset.add);
+    inp.value = v > 0 ? wFmt(v) : '';
+  }));
+  root.querySelectorAll('[data-rd]').forEach(b => b.addEventListener('click', () => {
+    const input = document.getElementById('ewreps');
+    const cur = parseRepInput(input.value) || 0;
+    const next = Math.max(0, Math.min(100, cur + (+b.dataset.rd)));
+    input.value = next > 0 ? next : '';
+  }));
+  document.getElementById('esave').addEventListener('click', () => saveEdit(entryId));
+  document.getElementById('edel').addEventListener('click', () => deleteRecord(entryId));
+}
+function saveEdit(entryId){
+  const p = me();
+  const e = logOf(p.id).lifts[entryId];
+  if (!e) return;
+  const w = parseWeight(document.getElementById('ewin').value);
+  const rv = parseRepInput(document.getElementById('ewreps').value);
+  const newDate = document.getElementById('ewdate').value || e.date;
+  if (w == null || w > MAXW){ toast('Enter a valid weight first'); return; }
+  const snap = snapshotBefore([p.id]);
+  const entry = Object.assign({}, e, { weight:w, reps: rv ? [rv] : null, ts: now() });
+  if (rv) entry.repsMode = 'last'; else delete entry.repsMode;
+
+  if (newDate !== e.date){
+    const newId = 'l:' + p.id + ':' + e.ex + ':' + newDate;
+    entry.id = newId; entry.date = newDate;
+    logOf(p.id).lifts[newId] = entry;
+    logOf(p.id).lifts[entryId] = Object.assign({}, e, { deleted:true, ts: now() });
+  } else {
+    logOf(p.id).lifts[entryId] = entry;
+  }
+  saveLog(p.id, true);
+  registerUndo(snap);
+  closeOverlay();
+  toast(`Updated ${wFmt(w)} ${UNIT}${rv ? ' × ' + rv : ''} · ${esc(e.name || e.ex)}`, personDotColor(p.id), undoLast);
+  render();
+  openHistory(e.ex);          // straight back to the list, so you can see it changed
+}
+function deleteRecord(entryId){
+  const p = me();
+  const e = logOf(p.id).lifts[entryId];
+  if (!e) return;
+  const snap = snapshotBefore([p.id]);
+  logOf(p.id).lifts[entryId] = Object.assign({}, e, { deleted:true, ts: now() });
+  saveLog(p.id, true);
+  registerUndo(snap);
+  closeOverlay();
+  toast(`Deleted ${wFmt(e.weight)} ${UNIT} · ${fmtGB(e.date, true)}`, personDotColor(p.id), undoLast);
+  render();
+  openHistory(e.ex);
 }
 
 /* ============================================================
@@ -1598,68 +2715,485 @@ function renderProgress(){
   setPersonAccent();
   const p = me();
   const lifts = liftsOf(p.id);
-  const date = todayKey();
 
-  // aggregate by canon
+  let body = progressHeader(p, lifts);
+  if (progressView === 'pbs')       body += progressPBsView(p);
+  else if (progressView === 'map')  body += progressMapView(p);
+  else if (progressView === 'two')  body += progressTwoView(p);
+  else                              body += progressLiftsView(p, lifts);
+
+  body += `<div style="margin-top:26px;border-top:1px solid var(--line);padding-top:14px">
+      ${syncFooterHTML()}
+      ${netNoteHTML()}
+      ${backupNudgeHTML()}
+    </div>`;
+
+  document.getElementById('app').innerHTML = `<div class="anim">${body}</div>`;
+  document.querySelectorAll('.pr-row').forEach(r => r.addEventListener('click', () => openHistory(r.dataset.ex)));
+  document.querySelectorAll('[data-pv]').forEach(b => b.addEventListener('click', () => {
+    progressView = b.dataset.pv; render();
+  }));
+  document.querySelectorAll('[data-pbsort]').forEach(b => b.addEventListener('click', () => {
+    pbSort = b.dataset.pbsort; render();
+  }));
+  bindSyncButtons();
+  window.scrollTo(0, 0);
+  if (syncConfigured() && S.sync.pin && !syncInFlight) doSync(false);
+}
+
+/* ============================================================
+   Release 4 — Progress, motivation and the two of you
+   ============================================================ */
+
+/* ---------- shared helpers ---------- */
+function isoDate(d){ return d.toLocaleDateString('en-CA'); }
+function dateFromKey(k){ return new Date(k + 'T12:00:00'); }
+function weekStartKey(offsetWeeks){
+  const d = new Date();
+  d.setHours(12,0,0,0);
+  const dow = (d.getDay() + 6) % 7;          // Monday = 0
+  d.setDate(d.getDate() - dow + (offsetWeeks || 0) * 7);
+  return isoDate(d);
+}
+function agoText(dateStr){
+  const then = dateFromKey(dateStr).getTime();
+  const days = Math.round((Date.now() - then) / 86400000);
+  if (days <= 0) return 'today';
+  if (days === 1) return 'yesterday';
+  if (days < 7) return days + ' days ago';
+  if (days < 14) return 'last week';
+  if (days < 60) return Math.round(days / 7) + ' weeks ago';
+  return Math.round(days / 30) + ' months ago';
+}
+function entriesOn(pid, date){
+  return liftsOf(pid).filter(e => e.date === date);
+}
+function volumeOn(pid, date){
+  return entriesOn(pid, date).reduce((n, e) => n + (e.weight || 0) * (lastReps(e) || 1), 0);
+}
+function dayVolume(pid, dow, date){
+  return volumeOn(pid, date);
+}
+/* the most recent earlier date on which this person logged anything */
+function previousSessionDate(pid, beforeDate){
+  const dates = [...new Set(liftsOf(pid).map(e => e.date))].filter(d => d < beforeDate).sort();
+  return dates.length ? dates[dates.length - 1] : null;
+}
+function sameDayLastTime(pid, dow, beforeDate){
+  const dates = [...new Set(ticksForDates(pid, dow))].filter(d => d < beforeDate).sort();
+  return dates.length ? dates[dates.length - 1] : null;
+}
+function ticksForDates(pid, dow){
+  const t = logOf(pid).ticks || {};
+  return Object.keys(t).filter(k => +k.split(':')[0] === dow && (t[k].items || []).length).map(k => k.split(':')[1]);
+}
+function pbOf(pid, canon){
+  let pb = null;
+  for (const e of liftsOf(pid)) if (e.ex === canon && (!pb || e.weight > pb.weight)) pb = e;
+  return pb;
+}
+function allPBs(pid){
+  const map = new Map();
+  for (const e of liftsOf(pid)){
+    const cur = map.get(e.ex);
+    if (!cur || e.weight > cur.weight) map.set(e.ex, e);
+  }
+  return [...map.values()].map(e => ({
+    ex:e.ex, name:CANON_LABEL[e.ex] || e.name || e.ex, muscle:muscleFor(e.ex), entry:e, weight:e.weight, date:e.date
+  }));
+}
+
+/* ---------- session summary (X157) and PB celebration (X158) ---------- */
+function sessionSummaryHTML(pid, day, date){
+  const entries = entriesOn(pid, date);
+  if (!entries.length) return '';
+  const dows = ['', 'MON', 'WED', 'FRI'];
+  const sets = day.ex.length;
+  const vol = entries.reduce((n, e) => n + (e.weight || 0) * (lastReps(e) || 1), 0);
+  const best = entries.slice().sort((a, b) => (b.weight || 0) - (a.weight || 0))[0];
+  const ts = entries.map(e => e.ts).filter(Boolean).sort((a, b) => a - b);
+  const mins = ts.length > 1 ? Math.max(1, Math.round((ts[ts.length-1] - ts[0]) / 60000)) : 0;
+  const pbs = entries.filter(e => {
+    const all = liftsOf(pid).filter(x => x.ex === e.ex && x.date <= e.date && !isDeleted(x));
+    return all.length > 1 && e.weight >= Math.max(...all.map(x => x.weight));
+  });
+  const prev = sameDayLastTime(pid, day.n, date);
+  const prevVol = prev ? volumeOn(pid, prev) : 0;
+  const delta = prevVol ? vol - prevVol : 0;
+
+  return `
+    <div class="summary" role="status">
+      <div class="shead"><span class="sdot"></span> Session complete</div>
+      <div class="srow">
+        <span><b>${entries.length}</b> of ${sets} logged</span>
+        ${vol ? `<span><b>${Math.round(vol).toLocaleString('en-GB')}</b> kg moved</span>` : ''}
+        ${mins ? `<span><b>${mins}</b> min</span>` : ''}
+      </div>
+      ${best ? `<div class="sbest">Best set: <b>${esc(best.name)} ${wFmt(best.weight)} ${UNIT}${lastReps(best) ? ' ×' + lastReps(best) : ''}</b></div>` : ''}
+      ${pbs.length ? `<div class="spb">🏆 ${pbs.length === 1 ? 'A PB today' : pbs.length + ' PBs today'}: ${pbs.map(e => esc(e.name) + ' ' + wFmt(e.weight)).join(' · ')}</div>` : ''}
+      ${delta ? `<div class="sdelta ${delta > 0 ? 'up' : 'down'}">${delta > 0 ? '+' : ''}${Math.round(delta).toLocaleString('en-GB')} kg against last ${esc(String(day.label).toUpperCase())}${prev ? ' (' + esc(fmtGB(prev)) + ')' : ''}</div>` : ''}
+    </div>`;
+}
+function celebratePB(list){
+  const el = document.getElementById('pbbanner');
+  if (!el) return;
+  const who = list.length > 1 ? 'both of you' : (list[0].name + "'s");
+  const first = list[0];
+  el.innerHTML = `
+    <div class="pbin">
+      <span class="pbstar">🏆</span>
+      <span class="pbtxt">
+        <b>${wFmt(first.entry.weight)} ${UNIT}${lastReps(first.entry) ? ' × ' + lastReps(first.entry) : ''}</b>
+        <span>${esc(first.name)} — a new PB for ${esc(who)}${list.length > 1 ? ' · ' + esc(list.slice(1).map(x => x.name).join(', ')) : ''}</span>
+      </span>
+    </div>`;
+  el.classList.add('show');
+  clearTimeout(celebratePB.timer);
+  celebratePB.timer = setTimeout(() => el.classList.remove('show'), 3600);
+}
+
+/* ---------- the Progress screen, in four views ---------- */
+let progressView = 'lifts';
+
+function progressTabsHTML(){
+  const views = [['lifts','Lifts'], ['pbs','PBs'], ['map','Map'], ['two','You two']];
+  return `<div class="views">${views.map(([v, label]) =>
+    `<button data-pv="${v}" aria-pressed="${progressView === v}">${label}</button>`).join('')}</div>`;
+}
+
+function progressHeader(p, lifts){
+  const groups = new Set(lifts.map(e => e.ex)).size;
+  const dates = [...new Set(lifts.map(e => e.date))].sort();
+  const streak = sessionStreak(p.id);
+  return `
+    <div class="eyebrow"><span class="who">${esc(p.name)}</span> &nbsp;·&nbsp; PROGRESS</div>
+    <h1 class="small">Lift <span class="idx" style="color:${personDotColor(p.id)}">history</span></h1>
+    <div class="sumline">
+      <div class="statcard"><span class="v" style="color:${personDotColor(p.id)}">${groups}</span><span class="k">lifts logged</span></div>
+      <div class="statcard"><span class="v" style="color:${personDotColor(p.id)}">${dates.length}</span><span class="k">sessions</span></div>
+      <div class="statcard"><span class="v" style="color:${personDotColor(p.id)}">${streak}</span><span class="k">week streak</span></div>
+    </div>
+    ${progressTabsHTML()}`;
+}
+
+function progressLiftsView(p, lifts){
   const map = new Map();
   for (const e of lifts){
-    if (!map.has(e.ex)) map.set(e.ex, { ex:e.ex, name:CANON_LABEL[e.ex] || e.name, entries:[] });
+    if (!map.has(e.ex)) map.set(e.ex, { ex:e.ex, name:CANON_LABEL[e.ex] || e.name || e.ex, entries:[] });
     map.get(e.ex).entries.push(e);
   }
   const groups = [];
   for (const [ex, g] of map){
-    g.entries.sort((a,b)=>a.ts-b.ts);
+    g.entries.sort((a, b) => a.ts - b.ts);
     let pb = null;
     for (const e of g.entries) if (!pb || e.weight > pb.weight) pb = e;
     g.pb = pb;
     g.muscle = muscleFor(ex);
     groups.push(g);
   }
-  groups.sort((a,b) => (b.pb.weight - a.pb.weight));
+  groups.sort((a, b) => (b.pb.weight - a.pb.weight));
 
-  let body = `
-    <div class="eyebrow"><span class="who">${esc(p.name)}</span> &nbsp;·&nbsp; PROGRESS</div>
-    <h1 class="small">Lift <span class="idx" style="color:${personDotColor(p.id)}">history</span></h1>
-    <div class="sumline">
-      <div class="statcard"><span class="v" style="color:${personDotColor(p.id)}">${groups.length}</span><span class="k">lifts logged</span></div>
-      <div class="statcard"><span class="v" style="color:${personDotColor(p.id)}">${groups.filter(g=>g.entries.length>=2).length}</span><span class="k">with a trend</span></div>
-      <div class="statcard"><span class="v" style="color:${personDotColor(p.id)}">${liftCount(lifts)}</span><span class="k">total sessions</span></div>
-    </div>`;
-
+  let body = monthCompareHTML(p);
   if (!groups.length){
     body += `<div class="empty">Nothing logged yet.<br>Tap an exercise in the SESSION tab and enter a weight.<br>Your PBs and history build up here.</div>`;
-  } else {
-    for (const g of groups){
-      const repsTxt = g.pb.reps ? g.pb.reps.map(r=>r||'·').join('·') : '';
-      body += `
-      <div class="block" style="margin-top:22px">
-        <div class="pr-row" data-ex="${g.ex}">
-          <span class="rn"><span class="nm">${esc(g.name)}</span>
-            <span class="mus">${esc(g.muscle)}${g.pb.reps ? ' · ' + esc(g.pb.reps.length) + ' sets logged' : ''}</span></span>
-          <span class="spark">${sparkSVG(g.entries.map(e=>e.weight))}</span>
-          <span class="pbv"><span class="w">${wFmt(g.pb.weight)}</span>
-            <span class="d">PB · ${fmtGB(g.pb.date)}</span></span>
-        </div>
-      </div>`;
-    }
+    return body;
+  }
+  for (const g of groups){
+    const pbReps = lastReps(g.pb);
+    body += `
+    <div class="block" style="margin-top:22px">
+      <div class="pr-row" data-ex="${g.ex}">
+        <span class="rn"><span class="nm">${esc(g.name)}</span>
+          <span class="mus">${esc(g.muscle)} · ${esc(String(g.entries.length))} logged</span></span>
+        <span class="spark">${sparkSVG(g.entries.map(e => e.weight))}</span>
+        <span class="pbv"><span class="w">${wFmt(g.pb.weight)}</span>
+          <span class="d">PB${pbReps ? ' × ' + pbReps : ''} · ${fmtGB(g.pb.date)}</span></span>
+      </div>
+    </div>`;
   }
   body += `<p style="margin-top:20px;font-size:13px;color:var(--muted);line-height:1.6;font-family:'IBM Plex Mono',monospace;letter-spacing:.02em">
     PB = the heaviest weight you've logged for that lift, with the date you first hit it.
-    Tap a row to see every session.</p>
-    <div style="margin-top:26px;border-top:1px solid var(--line);padding-top:14px">
-      ${syncFooterHTML()}
-    </div>`;
-
-  document.getElementById('app').innerHTML = `<div class="anim">${body}</div>`;
-  document.querySelectorAll('.pr-row').forEach(r => r.addEventListener('click', () => openHistory(r.dataset.ex)));
-  bindSyncButtons();
-  window.scrollTo(0,0);
-  // pull fresh updates from the other phone whenever Progress opens
-  if (syncConfigured() && S.sync.pin && !syncInFlight) doSync(false);
+    Tap a row to see every session — and to edit or delete one.</p>`;
+  return body;
 }
+
+/* X168 — this month against last month, per lift */
+function monthCompareHTML(p){
+  const lifts = liftsOf(p.id);
+  const now = new Date();
+  const thisM = isoDate(now).slice(0, 7);
+  const lm = new Date(now); lm.setMonth(lm.getMonth() - 1);
+  const lastM = isoDate(lm).slice(0, 7);
+  const bestIn = m => {
+    const map = new Map();
+    for (const e of lifts) if (e.date.slice(0, 7) === m){
+      const cur = map.get(e.ex);
+      if (!cur || e.weight > cur.weight) map.set(e.ex, e);
+    }
+    return map;
+  };
+  const a = bestIn(thisM), b = bestIn(lastM);
+  const rows = [];
+  for (const [ex, e] of a){
+    const was = b.get(ex);
+    if (!was) continue;
+    rows.push({ name:CANON_LABEL[ex] || e.name || ex, now:e.weight, then:was.weight, delta:e.weight - was.weight });
+  }
+  if (!rows.length) return '';
+  rows.sort((x, y) => Math.abs(y.delta) - Math.abs(x.delta));
+  const monthName = m => new Date(m + '-15T12:00:00').toLocaleDateString('en-GB', { month:'long' });
+  return `
+    <div class="block">
+      <div class="block-label">This month vs last</div>
+      <p style="font-size:14px;opacity:.75">Best set per lift — ${esc(monthName(thisM))} against ${esc(monthName(lastM))}.</p>
+      ${rows.map(r => `
+        <div class="cmpline">
+          <span class="nm">${esc(r.name)}</span>
+          <span class="was">${wFmt(r.then)}</span>
+          <span class="to">${wFmt(r.now)} ${UNIT}</span>
+          <span class="dl ${r.delta > 0 ? 'up' : (r.delta < 0 ? 'down' : '')}">${r.delta > 0 ? '+' : ''}${r.delta ? wFmt(r.delta) : '—'}</span>
+        </div>`).join('')}
+    </div>`;
+}
+
+/* X120 — the PR wall, and the nudge towards the next milestone (X174) */
+let pbSort = 'weight';
+function progressPBsView(p){
+  const list = allPBs(p.id);
+  if (!list.length) return `<div class="empty">No PBs yet.<br>Log a weight and your wall starts here.</div>`;
+  const sorted = list.slice().sort((a, b) =>
+    pbSort === 'recent' ? (b.date > a.date ? 1 : b.date < a.date ? -1 : 0) :
+    pbSort === 'name'   ? a.name.localeCompare(b.name) :
+    (b.weight - a.weight));
+  const total = list.length;
+  const dates = [...new Set(liftsOf(p.id).map(e => e.date))];
+  const bodies = [
+    { label:'lifts with a PB', v:total, next:Math.ceil((total + 1) / 10) * 10 },
+    { label:'sessions logged', v:dates.length, next:Math.ceil((dates.length + 1) / 25) * 25 }
+  ].filter(m => m.next > m.v).slice(0, 2);
+  return `
+    <div class="block" style="border-top:none;padding-top:4px;margin-top:8px">
+      <div class="block-label">The wall · ${total} personal best${total === 1 ? '' : 's'}</div>
+      <div class="views small" style="margin-bottom:14px">
+        ${[['weight','Heaviest'], ['recent','Newest'], ['name','A–Z']].map(([v, l]) =>
+          `<button data-pbsort="${v}" aria-pressed="${pbSort === v}">${l}</button>`).join('')}
+      </div>
+      ${sorted.map(x => `
+        <div class="wallrow">
+          <span class="wm">${esc(x.muscle || '—')}</span>
+          <span class="wn">${esc(x.name)}</span>
+          <span class="ww">${wFmt(x.weight)}<span class="u">${UNIT}</span>${lastReps(x.entry) ? `<span class="xr">×${lastReps(x.entry)}</span>` : ''}</span>
+          <span class="wd">${esc(fmtGB(x.date, true))}</span>
+        </div>`).join('')}
+    </div>
+    ${bodies.map(m => `
+      <div class="nudge">
+        <span class="nb">${m.next - m.v}</span>
+        <span class="nt">more ${esc(m.label.replace('with a PB',''))} to <b>${m.next}</b> — you're on ${m.v}.</span>
+      </div>`).join('')}`;
+}
+
+/* X108 — twelve weeks at a glance, and this week against the plan */
+function progressMapView(p){
+  const weeks = 12;
+  const grid = [];
+  for (let w = weeks - 1; w >= 0; w--){
+    const startKey = weekStartKey(-w);
+    const cols = DAYS.map(d => {
+      // the date for that training day inside that week
+      const start = dateFromKey(startKey);
+      const offset = (d.dow - 1 + 7) % 7;           // Monday = 1
+      const dt = new Date(start); dt.setDate(start.getDate() + offset);
+      const key = isoDate(dt);
+      const t = logOf(p.id).ticks[tickKey(d.dow, key)];
+      const items = t ? (t.items || []).length : 0;
+      return { key, dow:d.n, items, future: key > todayKey() };
+    });
+    grid.push({ week:w + 1, cols });
+  }
+  const cell = c => {
+    if (c.future) return `<span class="hmc future" title="${c.key}"></span>`;
+    const lvl = c.items === 0 ? 0 : c.items <= 4 ? 1 : c.items <= 7 ? 2 : 3;
+    return `<span class="hmc l${lvl}" title="${c.key} — ${c.items} logged"></span>`;
+  };
+  const gridHTML = grid.map(g => `
+    <div class="hmweek">
+      <span class="hw">${g.week}</span>
+      ${g.cols.map(cell).join('')}
+    </div>`).join('');
+
+  const totalDays = ticksForDates(p.id, 1).length + ticksForDates(p.id, 3).length + ticksForDates(p.id, 5).length;
+  const last12 = grid.reduce((n, g) => n + g.cols.reduce((m, c) => m + (c.items ? 1 : 0), 0), 0);
+
+  // this week: what the plan asks per muscle vs what has actually been logged
+  const ws = weekStartKey(0);
+  const thisWeek = liftsOf(p.id).filter(e => e.date >= ws);
+  const plan = new Map();
+  for (const d of DAYS) for (const e of d.ex) plan.set(e.muscle, (plan.get(e.muscle) || 0) + 1);
+  const done = new Map();
+  for (const e of thisWeek) done.set(muscleFor(e.ex), (done.get(muscleFor(e.ex)) || 0) + 1);
+  const rows = [...plan.entries()].sort((a, b) => b[1] - a[1]);
+
+  return `
+    <div class="block" style="border-top:none;padding-top:4px;margin-top:8px">
+      <div class="block-label">Twelve weeks</div>
+      <p style="font-size:14px;opacity:.75">One square per session day. Filled by how much of the session was logged —
+         light, mid, full. Numbered by week, newest at the bottom.</p>
+      <div class="hmgrid">${gridHTML}</div>
+      <div class="hmkey"><span class="hmc l0"></span> none <span class="hmc l1"></span> started
+        <span class="hmc l2"></span> most <span class="hmc l3"></span> full</div>
+      <div class="sumline" style="margin-top:18px">
+        <div class="statcard"><span class="v" style="color:${personDotColor(p.id)}">${totalDays}</span><span class="k">sessions all time</span></div>
+        <div class="statcard"><span class="v" style="color:${personDotColor(p.id)}">${last12}</span><span class="k">in 12 weeks</span></div>
+        <div class="statcard"><span class="v" style="color:${personDotColor(p.id)}">${streakWeeks(p.id)}</span><span class="k">weeks in a row</span></div>
+      </div>
+    </div>
+    <div class="block">
+      <div class="block-label">This week against the plan</div>
+      <p style="font-size:14px;opacity:.75">How many exercises hit each muscle so far this week (Monday to today).</p>
+      ${rows.map(([mus, want]) => {
+        const got = Math.min(done.get(mus) || 0, want);
+        const pct = want ? Math.round(got / want * 100) : 0;
+        return `<div class="mfreq">
+          <span class="fm">${esc(mus)}</span>
+          <span class="fbar"><span style="width:${pct}%"></span></span>
+          <span class="fv">${got}/${want}</span>
+        </div>`;
+      }).join('')}
+    </div>`;
+}
+
+/* X123 + X163 — the two of you */
+function progressTwoView(p){
+  const others = S.people.filter(x => x.id !== p.id);
+  if (!others.length) return `<div class="empty">Only one person in this room.</div>`;
+  const other = others[0];
+  const mine = new Map(allPBs(p.id).map(x => [x.ex, x]));
+  const theirs = new Map(allPBs(other.id).map(x => [x.ex, x]));
+  const shared = [...new Set([...mine.keys(), ...theirs.keys()])].filter(ex => mine.has(ex) && theirs.has(ex));
+  const mineOnly = [...mine.keys()].filter(ex => !theirs.has(ex));
+  const theirsOnly = [...theirs.keys()].filter(ex => !mine.has(ex));
+
+  const bar = (ex) => {
+    const a = mine.get(ex), b = theirs.get(ex);
+    const mx = Math.max(a.weight, b.weight, 1);
+    return `
+      <div class="vsrow">
+        <span class="vn">${esc(a.name)}</span>
+        <span class="vcol">
+          <span class="vbar" style="width:${Math.round(a.weight / mx * 100)}%;background:${personDotColor(p.id)}"></span>
+          <span class="vv">${esc(p.name)} ${wFmt(a.weight)}<span class="u">${UNIT}</span></span>
+        </span>
+        <span class="vcol">
+          <span class="vbar" style="width:${Math.round(b.weight / mx * 100)}%;background:${personDotColor(other.id)}"></span>
+          <span class="vv">${esc(other.name)} ${wFmt(b.weight)}<span class="u">${UNIT}</span></span>
+        </span>
+      </div>`;
+  };
+
+  const feed = liftsOf(other.id)
+    .filter(e => !isDeleted(e))
+    .sort((a, b) => (b.ts || 0) - (a.ts || 0))
+    .slice(0, 8)
+    .map(e => {
+      const before = liftsOf(other.id).filter(x => x.ex === e.ex && x.ts < e.ts);
+      const best = before.reduce((m, x) => Math.max(m, x.weight), 0);
+      const isPB = e.weight > best && before.length > 0;
+      return `
+        <div class="feedrow">
+          <span class="fpdot" style="background:${personDotColor(other.id)}"></span>
+          <span class="ftxt"><b>${esc(e.name)}</b> ${wFmt(e.weight)} ${UNIT}${lastReps(e) ? ' × ' + lastReps(e) : ''}${isPB ? ' <span class="fpb">PB</span>' : ''}</span>
+          <span class="fwhen">${esc(agoText(e.date))}</span>
+        </div>`;
+    }).join('');
+
+  return `
+    <div class="block" style="border-top:none;padding-top:4px;margin-top:8px">
+      <div class="block-label">Lifts you both do · ${shared.length}</div>
+      <p style="font-size:14px;opacity:.75">Bars are drawn against the heavier of the two. Dumbbell numbers are per hand,
+         and a machine and a cable are different lifts, so compare only what is genuinely the same.</p>
+      ${shared.length ? shared.sort().map(bar).join('') : '<div class="empty">No lift logged by both of you yet.</div>'}
+    </div>
+    ${mineOnly.length || theirsOnly.length ? `
+    <div class="block">
+      <div class="block-label">Only one of you has logged</div>
+      <div class="two-lists">
+        <div><span class="tl">${esc(p.name)}</span>
+          ${mineOnly.length ? mineOnly.map(ex => `<div class="tinyrow">${esc(CANON_LABEL[ex] || ex)}</div>`).join('') : '<div class="tinyrow muted">nothing yet</div>'}</div>
+        <div><span class="tl">${esc(other.name)}</span>
+          ${theirsOnly.length ? theirsOnly.map(ex => `<div class="tinyrow">${esc(CANON_LABEL[ex] || ex)}</div>`).join('') : '<div class="tinyrow muted">nothing yet</div>'}</div>
+      </div>
+    </div>` : ''}
+    <div class="block">
+      <div class="block-label">${esc(other.name)}'s latest</div>
+      ${feed || '<div class="empty">Nothing logged yet.</div>'}
+    </div>
+    <div class="block">
+      <div class="block-label">On this day</div>
+      ${onThisDayHTML(p)}
+    </div>`;
+}
+
+/* X118 + X184 — memories */
+function onThisDayHTML(p){
+  const today = todayKey();
+  const md = today.slice(5);                                  // MM-DD
+  const yearsAgo = new Date().getFullYear() - 1 + '-' + md;
+  const hits = liftsOf(p.id).filter(e => (e.date.slice(5) === md) || (e.date === yearsAgo));
+  const first = liftsOf(p.id).slice().sort((a, b) => (a.ts || 0) - (b.ts || 0))[0];
+  let out = '';
+  if (hits.length){
+    out += `<p style="font-size:14px;opacity:.8">On this date before:</p>` + hits.slice(0, 6).map(e =>
+      `<div class="feedrow"><span class="fpdot" style="background:${personDotColor(p.id)}"></span>
+        <span class="ftxt"><b>${esc(e.name)}</b> ${wFmt(e.weight)} ${UNIT}${lastReps(e) ? ' × ' + lastReps(e) : ''}</span>
+        <span class="fwhen">${esc(agoText(e.date))}</span></div>`).join('');
+  }
+  if (first){
+    const days = Math.round((Date.now() - dateFromKey(first.date).getTime()) / 86400000);
+    if (days >= 30){
+      out += `<div class="nudge"><span class="nb">${days >= 365 ? (days / 365).toFixed(1).replace('.0','') + 'y' : Math.round(days / 30) + 'm'}</span>
+        <span class="nt">since you logged your first lift — <b>${esc(first.name)}</b>, ${wFmt(first.weight)} ${UNIT}, ${esc(fmtGB(first.date))}. Keep going.</span></div>`;
+    }
+  }
+  if (!out) out = `<div class="tinyrow muted">Nothing from this date to show yet — it builds up as you log.</div>`;
+  return out;
+}
+
+/* ---------- streaks ---------- */
+function sessionStreak(pid){
+  const weeks = new Set();
+  for (const dow of [1, 3, 5]) for (const d of ticksForDates(pid, dow)) weeks.add(weekStartKeyOf(d));
+  let n = 0;
+  for (let i = 0; i < 260; i++){
+    if (weeks.has(weekStartKey(-i))) n++;
+    else if (i > 0) break;
+  }
+  return n;
+}
+function streakWeeks(pid){
+  const perWeek = new Map();
+  for (const dow of [1, 3, 5]) for (const d of ticksForDates(pid, dow)){
+    const w = weekStartKeyOf(d);
+    perWeek.set(w, (perWeek.get(w) || 0) + 1);
+  }
+  let n = 0;
+  for (let i = 0; i < 260; i++){
+    const w = weekStartKey(-i);
+    if ((perWeek.get(w) || 0) > 0) n++;
+    else if (i > 0) break;
+  }
+  return n;
+}
+function weekStartKeyOf(dateKey){
+  const d = dateFromKey(dateKey);
+  const dow = (d.getDay() + 6) % 7;
+  d.setDate(d.getDate() - dow);
+  return isoDate(d);
+}
+
 function muscleFor(ex){
   for (const d of DAYS) for (const e of d.ex) if (e.canon === ex || (e.opts && e.opts.some(o=>o.id===ex))) return e.muscle;
-  return '';
+  return MUSCLE_FALLBACK[ex] || '';
 }
 function liftCount(lifts){
   const days = new Set(lifts.map(e => e.date));
@@ -1694,13 +3228,16 @@ function openHistory(ex){
 
   let hist = entries.slice().reverse().map(e => {
     const isPb = pb && e.weight === pb.weight && e.ts === pb.ts;
-    const repTxt = e.reps ? e.reps.map(r=>r||'·').join(' · ') : '';
-    return `<div class="hist-item">
+    const last = lastReps(e);
+    const detail = repsDetail(e);
+    return `<div class="hist-item" data-eid="${esc(e.id)}" role="button" tabindex="0"
+        aria-label="Edit the record from ${fmtGB(e.date, true)}">
       <div class="hrow">
         <span class="hdate">${fmtGB(e.date, true)}</span>
-        <span class="hw ${isPb?'pb-mark':''}">${wFmt(e.weight)} ${UNIT} ${isPb?'<span class="tag">· PB</span>':''}</span>
+        <span class="hw ${isPb?'pb-mark':''}">${wFmt(e.weight)} ${UNIT}${last ? ` <span style="color:var(--muted)">× ${last}</span>` : ''} ${isPb?'<span class="tag">· PB</span>':''}</span>
       </div>
-      ${repTxt ? `<div class="hreps">${repTxt} reps</div>` : '<div class="hreps">target reps (not entered)</div>'}
+      ${detail ? `<div class="hreps">${esc(detail)}</div>`
+               : (last ? '' : '<div class="hreps">weight only — no reps recorded</div>')}
     </div>`;
   }).join('');
 
@@ -1709,14 +3246,25 @@ function openHistory(ex){
       <div class="sumline" style="margin-top:0">
         <div class="statcard"><span class="v" style="color:${colorVar}">${pb ? wFmt(pb.weight) : '—'}</span><span class="k">PB ${UNIT} · ${pb ? fmtGB(pb.date,true) : ''}</span></div>
         <div class="statcard"><span class="v" style="color:${colorVar}">${entries.length}</span><span class="k">sessions</span></div>
-        <div class="statcard"><span class="v" style="color:${colorVar}">${entries.reduce((s,e)=>s+(e.reps?e.reps.reduce((a,b)=>a+(b||0),0):0),0)}</span><span class="k">total reps</span></div>
+        <div class="statcard"><span class="v" style="color:${colorVar}">${pb ? wFmt(pb.weight) + (lastReps(pb) ? '×' + lastReps(pb) : '') : '—'}</span><span class="k">best set</span></div>
       </div>
       ${entries.length >= 2 ? `<div style="margin-top:16px;text-align:center">${sparkSVG(entries.map(e=>e.weight)).replace('<span class="spark"','<span class="spark" style="width:100%;height:46px"')}</div>` : ''}
     </div>
-    <div class="modal-sec"><span class="lbl">Every logged session</span>${hist || '<div class="empty">Nothing yet.</div>'}</div>`;
+    <div class="modal-sec"><span class="lbl">Every logged session — tap one to edit or delete it</span>${hist || '<div class="empty">Nothing yet.</div>'}</div>`;
 
   openOverlay(overlayShell(`${esc(name)} — ${esc(p.name)}`, `PB &amp; full history · ${UNIT}`, body, {full:false, center:false}));
   bindOverlayClicks();
+  const hroot = document.getElementById('ov');
+  const openEd = ev => {
+    const item = ev.target.closest('.hist-item');
+    if (item && item.dataset.eid) openEditSheet(item.dataset.eid);
+  };
+  hroot.querySelectorAll('.hist-item').forEach(item => {
+    item.addEventListener('click', openEd);
+    item.addEventListener('keydown', ev => {
+      if (ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); openEditSheet(item.dataset.eid); }
+    });
+  });
 }
 
 /* ============================================================
@@ -1852,6 +3400,10 @@ function tickTimer(){
    ============================================================ */
 function openSettings(){
   const p = me();
+  storageRowHTML().then(html => {
+    const el = document.getElementById('storagerow');
+    if (el) el.innerHTML = html;
+  });
   const cfg = syncConfigured();
   let syncHTML;
   if (!cfg){
@@ -1929,12 +3481,70 @@ function openSettings(){
         <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
           <button class="mini-btn" data-act="expjson">Full backup (.json)</button>
           <button class="mini-btn" data-act="expcsv">Spreadsheet (.csv)</button>
+          <button class="mini-btn accent" data-act="restore">Restore from backup</button>
+        </div>
+      </div>
+      <div class="set-row">
+        <span class="sk">Tidy up old rep numbers</span>
+        <div class="sv">Every lift logged before this update also stored a rep count you never
+        typed (the old version filled in the top of the rep range on its own). This blanks those
+        rep numbers only — <b>weights, dates and PBs are not touched</b> — and you can undo it
+        straight afterwards.</div>
+        <div style="margin-top:10px"><button class="mini-btn" data-act="cleanreps">Clean up auto-filled reps</button></div>
+      </div>
+      <div class="set-row">
+        <span class="sk">Feel</span>
+        <div class="sv">A short buzz when you log or tick something, on phones that support it. It never
+        makes a sound, so it is fine in a quiet gym.</div>
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <button class="mini-btn ${S.haptics === false ? '' : 'accent'}" data-act="hap-on">Buzz on</button>
+          <button class="mini-btn ${S.haptics === false ? 'accent' : ''}" data-act="hap-off">Buzz off</button>
+        </div>
+      </div>
+      <div class="set-row">
+        <span class="sk">Contrast</span>
+        <div class="sv">Raises the contrast of the small grey text — useful in a bright gym.</div>
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <button class="mini-btn ${S.contrast === 'high' ? '' : 'accent'}" data-act="con-normal">Normal</button>
+          <button class="mini-btn ${S.contrast === 'high' ? 'accent' : ''}" data-act="con-high">Higher</button>
         </div>
       </div>
       <div class="set-row">
         <span class="sk" style="color:var(--d3)">Danger zone</span>
         <div class="sv">Wipe <b>this phone's</b> local data only. It won't touch the other phone unless sync re-uploads it.</div>
         <div style="margin-top:10px"><button class="mini-btn" style="border-color:var(--d3);color:var(--d3)" data-act="wipe">Erase local data</button></div>
+      </div>
+    </div>
+    <div class="modal-sec">
+      <span class="lbl">This phone</span>
+      <div class="set-row">
+        <span class="sk">How it is opened</span>
+        ${installRowHTML()}
+      </div>
+      <div class="set-row">
+        <span class="sk">Your data</span>
+        <div class="sv">Two copies exist: this phone's own copy, and the shared sync room (which is why you
+        can see each other's logs). The export below is the third one.</div>
+        <div id="storagerow">${storageRowHTMLSync()}</div>
+      </div>
+    </div>
+    <div class="modal-sec">
+      <span class="lbl">What's new</span>
+      ${whatsNewHTML()}
+    </div>
+    <div class="modal-sec">
+      <span class="lbl">What the symbols mean</span>
+      <div class="set-row">
+        <div class="sv" style="line-height:1.75">
+          <b style="color:var(--chalk)">1/3</b> — which time this muscle is worked in the week. <b style="color:var(--chalk)">2/3</b> means
+          this is the second of three exercises in the week for that muscle. It is worked out from the plan, so it
+          is always right.<br>
+          <b style="color:var(--chalk)">PB</b> — the heaviest weight you have logged for that lift, with the date.<br>
+          <b style="color:var(--chalk)">×8</b> — the reps in your <b>last</b> set, which is the one that counts.<br>
+          <b style="color:var(--chalk)">per dumbbell</b> — the weight is per hand, not the pair.<br>
+          <b style="color:var(--chalk)">compound / isolation / core</b> — how long to rest: 90–120s, 45–75s, 30–60s.<br>
+          <b style="color:var(--chalk)">Dumbbell ⇄ barbell</b> — the app gives you whichever one you did not do last time.
+        </div>
       </div>
     </div>
     <div class="modal-sec">
@@ -1982,13 +3592,15 @@ function openSettings(){
       S.sync = { pin:'', room:'', lastSync:0, lastErr:'', busy:false };
       saveSettings(); openSettings();
     }
+    else if (a === 'cleanreps') cleanOldReps();
+    else if (a === 'hap-on'){ S.haptics = true; saveSettings(); openSettings(); }
+    else if (a === 'hap-off'){ S.haptics = false; saveSettings(); openSettings(); }
+    else if (a === 'con-normal'){ setContrast('normal'); openSettings(); }
+    else if (a === 'con-high'){ setContrast('high'); openSettings(); }
+    else if (a === 'restore') openRestoreSheet();
     else if (a === 'expjson') exportData('json');
     else if (a === 'expcsv') exportData('csv');
-    else if (a === 'wipe'){
-      if (!confirm('Erase ALL data stored locally on this phone? This cannot be undone.')) return;
-      if (!confirm('Are you absolutely sure?')) return;
-      wipeLocal();
-    }
+    else if (a === 'wipe') openEraseSheet();
   }));
 }
 
@@ -2022,15 +3634,22 @@ function openSyncSetup(){
     ok.disabled = true; ok.textContent = 'Connecting…';
     msg.style.display = 'none';
     const secret = sha256('gym-pin:' + v.toLowerCase());
+    const previous = { pin:S.sync.pin, room:S.sync.room };
+    // Try it first, save it only once the store has accepted it — otherwise a mistyped PIN
+    // would be retried forever and the only way back is the Reconnect button.
     S.sync.pin = v;
     S.sync.room = wireSecret(secret).slice(0,16);
-    await saveSettings();
+    S.sync.upTs = 0; S.sync.downTs = 0; S.sync.count = 0;
     const res = await doSync(true, secret);
     if (res && res.ok){
+      await saveSettings();
       toast('Phones connected ✦');
       closeOverlay();
       render();
     } else {
+      S.sync.pin = previous.pin;
+      S.sync.room = previous.room;
+      await saveSettings();
       ok.disabled = false; ok.textContent = 'Connect';
       msg.textContent = res && res.msg ? res.msg : 'Could not reach the sync store. Check your connection and the keys in SETUP.md.';
       msg.style.display='block';
@@ -2050,14 +3669,19 @@ function exportData(fmt){
   if (fmt === 'json'){
     name = `gym-backup-${stamp}.json`;
     type = 'application/json';
-    text = JSON.stringify({ exported:new Date().toISOString(), unit:UNIT, people:S.people, data:all }, null, 2);
+    text = JSON.stringify({
+      app:'Session', schema:EXPORT_SCHEMA, version:APP_VERSION,
+      exported:new Date().toISOString(), unit:UNIT, people:S.people, data:all
+    }, null, 2);
   } else {
     name = `gym-weights-${stamp}.csv`;
     type = 'text/csv';
-    const rows = ['person,date,exercise,weight_kg,reps,note'];
+    const rows = ['person,date,exercise,weight_kg,reps,note,last_reps'];
     for (const p of S.people){
       for (const e of liftsOf(p.id)){
-        rows.push([p.name, e.date, e.name || e.ex, e.weight, e.reps ? e.reps.join('/') : '', e.note || ''].map(v => '"'+String(v).replace(/"/g,'""')+'"').join(','));
+        const lr = lastReps(e);
+        rows.push([p.name, e.date, e.name || e.ex, e.weight, e.reps ? e.reps.join('/') : '', e.note || '',
+                   lr != null ? lr : ''].map(v => '"'+String(v).replace(/"/g,'""')+'"').join(','));
       }
     }
     text = rows.join('\n');
@@ -2069,15 +3693,447 @@ function exportData(fmt){
     document.body.appendChild(a);
     a.click();
     setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 400);
+    S.lastBackup = now();
+    saveSettings();
     toast('Backup downloaded');
   } catch(e){ toast('Export failed on this device'); }
 }
-function wipeLocal(){
-  for (const k of Object.keys(localStorage)){
-    if (k.startsWith('gym:') || /^session:/.test(k)) localStorage.removeItem(k);
+/* ============================================================
+   Restore from a backup (the one real hole: you could export but not import)
+   Merges only — newest wins, exactly like sync. It never deletes and it never
+   overwrites anything newer, so a stale backup file cannot do damage.
+   ============================================================ */
+function analyseBackup(obj){
+  const out = { lifts:[], ticks:[], unknownPeople:[], peopleCount:0, exported:obj && obj.exported };
+  if (!obj || typeof obj !== 'object') return null;
+  const data = obj.data;
+  if (!data || typeof data !== 'object') return null;
+  const known = new Set(S.people.map(p => p.id));
+  for (const pid of Object.keys(data)){
+    if (!known.has(pid)){ out.unknownPeople.push(pid); continue; }
+    out.peopleCount++;
+    const bucket = data[pid] || {};
+    for (const id of Object.keys(bucket.lifts || {})){
+      const e = bucket.lifts[id];
+      if (e && typeof e === 'object' && e.weight != null) out.lifts.push({ pid, id, entry:e });
+    }
+    for (const k of Object.keys(bucket.ticks || {})){
+      const t = bucket.ticks[k];
+      if (t && typeof t === 'object') out.ticks.push({ pid, k, t });
+    }
   }
-  if (window.storage){ /* best effort only for our own keys */
-    try { Object.keys(mem).forEach(k => delete mem[k]); } catch(e){}
+  return out;
+}
+function previewBackup(plan){
+  let add = 0, update = 0, skip = 0;
+  for (const x of plan.lifts){
+    const cur = logOf(x.pid).lifts[x.id];
+    if (!cur) add++;
+    else if ((x.entry.ts || 0) > (cur.ts || 0)) update++;
+    else skip++;
+  }
+  let tAdd = 0, tUpdate = 0, tSkip = 0;
+  for (const x of plan.ticks){
+    const cur = logOf(x.pid).ticks[x.k];
+    if (!cur) tAdd++;
+    else if ((x.t.ts || 0) > (cur.ts || 0)) tUpdate++;
+    else tSkip++;
+  }
+  return { add, update, skip, tAdd, tUpdate, tSkip };
+}
+function openRestoreSheet(){
+  const body = `
+    <p style="font-size:15px;line-height:1.65;color:var(--chalk);opacity:.92">
+      Pick a backup file (<b>.json</b>) that you downloaded from this app. It merges into what is already
+      here: anything you have that is <b>newer</b> is kept, anything missing is added, and nothing is ever
+      deleted.</p>
+    <div class="modal-sec">
+      <span class="lbl">Backup file</span>
+      <input type="file" id="restorefile" accept=".json,application/json"
+        style="width:100%;font-size:14px;color:var(--chalk);background:var(--base);border:1px solid var(--line);border-radius:3px;padding:12px">
+    </div>
+    <div id="restorepreview"></div>
+    <div class="cta-row"><button class="cta ghost" data-close>Close</button></div>
+    <p style="font-size:12.5px;color:var(--muted);line-height:1.6;margin-top:14px">
+      A backup taken on this phone contains both people's logs. Restoring is undoable for a few seconds
+      afterwards, like everything else.</p>`;
+  openOverlay(overlayShell('Restore from backup', 'merge, never overwrite', body, {center:true}));
+  bindOverlayClicks();
+  let plan = null;
+  document.getElementById('restorefile').addEventListener('change', ev => {
+    const f = ev.target.files && ev.target.files[0];
+    const box = document.getElementById('restorepreview');
+    if (!f) return;
+    box.innerHTML = `<div class="hint-row">Reading ${esc(f.name)}…</div>`;
+    const rd = new FileReader();
+    rd.onload = () => {
+      let obj = null;
+      try { obj = JSON.parse(rd.result); } catch(e){}
+      plan = analyseBackup(obj);
+      if (!plan){
+        box.innerHTML = `<div class="hint-row" style="border-color:var(--d3)">That file is not a Session backup — it should be the <b>.json</b> one, not the spreadsheet.</div>`;
+        return;
+      }
+      const st = previewBackup(plan);
+      const total = plan.lifts.length + plan.ticks.length;
+      const warn = plan.unknownPeople.length
+        ? `<div style="margin-top:10px;opacity:.85">Ignoring data for unknown people: ${esc(plan.unknownPeople.join(', '))}</div>` : '';
+      box.innerHTML = `
+        <div class="hint-row" style="border-style:solid">
+          <b>${total}</b> records found${plan.exported ? ` · exported ${esc(fmtGB(String(plan.exported).slice(0,10), true))}` : ''}<br><br>
+          <b>${st.add}</b> will be added · <b>${st.update}</b> will be updated (they are newer than what is here) ·
+          <b>${st.skip}</b> skipped (you already have a newer version)<br><br>
+          Ticks: <b>${st.tAdd}</b> added · <b>${st.tUpdate}</b> updated · <b>${st.tSkip}</b> skipped
+          ${warn}
+        </div>
+        <div class="cta-row" style="margin-top:14px">
+          <button class="cta primary" id="restorego" style="--pc:${personDotColor(me().id)}">Merge it in</button>
+        </div>`;
+      const go = document.getElementById('restorego');
+      if (go) go.addEventListener('click', () => doRestore(plan));
+    };
+    rd.onerror = () => { box.innerHTML = `<div class="hint-row" style="border-color:var(--d3)">Could not read that file.</div>`; };
+    rd.readAsText(f);
+  });
+}
+function doRestore(plan){
+  const st = previewBackup(plan);
+  const snap = snapshotBefore(S.people.map(p => p.id));
+  let changed = 0;
+  for (const x of plan.lifts){
+    const cur = logOf(x.pid).lifts[x.id];
+    if (!cur || (x.entry.ts || 0) > (cur.ts || 0)){ logOf(x.pid).lifts[x.id] = x.entry; changed++; }
+  }
+  for (const x of plan.ticks){
+    const cur = logOf(x.pid).ticks[x.k];
+    if (!cur || (x.t.ts || 0) > (cur.ts || 0)){ logOf(x.pid).ticks[x.k] = x.t; changed++; }
+  }
+  for (const p of S.people) saveLog(p.id, true);
+  // restored records can carry old timestamps, so make the next sync a full one
+  S.sync.upTs = 0;
+  S.sync.count = 0;
+  saveSettings();
+  registerUndo(snap);
+  closeOverlay();
+  toast(`Restored ${changed} of ${plan.lifts.length + plan.ticks.length} records`, null, undoLast);
+  render();
+}
+
+/* ---------- erase: a styled sheet with the facts, not a browser popup ---------- */
+function openEraseSheet(){
+  const counts = S.people.map(p => {
+    const l = liftsOf(p.id).length;
+    const t = Object.keys(logOf(p.id).ticks).length;
+    return { name:p.name, l, t };
+  });
+  const total = counts.reduce((n, c) => n + c.l, 0);
+  const body = `
+    <p style="font-size:15px;line-height:1.65;color:var(--chalk);opacity:.92">
+      This erases the copy of the data stored <b>on this phone only</b>.</p>
+    <div class="hint-row" style="border-style:solid;margin-top:16px">
+      ${counts.map(c => `<b>${esc(c.name)}</b>: ${c.l} logged lifts, ${c.t} days of ticks`).join('<br>')}
+      <br><br>${total} records in total.
+    </div>
+    <p style="font-size:13.5px;color:var(--muted);line-height:1.65;margin-top:16px">
+      It does <b>not</b> touch Kieran's phone. If the phones are still connected, this phone will pull the
+      history back from the shared copy the next time it syncs — so if you want it gone everywhere, disconnect
+      sync first (Settings → Sync).</p>
+    <div class="cta-row" style="margin-top:20px">
+      <button class="cta ghost" id="eraseexport">Export a backup first</button>
+      <button class="cta danger" id="erasego">Erase</button>
+    </div>
+    <div class="cta-row" style="margin-top:10px">
+      <button class="cta ghost" data-close>Cancel</button>
+    </div>
+    <div id="eraseconfirm" style="margin-top:16px"></div>`;
+  openOverlay(overlayShell('Erase local data', 'this phone only · not reversible', body, {center:true}));
+  bindOverlayClicks();
+  document.getElementById('eraseexport').addEventListener('click', () => exportData('json'));
+  let armed = false;
+  document.getElementById('erasego').addEventListener('click', () => {
+    if (!armed){
+      armed = true;
+      const btn = document.getElementById('erasego');
+      btn.textContent = 'Tap again to confirm';
+      document.getElementById('eraseconfirm').innerHTML =
+        '<div class="hint-row" style="border-color:var(--d3)">Last chance — this clears the data on this phone.</div>';
+      return;
+    }
+    wipeLocal();
+  });
+}
+
+/* ============================================================
+   X25 — long-press a pill: log last time's weight and reps in one
+   gesture, no sheet. A plain tap still opens the sheet.
+   ============================================================ */
+let suppressTapUntil = 0;
+function quickLog(idx){
+  const p = me();
+  const day = currentDay();
+  const slot = day.ex[idx];
+  const key = slotKeyOf(day.n, idx);
+  const canon = chosenCanonFor(p.id, key, slot);
+  if (isBWChoice(slot, canon)){ toast('That one is ticked, not weighed — tap to tick it'); return; }
+  const st = personStats(p.id, canon);
+  const ref = liveLift(p.id, canon, todayKey()) || (st ? st.last : null);
+  if (!ref || ref.weight == null){
+    toast('Nothing to repeat yet — tap it to log a weight first');
+    return;
+  }
+  const reps = lastReps(ref);
+  writeLift(idx, [{ id:p.id, name:p.name }], { w:ref.weight, reps:reps != null ? [reps] : null, repsMode:'last' });
+  toast(`Repeated ${wFmt(ref.weight)} ${UNIT}${reps != null ? ' × ' + reps : ''} · ${esc(labelForCanon(canon, slot))}`, personDotColor(p.id), undoLast);
+}
+function bindLongPress(){
+  const list = document.getElementById('list');
+  if (!list) return;
+  let timer = null, moved = false, fired = false;
+  const drop = () => { if (timer){ clearTimeout(timer); timer = null; } };
+  list.addEventListener('pointerdown', ev => {
+    const li = ev.target.closest('li.ex');
+    if (!li) return;
+    moved = false; fired = false;
+    const idx = +li.dataset.i;
+    timer = setTimeout(() => {
+      timer = null; fired = true; suppressTapUntil = Date.now() + 700;
+      buzz(22);
+      quickLog(idx);
+    }, 450);
+  });
+  list.addEventListener('pointermove', ev => { moved = true; drop(); });
+  list.addEventListener('pointerup', drop);
+  list.addEventListener('pointercancel', drop);
+  list.addEventListener('pointerleave', drop);
+  list.addEventListener('scroll', drop, { passive:true });
+  window.addEventListener('scroll', drop, { passive:true });
+  list.addEventListener('contextmenu', ev => { if (ev.target.closest('li.ex')) ev.preventDefault(); });
+}
+
+/* ============================================================
+   X79 — short on time: trim today to a number of minutes
+   ============================================================ */
+function shortFor(pid, dayN, date){
+  const raw = (S.short && S.short[pid]) || null;
+  if (!raw) return null;
+  if (raw.key !== dayN + ':' + date) return null;   // yesterdays never leak into today
+  return raw;
+}
+function setShortFor(pid, dayN, date, keep, mins){
+  S.short = S.short || {};
+  S.short[pid] = keep ? { key:dayN + ':' + date, keep:keep.slice(), mins } : null;
+  saveSettings();
+  render();
+}
+/* Compounds first, then one movement per muscle, then the rest — the honest way to cut. */
+function trimOrder(day){
+  const seenMuscle = new Set();
+  const scored = day.ex.map((e, i) => {
+    let score = 0;
+    if (e.type === 'compound') score += 100;
+    if (e.supersetWith != null) score += 8;
+    if (!seenMuscle.has(e.muscle)){ score += 30; seenMuscle.add(e.muscle); }
+    score -= i;                                  // earlier in the plan wins ties
+    return { i, e, score };
+  });
+  return scored.sort((a, b) => b.score - a.score).map(x => x.i);
+}
+function trimFor(mins, day){
+  const order = trimOrder(day);
+  const keep = [];
+  let used = 8;                                   // warm-up
+  const sorted = order.slice().sort((a, b) => day.ex[a].sets === undefined ? 0 : 0);
+  for (const i of order){
+    const e = day.ex[i];
+    const sets = parseInt(e.sets, 10) || 3;
+    const perSet = e.type === 'compound' ? 3.2 : 2.2;    // minutes: work + rest
+    const cost = sets * perSet + 1.5;                    // + the walk and the load
+    if (used + cost <= mins || keep.length < 3){
+      keep.push(i); used += cost;
+    }
+  }
+  return { keep:keep.sort((a, b) => a - b), used:Math.round(used) };
+}
+function openShortSheet(){
+  const p = me();
+  const day = currentDay();
+  const date = todayKey();
+  const cur = shortFor(p.id, day.n, date);
+  const body = `
+    <p style="font-size:15px;line-height:1.65;color:var(--chalk);opacity:.92">
+      How long have you got? The app keeps the big lifts and one movement per muscle, drops the rest
+      <b>for today only</b>, and tells you what it left out. Your plan and your history are untouched.</p>
+    <div class="modal-sec">
+      <span class="lbl">Time</span>
+      <div class="choicechips" id="shortmins">
+        ${[25, 35, 45, 60].map(m => `<button data-mins="${m}" aria-pressed="${cur && cur.mins === m}">${m} min</button>`).join('')}
+      </div>
+    </div>
+    <div id="shortpreview"></div>
+    ${cur ? `<div class="cta-row" style="margin-top:16px"><button class="cta ghost" id="shortoff">Back to the full session</button></div>` : ''}`;
+  openOverlay(overlayShell('Short on time?', 'trim today, keep the essentials', body));
+  bindOverlayClicks();
+  const paint = m => {
+    const t = trimFor(m, day);
+    const kept = t.keep.map(i => day.ex[i]);
+    const cut = day.ex.filter((e, i) => !t.keep.includes(i));
+    document.getElementById('shortpreview').innerHTML = `
+      <div class="hint-row" style="border-style:solid">
+        <b>${kept.length} exercises</b> · about <b>${t.used} minutes</b> including the warm-up.<br><br>
+        ${kept.map(e => esc(e.name)).join(' · ')}
+      </div>
+      ${cut.length ? `<div class="hint-row" style="margin-top:12px">Left out today: ${cut.map(e => esc(e.name)).join(', ')}.
+        Do them if the time appears — nothing is lost if you don't.</div>` : ''}
+      <div class="cta-row" style="margin-top:16px">
+        <button class="cta primary" id="shortgo" style="--pc:${personDotColor(p.id)}">Trim today's session</button>
+      </div>`;
+    document.getElementById('shortgo').addEventListener('click', () => {
+      setShortFor(p.id, day.n, date, t.keep, m);
+      closeOverlay();
+      toast(`Today trimmed to ${kept.length} exercises`, personDotColor(p.id));
+    });
+  };
+  document.querySelectorAll('#shortmins [data-mins]').forEach(b => b.addEventListener('click', () => {
+    const m = Number(b.dataset.mins);
+    document.querySelectorAll('#shortmins [data-mins]').forEach(x => x.setAttribute('aria-pressed', String(Number(x.dataset.mins) === m)));
+    paint(m);
+  }));
+  const off = document.getElementById('shortoff');
+  if (off) off.addEventListener('click', () => { setShortFor(p.id, day.n, date, null, 0); closeOverlay(); });
+  paint(cur ? cur.mins : 45);
+}
+
+/* ============================================================
+   X144 — plate calculator
+   Per side, from a standard set, with the bar weight optional.
+   ============================================================ */
+const PLATES = [25, 20, 15, 10, 5, 2.5, 1.25];
+let plateBar = 20;
+function plateMath(target, bar){
+  const perSide = (target - bar) / 2;
+  if (target <= 0) return { error:'Pick a weight above zero.' };
+  if (perSide < 0) return { error:`That is lighter than the bar (${bar} kg) — use a lighter bar or dumbbells.` };
+  let left = Math.round(perSide * 100) / 100;
+  const out = [];
+  for (const pl of PLATES){
+    const n = Math.floor((left + 1e-9) / pl);
+    if (n > 0){ out.push({ plate:pl, n }); left = Math.round((left - n * pl) * 100) / 100; }
+  }
+  return { perSide:Math.round(perSide * 100) / 100, plates:out, remainder:left, bar };
+}
+function plateHTML(target, bar){
+  const r = plateMath(target, bar);
+  if (r.error) return `<div class="hint-row" style="border-color:var(--d3)">${esc(r.error)}</div>`;
+  return `
+    <div class="hint-row" style="border-style:solid">
+      <b>${wFmt(r.bar)} kg bar</b> + <b>${wFmt(r.perSide)} kg per side</b>${r.remainder ? ` <span style="opacity:.7">(${wFmt(r.remainder)} kg cannot be made exactly)</span>` : ''}
+    </div>
+    <div class="plate-row">
+      ${r.plates.map(p => `<span class="plate"><b>${wFmt(p.plate)}</b><span>×${p.n}</span></span>`).join('') || '<span class="plate none">no plates needed</span>'}
+      <span class="plate bar"><b>bar</b><span>${wFmt(r.bar)}</span></span>
+    </div>`;
+}
+function openPlateSheet(){
+  const body = `
+    <p style="font-size:15px;line-height:1.65;color:var(--chalk);opacity:.92">
+      What to load on each side. Assumes a standard set: 25, 20, 15, 10, 5, 2.5 and 1.25 kg plates,
+      one of each per side of the bar you pick.</p>
+    <div class="modal-sec">
+      <span class="lbl">Target weight (${UNIT})</span>
+      <div class="stepper-row">
+        <button class="step" data-plate="-5" aria-label="Five kilos less">−</button>
+        <input id="plwt" type="text" inputmode="decimal" value="${wFmt(lastPlateTarget())}" aria-label="Target weight">
+        <button class="step" data-plate="5" aria-label="Five kilos more">+</button>
+      </div>
+    </div>
+    <div class="modal-sec">
+      <span class="lbl">Bar</span>
+      <div class="choicechips" id="platebars">
+        ${[20,15,10,0].map(b => `<button data-bar="${b}" aria-pressed="${plateBar === b}">${b === 0 ? 'no bar' : b + ' kg'}</button>`).join('')}
+      </div>
+      <div class="choicehint">Dumbbells are per hand, so there is nothing to load — this is for a barbell or a plate-loaded machine.</div>
+    </div>
+    <div id="plateres">${plateHTML(lastPlateTarget(), plateBar)}</div>`;
+  openOverlay(overlayShell('Plate calculator', 'per side, so you can load it once', body));
+  bindOverlayClicks();
+  const input = document.getElementById('plwt');
+  const paint = () => { document.getElementById('plateres').innerHTML = plateHTML(parseWeight(input.value) || 0, plateBar); };
+  input.addEventListener('input', paint);
+  document.querySelectorAll('[data-plate]').forEach(b => b.addEventListener('click', () => {
+    input.value = String(Math.max(0, (parseWeight(input.value) || 0) + Number(b.dataset.plate)));
+    paint();
+  }));
+  document.querySelectorAll('#platebars [data-bar]').forEach(b => b.addEventListener('click', () => {
+    plateBar = Number(b.dataset.bar);
+    document.querySelectorAll('#platebars [data-bar]').forEach(x => x.setAttribute('aria-pressed', String(Number(x.dataset.bar) === plateBar)));
+    paint();
+  }));
+}
+function lastPlateTarget(){
+  const last = liftsOf(me().id).sort((a, b) => (b.ts || 0) - (a.ts || 0))[0];
+  return last ? Math.round(last.weight) : 60;
+}
+
+/* ============================================================
+   X50 — search the whole log
+   ============================================================ */
+function openSearchSheet(){
+  const body = `
+    <div class="modal-sec" style="margin-top:4px">
+      <input id="q" type="search" placeholder="Exercise, weight, or a word from a note…"
+        aria-label="Search your log" autocomplete="off"
+        style="width:100%;background:var(--base);border:1px solid var(--line);border-radius:3px;
+        color:var(--chalk);font-family:inherit;font-size:16px;padding:13px 14px">
+    </div>
+    <div id="qres"></div>`;
+  openOverlay(overlayShell('Search', 'everything you have ever logged', body));
+  bindOverlayClicks();
+  const input = document.getElementById('q');
+  const run = () => {
+    const term = input.value.trim().toLowerCase();
+    const box = document.getElementById('qres');
+    if (term.length < 2){ box.innerHTML = '<div class="hint-row">Type at least two letters.</div>'; return; }
+    const hits = [];
+    for (const p of S.people){
+      for (const e of Object.values(logOf(p.id).lifts)){
+        if (isDeleted(e) || e.kind !== 'lift') continue;
+        const name = CANON_LABEL[e.ex] || e.name || e.ex;
+        const hay = [name, e.name, e.ex, e.date, e.note, String(e.weight)].filter(Boolean).join(' ').toLowerCase();
+        if (hay.includes(term)) hits.push({ p, e, name });
+      }
+    }
+    if (!hits.length){ box.innerHTML = `<div class="hint-row">Nothing matching “${esc(input.value)}”.</div>`; return; }
+    hits.sort((a, b) => (b.e.ts || 0) - (a.e.ts || 0));
+    const shown = hits.slice(0, 60);
+    box.innerHTML = `<div class="hint-row" style="border-style:solid">${hits.length} match${hits.length === 1 ? '' : 'es'}${hits.length > shown.length ? `, newest ${shown.length}` : ''}</div>` +
+      shown.map((h, i) => `
+        <div class="feedrow" data-hit="${i}">
+          <span class="fpdot" style="background:${personDotColor(h.p.id)}"></span>
+          <span class="ftxt"><b>${esc(h.name)}</b> ${wFmt(h.e.weight)} ${UNIT}${lastReps(h.e) ? ' × ' + lastReps(h.e) : ''}
+            ${h.e.note ? `<span style="opacity:.7"> — ${esc(h.e.note)}</span>` : ''}</span>
+          <span class="fwhen">${esc(fmtGB(h.e.date, true))}</span>
+        </div>`).join('');
+    box.querySelectorAll('[data-hit]').forEach(row => row.addEventListener('click', () => {
+      const h = shown[Number(row.dataset.hit)];
+      closeOverlay();
+      if (h.p.id !== me().id){ S.sel = h.p.id; saveSettings(); }
+      view = 'progress'; progressView = 'lifts';
+      openHistory(h.e.ex);
+    }));
+  };
+  input.addEventListener('input', run);
+  run();
+  setTimeout(() => input.focus(), 60);
+}
+
+function wipeLocal(){
+  const keys = [];
+  try { for (const k of Object.keys(localStorage)) if (k.startsWith('gym:') || /^session:/.test(k)) keys.push(k); } catch(e){}
+  for (const k of keys){ try { localStorage.removeItem(k); } catch(e){} }
+  try { Object.keys(mem).forEach(k => { if (k.startsWith('gym:') || /^session:/.test(k)) delete mem[k]; }); } catch(e){}
+  // clear through the store too, so a host-injected storage bridge is emptied as well
+  if (window.storage && window.storage.set){
+    (async () => { for (const k of keys){ try { await window.storage.set(k, ''); } catch(e){} } })();
   }
   location.reload();
 }
@@ -2129,7 +4185,13 @@ function scheduleSync(){
 const wireSecret = secret => sha256('gym-store:' + secret);
 async function doSync(manual, secretOverride){
   if (!syncConfigured()) return { ok:false, msg:'Sync not configured (see SETUP.md)' };
-  if (syncInFlight) return { ok:true, silent:true };
+  if (syncInFlight){
+    // A background sync is already running. Never report success for a PIN we have not checked —
+    // wait for the running one to finish first, then report its outcome honestly.
+    if (!manual) return { ok:true, silent:true };
+    while (syncInFlight) await new Promise(r => setTimeout(r, 120));
+    if (!secretOverride) return { ok:true, checked:true };
+  }
   if (!secretOverride && !S.sync.pin) {
     // first time: prompt for the shared PIN
     if (manual) openSyncSetup();
@@ -2141,21 +4203,27 @@ async function doSync(manual, secretOverride){
   saveSettings();
   try {
     const secret = secretOverride || sha256('gym-pin:' + S.sync.pin.toLowerCase());
-    const room = wireSecret(secret);
-    // build payload: every local lift + tick across both people
-    const rows = [];
+    // Every 20th sync (and every manual one) sends everything, so a missed row can never be
+    // lost forever; in between we only send and ask for what has changed since last time.
+    const full = !!manual || ((S.sync.count || 0) % 20 === 0);
+    const upTs = full ? 0 : (S.sync.upTs || 0);
+    const downTs = full ? 0 : (S.sync.downTs || 0);
+
+    const all = [];
     for (const p of S.people){
-      for (const e of Object.values(logOf(p.id).lifts)) rows.push({ id:e.id, pid:p.id, ts:e.ts, data:e });
+      for (const e of Object.values(logOf(p.id).lifts)) all.push({ id:e.id, pid:p.id, ts:e.ts, data:e });
       for (const k of Object.keys(logOf(p.id).ticks)){
         const t = logOf(p.id).ticks[k];
         const [dow, date] = k.split(':');
-        rows.push({ id:'t:' + p.id + ':' + dow + ':' + date, pid:p.id, ts:t.ts, data:{ kind:'tick', pid:p.id, dow:+dow, date, items:t.items, ts:t.ts } });
+        all.push({ id:'t:' + p.id + ':' + dow + ':' + date, pid:p.id, ts:t.ts, data:{ kind:'tick', pid:p.id, dow:+dow, date, items:t.items, ts:t.ts } });
       }
     }
+    const rows = full ? all : all.filter(r => (r.ts || 0) > upTs);
+    const maxUp = all.reduce((m, r) => Math.max(m, r.ts || 0), 0);
     const res = await fetch(SUPABASE.url.replace(/\/$/,'') + '/rest/v1/rpc/sync_state', {
       method:'POST',
       headers:{ 'apikey': SUPABASE.anonKey, 'Authorization':'Bearer ' + SUPABASE.anonKey, 'Content-Type':'application/json' },
-      body: JSON.stringify({ p_secret: secret, p_rows: rows, p_since: 0 })
+      body: JSON.stringify({ p_secret: secret, p_rows: rows, p_since: downTs })
     });
     if (!res.ok){
       let msg = 'Sync failed (' + res.status + ')';
@@ -2193,6 +4261,11 @@ async function doSync(manual, secretOverride){
     if (changed){
       for (const p of S.people) saveLog(p.id, true);
     }
+    // remember how far we have got, so the next sync is a fraction of the work
+    const maxDown = (remote || []).reduce((m, r) => Math.max(m, r.ts || 0), 0);
+    S.sync.upTs = Math.max(S.sync.upTs || 0, maxUp);
+    S.sync.downTs = Math.max(S.sync.downTs || 0, maxDown);
+    S.sync.count = (S.sync.count || 0) + 1;
     S.sync.lastSync = now();
     S.sync.lastErr = '';
     await saveSettings();
@@ -2210,18 +4283,139 @@ async function doSync(manual, secretOverride){
   }
 }
 
+
+/* ============================================================
+   Boot, install and offline (Release 3)
+   ============================================================ */
+function firstPaint(){
+  const sk = document.getElementById('bootskeleton');
+  const sp = document.getElementById('splash');
+  if (sk) sk.classList.add('gone');
+  if (sp){
+    sp.classList.add('gone');
+    setTimeout(() => { if (sp.parentNode) sp.parentNode.removeChild(sp); }, 600);
+  }
+}
+
+/* ---- offline / online, said plainly ---- */
+let lastOnline = navigator.onLine !== false;
+function netNoteHTML(){
+  if (lastOnline) return '';
+  return `<span class="sync-line"><span class="dotlive"></span>Offline — everything still saves on this phone and syncs when you have signal.</span>`;
+}
+function watchConnection(){
+  const mark = () => {
+    const was = lastOnline;
+    lastOnline = navigator.onLine !== false;
+    if (was !== lastOnline) render();
+    if (lastOnline && syncConfigured() && S.sync.pin && !syncInFlight) doSync(false);
+  };
+  window.addEventListener('online', mark);
+  window.addEventListener('offline', mark);
+}
+
+/* ---- ask the browser to keep our data, and say whether it agreed ---- */
+async function storageStateLabel(){
+  try {
+    if (!navigator.storage || !navigator.storage.persisted) return 'not supported on this device';
+    const already = await navigator.storage.persisted();
+    if (already) return 'protected';
+    const granted = navigator.storage.persist ? await navigator.storage.persist() : false;
+    return granted ? 'protected' : 'not protected — install to home screen for the strongest protection';
+  } catch(e){ return 'unknown'; }
+}
+let storageLabelCache = null;
+function storageRowHTMLSync(){
+  const ok = storageLabelCache === 'protected';
+  const label = storageLabelCache || 'checking…';
+  return `<div class="sv ${ok ? 'ok' : ''}" style="margin-top:6px">Storage: <b>${esc(label)}</b></div>`;
+}
+async function storageRowHTML(){
+  if (!storageLabelCache) storageLabelCache = await storageStateLabel();
+  const ok = storageLabelCache === 'protected';
+  return `<div class="sv ${ok ? 'ok' : ''}" style="margin-top:6px">Storage: <b>${esc(storageLabelCache)}</b></div>`;
+}
+
+/* ---- install: how it is opened matters, so say so ---- */
+function isStandalone(){
+  try {
+    if (window.navigator && window.navigator.standalone === true) return true;
+    if (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) return true;
+  } catch(e){}
+  return false;
+}
+function installRowHTML(){
+  const standalone = isStandalone();
+  if (standalone) return `<div class="sv ok" style="margin-top:6px">Opened as an installed app ✓ — and that is what keeps iOS from clearing this phone's data after a quiet week.</div>`;
+  return `<div class="sv warn" style="margin-top:6px">Opened in a browser tab. Add it to your home screen
+    (Share → Add to Home Screen) so it opens full screen and so iOS does not clear the data after 7 days without a visit.</div>`;
+}
+
+/* ---- the phone's top bar follows the day's accent ---- */
+const THEME_COLOR = { 1:'#F5C518', 2:'#4C8DFF', 3:'#F0575C' };
+function paintThemeColor(){
+  const day = (view === 'session') ? currentDay() : null;
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.setAttribute('content', day ? (THEME_COLOR[day.n] || '#12161A') : '#12161A');
+}
+
+/* ---- service worker: cache the shell, and take updates on a fresh launch ---- */
+let reloadingForUpdate = false;
+function registerServiceWorker(){
+  if (!('serviceWorker' in navigator)) return;
+  if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') return;
+  window.addEventListener('load', async () => {
+    try {
+      const reg = await navigator.serviceWorker.register('sw.js', { scope:'./' });
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (reloadingForUpdate) return;
+        reloadingForUpdate = true;
+        location.reload();
+      });
+      // A fresh launch is the safe moment to adopt a downloaded update.
+      const adopt = () => {
+        if (reg.waiting && !document.getElementById('overlayroot').innerHTML){
+          reg.waiting.postMessage({ type:'SKIP_WAITING' });
+        }
+      };
+      adopt();
+      reg.addEventListener('updatefound', () => {
+        const nw = reg.installing;
+        if (nw) nw.addEventListener('statechange', () => { if (nw.state === 'installed') adopt(); });
+      });
+      reg.update().catch(() => {});
+    } catch(e){}
+  });
+}
+
+/* ---- a tab shortcut from the home screen can name the screen ---- */
+function applyStartTab(){
+  try {
+    const t = new URLSearchParams(location.search).get('tab');
+    if (t && NAV.some(n => n.v === t)) view = t;
+  } catch(e){}
+}
+
 /* ============================================================
    Boot
    ============================================================ */
 (async function boot(){
+  // Whatever happens below, the app must never be left behind the splash screen.
+  setTimeout(firstPaint, 4000);
   await loadSettings();
   await loadLogs();
   await migrateLegacy();
 
+  if (S.contrast === 'high') document.documentElement.classList.add('contrast-high');
   document.getElementById('switch').innerHTML = '';
+  applyStartTab();
   render();
+  firstPaint();
 
   document.getElementById('gearbtn').addEventListener('click', openSettings);
+  watchConnection();
+  registerServiceWorker();
+  if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
 
   if (!S.onboarded){
     onboard();
@@ -2229,13 +4423,19 @@ async function doSync(manual, secretOverride){
     doSync(false);
   }
   document.addEventListener('visibilitychange', () => {
-    if (!document.hidden && syncConfigured() && S.sync.pin) doSync(false);
+    if (document.hidden) return;
+    // a new day (or a new session) may have started while the app sat in the background
+    if (lastRenderedDay !== todayKey()){ lastRenderedDay = todayKey(); render(); }
+    if (syncConfigured() && S.sync.pin) doSync(false);
   });
   window.addEventListener('focus', () => {
+    if (lastRenderedDay !== todayKey()){ lastRenderedDay = todayKey(); render(); }
     if (syncConfigured() && S.sync.pin && !syncInFlight) doSync(false);
   });
   setInterval(() => {
-    if (!document.hidden && syncConfigured() && S.sync.pin && !syncInFlight) doSync(false);
+    if (document.hidden) return;
+    if (lastRenderedDay !== todayKey()){ lastRenderedDay = todayKey(); render(); }
+    if (syncConfigured() && S.sync.pin && !syncInFlight) doSync(false);
   }, 60000);
 })();
 </script>

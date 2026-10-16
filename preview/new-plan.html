@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="en-GB"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The plan — built into the app</title>
+<style>
+  :root{
+    --base:#12161A;
+    --surface:#1A2026;
+    --line:#2A333C;
+    --chalk:#EDE8DF;
+    --muted:#7C8894;
+    --d1:#F5C518;   /* day accent: Monday   */
+    --d2:#4C8DFF;   /* day accent: Wednesday */
+    --d3:#F0575C;   /* day accent: Friday    */
+    --p1:#AABA99;   /* Danny   */
+    --p2:#2b7b78;   /* Kieran  */
+    --accent:var(--d1);
+    --pad:20px;
+    --tabh:64px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  html{-webkit-text-size-adjust:100%;touch-action:manipulation;}
+  body{
+    background:var(--base);
+    color:var(--chalk);
+    font-family:'Archivo',system-ui,sans-serif;
+    font-size:16px;
+    line-height:1.45;
+    padding:max(env(safe-area-inset-top),14px) var(--pad) calc(env(safe-area-inset-bottom) + var(--tabh) + 34px);
+    max-width:620px;
+    margin:0 auto;
+    overscroll-behavior-y:contain;
+    min-height:100vh;
+  }
+
+  button{font-family:inherit;}
+
+  /* ---- person switcher ---- */
+  .persons{display:flex;gap:6px;margin-bottom:12px;}
+  .person{
+    flex:1;
+    display:flex;align-items:center;justify-content:center;gap:8px;
+    background:transparent;
+    border:1px solid var(--line);
+    color:var(--muted);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    font-weight:500;
+    letter-spacing:.1em;
+    padding:9px 0 8px;
+    border-radius:3px;
+    cursor:pointer;
+    text-transform:uppercase;
+    transition:color .15s,border-color .15s,background .15s,box-shadow .15s;
+  }
+  .person .dot{width:8px;height:8px;border-radius:50%;background:transparent;flex:none;}
+  .person[data-a="0"] .dot{background:var(--p1);}
+  .person[data-a="1"] .dot{background:var(--p2);}
+  .person[aria-pressed="true"]{
+    border-color:var(--pc,var(--line));
+    color:var(--chalk);
+    box-shadow:inset 0 0 0 1px var(--pc,var(--line));
+  }
+  .person:focus-visible{outline:2px solid var(--chalk);outline-offset:2px;}
+  .gear{
+    flex:none;width:46px;
+    border:1px solid var(--line);border-radius:3px;background:transparent;
+    color:var(--muted);font-size:20px;line-height:1;cursor:pointer;
+    transition:color .15s,border-color .15s;
+  }
+  .gear:hover{color:var(--chalk);border-color:var(--chalk);}
+  .gear:focus-visible{outline:2px solid var(--chalk);outline-offset:2px;}
+  .toprow{display:flex;gap:8px;align-items:stretch;margin-bottom:12px;}
+  .toprow .persons{flex:1;margin-bottom:0;}
+
+  /* ---- day switcher ---- */
+  .switch{display:flex;gap:6px;margin-bottom:26px;}
+  .switch button{
+    flex:1;
+    background:transparent;
+    border:1px solid var(--line);
+    color:var(--muted);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    font-weight:500;
+    letter-spacing:.14em;
+    padding:11px 0 10px;
+    border-radius:3px;
+    cursor:pointer;
+    transition:color .15s,border-color .15s,background .15s;
+  }
+  .switch button[aria-pressed="true"]{
+    color:var(--base);
+    background:var(--accent);
+    border-color:var(--accent);
+    font-weight:600;
+  }
+  .switch button:focus-visible{outline:2px solid var(--chalk);outline-offset:2px;}
+
+  /* ---- header ---- */
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px;
+    letter-spacing:.2em;
+    color:var(--muted);
+    text-transform:uppercase;
+  }
+  .eyebrow .live{color:var(--accent);}
+  .eyebrow .who{color:var(--pc,#fff);font-weight:600;}
+  h1{
+    font-size:clamp(46px,15vw,64px);
+    font-weight:900;
+    line-height:.88;
+    letter-spacing:-.035em;
+    margin:10px 0 6px;
+    text-transform:uppercase;
+  }
+  h1 .idx{color:var(--accent);}
+  h1.small{font-size:clamp(34px,10vw,44px);line-height:.95;}
+  .focus{font-size:17px;font-weight:600;color:var(--chalk);letter-spacing:-.01em;}
+  .stats{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted);margin-top:9px;letter-spacing:.02em;}
+  .restnote{
+    border:1px dashed var(--line);
+    border-radius:4px;
+    padding:13px 15px;
+    margin-top:18px;
+    font-size:14.5px;
+    color:var(--muted);
+    line-height:1.5;
+  }
+  .restnote b{color:var(--chalk);font-weight:600;}
+
+  /* ---- blocks ---- */
+  .block{margin-top:26px;border-top:1px solid var(--line);padding-top:16px;}
+  .block-label{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px;
+    letter-spacing:.2em;
+    color:var(--accent);
+    text-transform:uppercase;
+    margin-bottom:9px;
+  }
+  .block p{font-size:15.5px;color:var(--chalk);opacity:.9;}
+
+  /* ---- exercise rows ---- */
+  ol{list-style:none;margin-top:6px;}
+  li.ex{
+    display:grid;
+    grid-template-columns:36px 1fr auto;
+    column-gap:12px;
+    padding:15px 0 14px;
+    border-bottom:1px solid var(--line);
+    align-items:start;
+  }
+  li.ex:last-child{border-bottom:none;}
+  li.ex{cursor:pointer;transition:opacity .22s ease;}
+  li.ex:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:3px;}
+  li.ex:active{opacity:.75;}
+  .num{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:15px;
+    font-weight:600;
+    color:var(--accent);
+    opacity:.65;
+    line-height:1.3;
+  }
+  .num .tk{display:none;}
+
+  .mid{min-width:0;}
+  .side{text-align:right;min-width:118px;display:flex;flex-direction:column;align-items:flex-end;gap:6px;}
+
+  .name{font-size:18.5px;font-weight:700;letter-spacing:-.015em;line-height:1.2;display:block;}
+  .meta{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px;
+    color:var(--muted);
+    margin-top:5px;
+    letter-spacing:.03em;
+    text-transform:uppercase;
+    display:block;
+    line-height:1.5;
+  }
+  .meta .count{color:var(--chalk);font-weight:500;}
+  .meta .count.final{color:var(--accent);}
+  .meta .also{text-transform:none;letter-spacing:.01em;}
+  .meta .choice{color:var(--pc,var(--chalk));}
+  .restline{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    color:var(--muted);
+    margin-top:3px;
+    letter-spacing:.04em;
+    opacity:.8;
+    display:block;
+  }
+
+  .prescribe{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13px;
+    font-weight:600;
+    color:var(--muted);
+    white-space:nowrap;
+    letter-spacing:-.01em;
+    line-height:1.4;
+  }
+  .pill{
+    min-width:96px;
+    height:42px;
+    padding:0 14px;
+    display:inline-flex;align-items:center;justify-content:center;gap:7px;
+    border:1px solid var(--line);
+    border-radius:3px;
+    background:transparent;
+    color:var(--chalk);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:17px;
+    font-weight:600;
+    letter-spacing:-.01em;
+    cursor:pointer;
+    transition:border-color .15s,background .15s,color .15s,box-shadow .15s;
+    white-space:nowrap;
+  }
+  .pill .u{font-size:10px;color:var(--muted);font-weight:500;letter-spacing:.05em;}
+  .pill.has{color:var(--pc,var(--accent));border-color:rgba(255,255,255,.14);box-shadow:inset 0 0 0 1px var(--pc,var(--accent));}
+  .pill.logged{background:var(--pc,var(--accent));border-color:var(--pc,var(--accent));color:var(--base);}
+  .pill.logged .u{color:inherit;opacity:.65;}
+  .pill:focus-visible{outline:2px solid var(--chalk);outline-offset:2px;}
+  .pbline{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    letter-spacing:.03em;
+    color:var(--muted);
+    line-height:1.45;
+    text-align:right;
+    white-space:nowrap;
+  }
+  .pbline b{color:var(--pc,var(--accent));font-weight:600;}
+  .pbline.blank{opacity:.55;}
+
+  /* completed */
+  li.ex.done{opacity:.4;}
+  li.ex.done .name{text-decoration:line-through;text-decoration-thickness:1.5px;font-weight:600;}
+  li.ex.done .num .n{display:none;}
+  li.ex.done .num .tk{display:inline;opacity:1;font-size:16px;}
+  li.ex.done .num{opacity:1;}
+
+  /* progress bar */
+  .progress{display:flex;align-items:center;gap:12px;margin-top:14px;}
+  .bar{flex:1;height:3px;background:var(--line);border-radius:2px;overflow:hidden;}
+  .bar span{display:block;height:100%;width:0;background:var(--accent);transition:width .3s cubic-bezier(.2,.7,.3,1);}
+  .ptext{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.12em;color:var(--muted);white-space:nowrap;}
+  .ptext.complete{color:var(--accent);}
+  .reset{
+    background:none;border:1px solid var(--line);color:var(--muted);
+    font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.12em;
+    text-transform:uppercase;padding:6px 10px;border-radius:3px;cursor:pointer;
+  }
+  .reset:focus-visible{outline:2px solid var(--chalk);outline-offset:2px;}
+  .taphint{
+    font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;
+    color:var(--muted);text-transform:uppercase;margin-bottom:2px;
+  }
+
+  /* ---- reference ---- */
+  details{margin-top:14px;border:1px solid var(--line);border-radius:4px;overflow:hidden;}
+  summary{
+    list-style:none;cursor:pointer;padding:14px 15px;
+    font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--muted);display:flex;justify-content:space-between;align-items:center;
+  }
+  summary::-webkit-details-marker{display:none;}
+  summary::after{content:'+';font-size:17px;color:var(--accent);line-height:1;}
+  details[open] summary{color:var(--chalk);border-bottom:1px solid var(--line);}
+  details[open] summary::after{content:'–';}
+  .ref-body{padding:15px;font-size:15px;line-height:1.55;}
+  .ref-body p+p{margin-top:11px;}
+  .ref-body ul{margin:9px 0 0 17px;}
+  .ref-body li{margin-bottom:7px;}
+  .ref-body strong{font-weight:700;}
+  .ref-row{display:flex;gap:14px;padding:10px 0;border-bottom:1px solid var(--line);font-size:14.5px;align-items:baseline;}
+  .ref-row:last-child{border-bottom:none;}
+  .ref-row .k{flex:1;color:var(--chalk);}
+  .ref-row .v{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--accent);white-space:nowrap;text-align:right;}
+
+  /* ---- bottom tabs ---- */
+  .tabbar{
+    position:fixed;left:0;right:0;bottom:0;z-index:40;
+    display:flex;justify-content:center;gap:6px;
+    padding:8px var(--pad) calc(env(safe-area-inset-bottom) + 8px);
+    background:rgba(18,22,26,.92);
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    border-top:1px solid var(--line);
+    pointer-events:none;
+  }
+  .tabbar nav{
+    pointer-events:auto;
+    width:100%;max-width:520px;
+    display:flex;gap:6px;
+  }
+  .tabbar button{
+    flex:1;
+    display:flex;flex-direction:column;align-items:center;gap:3px;
+    background:transparent;border:none;border-radius:6px;
+    color:var(--muted);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;
+    padding:7px 0 5px;cursor:pointer;
+    transition:color .15s,background .15s;
+  }
+  .tabbar button svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+  .tabbar button[aria-pressed="true"]{color:var(--accent);background:rgba(255,255,255,.04);}
+  .tabbar button:focus-visible{outline:2px solid var(--chalk);outline-offset:2px;}
+
+  /* ---- modal shell ---- */
+  .overlay{
+    position:fixed;inset:0;z-index:60;
+    display:flex;align-items:flex-end;justify-content:center;
+    background:rgba(8,10,12,.62);
+    animation:fade .2s ease both;
+  }
+  .sheet{
+    width:100%;max-width:620px;max-height:min(88vh,860px);
+    overflow-y:auto;
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-bottom:none;
+    border-radius:14px 14px 0 0;
+    padding:20px var(--pad) calc(env(safe-area-inset-bottom) + 20px);
+    animation:rise .3s cubic-bezier(.2,.7,.3,1) both;
+  }
+  .sheet.full{
+    border-radius:0;max-height:none;height:100%;max-width:620px;margin:0 auto;
+    padding-top:calc(env(safe-area-inset-top) + 16px);
+    animation:fade .2s ease both;
+  }
+  .overlay.center{align-items:center;}
+  .overlay.center .sheet{border-radius:14px;border-bottom:1px solid var(--line);max-height:90vh;}
+  .grab{width:44px;height:4px;border-radius:2px;background:var(--line);margin:0 auto 16px;flex:none;}
+  .modal-title{
+    font-size:21px;font-weight:700;letter-spacing:-.015em;line-height:1.2;
+    display:flex;align-items:baseline;gap:10px;justify-content:space-between;
+  }
+  .modal-sub{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase;margin-top:7px;}
+  .close-x{
+    background:none;border:1px solid var(--line);color:var(--muted);
+    width:34px;height:34px;border-radius:50%;font-size:16px;line-height:1;cursor:pointer;flex:none;
+  }
+  .close-x:focus-visible{outline:2px solid var(--chalk);outline-offset:2px;}
+  .modal-sec{margin-top:22px;}
+  .modal-sec > .lbl{
+    font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.18em;
+    color:var(--muted);text-transform:uppercase;margin-bottom:9px;display:block;
+  }
+
+  /* log sheet */
+  .presc-line{
+    display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:14px;
+    font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--muted);letter-spacing:.02em;
+  }
+  .presc-line b{color:var(--chalk);font-weight:600;}
+  .choicechips{display:flex;gap:8px;margin-top:4px;}
+  .choicechips button{
+    flex:1;border:1px solid var(--line);background:transparent;color:var(--muted);
+    font-size:14.5px;font-weight:600;padding:11px 8px;border-radius:3px;cursor:pointer;
+    transition:all .15s;
+  }
+  .choicechips button[aria-pressed="true"]{border-color:var(--pc,var(--accent));color:var(--base);background:var(--pc,var(--accent));}
+  .choicechips button:focus-visible{outline:2px solid var(--chalk);outline-offset:2px;}
+  .hint-row{
+    margin-top:16px;border:1px dashed var(--line);border-radius:4px;
+    padding:12px 13px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;line-height:1.55;color:var(--muted);
+  }
+  .hint-row b{color:var(--accent);font-weight:600;}
+  .hint-row .pb{color:var(--chalk);}
+  .hint-row.pb-new{border-color:var(--accent);background:rgba(245,197,24,.06);}
+
+  .winput-wrap{margin-top:18px;text-align:center;}
+  .winput{
+    width:100%;max-width:260px;text-align:center;
+    background:transparent;border:none;border-bottom:2px solid var(--line);
+    color:var(--chalk);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:56px;font-weight:600;letter-spacing:-.02em;
+    padding:2px 0 8px;outline:none;caret-color:var(--accent);
+    -moz-appearance:textfield;
+  }
+  .winput::-webkit-outer-spin-button,.winput::-webkit-inner-spin-button{-webkit-appearance:none;}
+  .winput:focus{border-bottom-color:var(--accent);}
+  .wunit{font-family:'IBM Plex Mono',monospace;color:var(--muted);font-size:14px;letter-spacing:.1em;text-transform:uppercase;margin-top:6px;display:block;}
+  .quickchips{display:flex;gap:8px;justify-content:center;margin-top:16px;flex-wrap:wrap;}
+  .qchip{
+    border:1px solid var(--line);background:var(--base);color:var(--chalk);
+    font-family:'IBM Plex Mono',monospace;font-size:15px;font-weight:600;
+    min-width:64px;padding:11px 12px;border-radius:3px;cursor:pointer;
+    transition:border-color .15s,color .15s,background .15s;
+  }
+  .qchip.small{min-width:0;font-size:13px;padding:10px 13px;}
+  .qchip:hover{border-color:var(--accent);color:var(--accent);}
+  .qchip:focus-visible{outline:2px solid var(--chalk);outline-offset:2px;}
+
+  .reps-block{margin-top:22px;}
+  .reps-title{
+    display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;
+    font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.18em;
+    color:var(--muted);text-transform:uppercase;
+  }
+  .reps-title .toggle{color:var(--accent);text-transform:uppercase;font-size:10px;letter-spacing:.12em;border:none;background:none;cursor:pointer;font-family:inherit;}
+  .setrow{
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    padding:10px 0;border-bottom:1px solid var(--line);
+    font-family:'IBM Plex Mono',monospace;
+  }
+  .setrow:last-child{border-bottom:none;}
+  .setrow .s{color:var(--muted);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;}
+  .setstepper{display:flex;align-items:center;gap:0;}
+  .setstepper button{
+    width:42px;height:38px;border:1px solid var(--line);background:var(--base);
+    color:var(--chalk);font-size:18px;cursor:pointer;line-height:1;
+  }
+  .setstepper button:first-child{border-radius:3px 0 0 3px;}
+  .setstepper button:last-child{border-radius:0 3px 3px 0;}
+  .setstepper button:focus-visible{outline:2px solid var(--chalk);outline-offset:1px;}
+  .setstepper input{
+    width:52px;height:38px;border:1px solid var(--line);border-left:none;border-right:none;
+    background:var(--base);color:var(--chalk);text-align:center;
+    font-family:'IBM Plex Mono',monospace;font-size:15px;font-weight:600;outline:none;
+  }
+
+  .cta-row{display:flex;gap:10px;margin-top:26px;}
+  .cta{
+    flex:1;border:none;border-radius:4px;padding:16px 10px;
+    font-size:16px;font-weight:700;letter-spacing:-.01em;cursor:pointer;
+    font-family:inherit;
+    transition:transform .1s,opacity .15s;
+  }
+  .cta:active{transform:scale(.98);}
+  .cta.primary{background:var(--pc,var(--accent));color:var(--base);}
+  .cta.ghost{background:transparent;border:1px solid var(--line);color:var(--muted);font-weight:600;}
+  .cta.danger{background:transparent;border:1px solid var(--d3);color:var(--d3);}
+  .cta:disabled{opacity:.4;cursor:default;}
+  .cta:focus-visible{outline:2px solid var(--chalk);outline-offset:2px;}
+  .cta .sub{display:block;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;opacity:.6;margin-top:3px;}
+
+  /* toast */
+  .toast{
+    position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom) + var(--tabh) + 14px);
+    z-index:80;max-width:calc(100% - 40px);
+    background:var(--pc,var(--accent));color:var(--base);
+    font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;letter-spacing:.08em;
+    padding:12px 18px;border-radius:4px;text-align:center;
+    box-shadow:0 8px 30px rgba(0,0,0,.4);
+    animation:rise .25s cubic-bezier(.2,.7,.3,1) both;
+    display:none;
+  }
+  .toast.show{display:block;}
+
+  /* progress tab */
+  .sumline{
+    display:flex;gap:8px;margin-top:16px;flex-wrap:wrap;
+  }
+  .statcard{
+    flex:1;min-width:110px;border:1px solid var(--line);border-radius:4px;padding:12px 13px;
+  }
+  .statcard .v{font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:600;color:var(--pc,var(--accent));line-height:1;}
+  .statcard .k{font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase;margin-top:7px;display:block;line-height:1.5;}
+  .pr-group{margin-top:22px;}
+  .pr-group .glabel{
+    font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.2em;color:var(--muted);
+    text-transform:uppercase;margin-bottom:2px;display:flex;justify-content:space-between;
+  }
+  .pr-row{
+    display:flex;align-items:center;gap:12px;
+    padding:13px 0;border-bottom:1px solid var(--line);cursor:pointer;
+    transition:opacity .15s;
+  }
+  .pr-row:last-child{border-bottom:none;}
+  .pr-row:active{opacity:.6;}
+  .pr-row .rn{flex:1;min-width:0;}
+  .pr-row .rn .nm{font-size:16.5px;font-weight:700;letter-spacing:-.015em;line-height:1.25;display:block;}
+  .pr-row .rn .mus{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-top:3px;display:block;}
+  .pr-row .pbv{text-align:right;flex:none;}
+  .pr-row .pbv .w{font-family:'IBM Plex Mono',monospace;font-size:18px;font-weight:600;color:var(--pc,var(--accent));white-space:nowrap;}
+  .pr-row .pbv .d{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);white-space:nowrap;margin-top:2px;}
+  .spark{flex:none;width:74px;height:28px;}
+  .spark svg{width:100%;height:100%;display:block;}
+  .empty{padding:30px 6px;text-align:center;color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:12.5px;letter-spacing:.04em;line-height:1.8;}
+  .hist-item{padding:13px 0;border-bottom:1px solid var(--line);}
+  .hist-item:last-child{border-bottom:none;}
+  .hist-item .hrow{display:flex;align-items:baseline;justify-content:space-between;gap:10px;}
+  .hist-item .hdate{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;}
+  .hist-item .hw{font-family:'IBM Plex Mono',monospace;font-size:17px;font-weight:600;}
+  .hist-item .hw.pb-mark{color:var(--accent);}
+  .hist-item .hw .tag{font-size:9.5px;letter-spacing:.1em;color:var(--accent);vertical-align:middle;}
+  .hist-item .hreps{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted);margin-top:3px;}
+
+  /* timer */
+  .timer-card{margin-top:26px;text-align:center;}
+  .tring{
+    width:min(280px,72vw);height:min(280px,72vw);margin:6px auto 0;
+    border-radius:50%;position:relative;
+    background:conic-gradient(var(--accent) 0deg,var(--line) 0deg);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .tring::before{
+    content:'';position:absolute;inset:12px;border-radius:50%;background:var(--base);
+  }
+  .tdisp{position:relative;z-index:1;font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:clamp(40px,13vw,52px);letter-spacing:-.02em;white-space:nowrap;}
+  .tdisp .unit{font-size:14px;color:var(--muted);letter-spacing:.08em;margin-left:4px;}
+  .tctl{display:flex;gap:10px;justify-content:center;margin-top:22px;}
+  .tctl button{flex:none;min-width:112px;}
+  .tpresets{display:flex;gap:8px;margin-top:20px;flex-wrap:wrap;justify-content:center;}
+  .tpreset{
+    border:1px solid var(--line);background:var(--base);color:var(--muted);
+    font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;letter-spacing:.04em;
+    padding:10px 14px;border-radius:3px;cursor:pointer;
+  }
+  .tpreset[aria-pressed="true"]{border-color:var(--accent);color:var(--accent);}
+  .tend-note{margin-top:26px;border:1px dashed var(--line);border-radius:4px;padding:14px 15px;font-size:14px;color:var(--muted);line-height:1.55;text-align:left;}
+  .tend-note b{color:var(--chalk);}
+  .tend-note.show{display:block;}
+
+  /* settings */
+  .set-row{padding:14px 0;border-bottom:1px solid var(--line);}
+  .set-row:last-child{border-bottom:none;}
+  .set-row .sk{font-weight:700;font-size:15.5px;display:flex;align-items:center;gap:9px;letter-spacing:-.01em;}
+  .set-row .sk .dot{width:9px;height:9px;border-radius:50%;flex:none;}
+  .set-row .sv{font-size:13.5px;color:var(--muted);margin-top:4px;line-height:1.55;}
+  .set-row .sv b{color:var(--chalk);font-weight:600;}
+  .set-row .sv.ok{color:#6FC98F;}
+  .set-row .sv.warn{color:var(--d1);}
+  .name-edit{
+    display:flex;gap:8px;align-items:center;margin-top:8px;
+  }
+  .name-edit input{
+    flex:1;background:var(--base);border:1px solid var(--line);border-radius:3px;
+    color:var(--chalk);font-size:16px;font-weight:600;padding:10px 12px;outline:none;
+    font-family:inherit;
+  }
+  .name-edit input:focus{border-color:var(--accent);}
+  .mini-btn{
+    border:1px solid var(--line);background:var(--base);color:var(--muted);
+    font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;letter-spacing:.1em;
+    padding:9px 13px;border-radius:3px;cursor:pointer;text-transform:uppercase;
+  }
+  .mini-btn:hover{color:var(--chalk);border-color:var(--chalk);}
+  .mini-btn:focus-visible{outline:2px solid var(--chalk);outline-offset:2px;}
+  .mini-btn.accent{color:var(--accent);border-color:rgba(255,255,255,.18);}
+  .sync-status{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--muted);}
+  .dotlive{width:8px;height:8px;border-radius:50%;background:var(--muted);flex:none;}
+  .dotlive.ok{background:#6FC98F;}
+  .dotlive.busy{background:var(--d1);animation:pulse 1s infinite;}
+  .dotlive.err{background:var(--d3);}
+
+  /* onboard */
+  .onb-title{font-size:28px;font-weight:900;letter-spacing:-.03em;text-transform:uppercase;line-height:1;}
+  .onb-sub{color:var(--muted);font-size:15px;margin-top:10px;line-height:1.6;}
+  .onb-cards{display:flex;gap:10px;margin-top:22px;}
+  .onb-card{
+    flex:1;border:1px solid var(--line);border-radius:6px;background:var(--base);
+    padding:22px 10px;text-align:center;cursor:pointer;transition:all .15s;
+  }
+  .onb-card:active{transform:scale(.97);}
+  .onb-card:focus-visible{outline:2px solid var(--chalk);outline-offset:2px;}
+  .onb-card .ava{width:54px;height:54px;border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:900;color:var(--base);}
+  .onb-card .nm{display:block;font-size:16px;font-weight:700;}
+  .onb-card .who{display:block;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase;margin-top:4px;}
+
+  footer{
+    margin-top:34px;padding-top:16px;border-top:1px solid var(--line);
+    font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.04em;
+    color:var(--muted);line-height:1.75;
+  }
+  footer .sync-line{margin-top:8px;display:flex;align-items:center;gap:7px;}
+  footer .sync-line button{border:none;background:none;color:var(--accent);font-family:inherit;font-size:10px;letter-spacing:.04em;cursor:pointer;padding:0;text-decoration:underline;}
+
+  @keyframes rise{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+  @keyframes fade{from{opacity:0;}to{opacity:1;}}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+  .anim{animation:rise .4s cubic-bezier(.2,.7,.3,1) both;}
+  @media (prefers-reduced-motion:reduce){
+    .anim,.sheet,.overlay{animation:none!important;}
+    *{transition:none!important;}
+  }
+  @media (min-width:700px){
+    .overlay{align-items:center;padding:24px;}
+    .sheet{border-radius:14px;border-bottom:1px solid var(--line);max-height:90vh;}
+  }
+
+  .pv-hdr{margin-top:40px;border-top:2px solid var(--accent);padding-top:16px;}
+  .pv-hdr h2{font-size:30px;font-weight:900;letter-spacing:-.03em;text-transform:uppercase;line-height:.95;}
+  .pv-hdr .sub{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase;margin-top:8px;}
+  .pv-legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;}
+  .lchip{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;
+    padding:4px 8px;border-radius:3px;border:1px solid var(--line);color:var(--muted);}
+  .lchip.new{border-color:rgba(111,201,143,.6);color:#6FC98F;}
+  .lchip.alt{border-color:rgba(76,141,255,.6);color:#4C8DFF;}
+  .lchip.gone{border-color:rgba(240,87,92,.5);color:#F0575C;}
+  .lchip.opt{border-color:rgba(245,197,24,.5);color:var(--d1);}
+  .tagline{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;margin-top:4px;display:block;}
+  .tagline.new{color:#6FC98F;} .tagline.alt{color:#4C8DFF;} .tagline.opt{color:var(--d1);}
+  .tagline.note{color:var(--muted);text-transform:none;letter-spacing:.02em;font-size:10.5px;}
+  .removedwrap{margin-top:10px;border:1px dashed var(--line);border-radius:4px;padding:12px 14px;}
+  .removedwrap .lbl{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--d3);margin-bottom:8px;display:block;}
+  .removedwrap ul{list-style:none;}
+  .removedwrap li{font-size:14.5px;color:var(--muted);padding:4px 0;display:flex;justify-content:space-between;gap:10px;}
+  .removedwrap li span{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);}
+  .intro{padding:14px 15px;border:1px dashed var(--line);border-radius:4px;margin-top:16px;
+    font-family:'IBM Plex Mono',monospace;font-size:11.5px;line-height:1.7;color:var(--muted);}
+  .intro b{color:var(--chalk);}
+  .vtable{width:100%;border-collapse:collapse;margin-top:12px;}
+  .vtable th,.vtable td{font-family:'IBM Plex Mono',monospace;font-size:12px;padding:8px 6px;border-bottom:1px solid var(--line);text-align:left;}
+  .vtable th{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:500;}
+  .vtable td.n{text-align:right;color:var(--chalk);font-weight:600;}
+  .vtable tr.hi td{color:var(--chalk);}
+  .lvl{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);align-items:flex-start;}
+  .lvl:last-child{border-bottom:none;}
+  .lvl .n{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;color:var(--accent);opacity:.7;flex:none;width:22px;}
+  .lvl .b{flex:1;}
+  .lvl .t{font-size:16px;font-weight:700;letter-spacing:-.01em;}
+  .lvl .d{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);margin-top:4px;line-height:1.55;}
+  .lvl.now{border-left:2px solid #6FC98F;padding-left:12px;margin-left:-14px;}
+  .lvl .you{font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:#6FC98F;display:block;margin-top:5px;}
+  .lvl .you.add{color:var(--d1);}
+  .ladder{margin-top:8px;}
+  .collapsenote{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--muted);margin-top:10px;letter-spacing:.02em;line-height:1.6;}
+  .ladderbox{border:1px solid var(--line);border-radius:4px;overflow:hidden;margin-top:14px;}
+  .ladderbox summary{list-style:none;cursor:pointer;padding:14px 15px;display:flex;justify-content:space-between;align-items:center;
+    font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);}
+  .ladderbox summary::-webkit-details-marker{display:none;}
+  .ladderbox summary::after{content:'+';font-size:17px;color:var(--accent);line-height:1;}
+  .ladderbox[open] summary{color:var(--chalk);border-bottom:1px solid var(--line);}
+  .ladderbox[open] summary::after{content:'–';}
+  .ladderbody{padding:15px;font-size:15px;line-height:1.55;}
+  .carrynote{font-size:14.5px;color:var(--chalk);opacity:.9;line-height:1.55;}
+</style></head>
+<body><div class="eyebrow">Preview · not the live app</div>
+<h1 class="split">The new <span class="idx">plan</span></h1>
+<div class="intro">Rendered with the app's <b>real stylesheet and row markup</b> — <b>this plan is now built into the app</b>.
+Nothing on this page is connected to your data; it is a drawing. <b>Blue</b> = alternates week to week (the app offers whichever you did not do last time).
+<b>Green</b> = new. <b>Amber</b> = optional. Red = removed from your plan (logged history for those lifts is kept forever).</div>
+<div class="pv-legend">
+  <span class="lchip new">new</span>
+  <span class="lchip alt">alternates weekly</span>
+  <span class="lchip opt">optional</span>
+  <span class="lchip gone">removed</span>
+  <span class="lchip">unchanged</span>
+</div>
+<div class="pv-hdr" id="monday">
+  <h2>Monday</h2>
+  <div class="sub">Day 1 · Strength Focus · 7 exercises · 19 working sets · 60–75 min</div>
+  <p style="font-size:15px;color:var(--chalk);opacity:.9;margin-top:10px;line-height:1.55">
+  The session you love, unchanged — apart from the flat bench alternating dumbbell and barbell week to week.
+  RDL stays barbell, laterals stay dumbbells.</p>
+  <ol>
+  <li class="ex ">
+    <span class="num"><span class="n">01</span><span class="tk">✓</span></span>
+    <span class="mid">
+      <span class="name">Leg Press</span>
+      <span class="meta">Quads <span class="count">1/3</span></span>
+      <span class="restline">90–120s rest</span>
+      
+    </span>
+    <span class="side">
+      <span class="prescribe">3 × 8–10</span>
+      <button class="pill has" style="--pc:var(--p1)">27<span class="u">kg</span><span class="xr">×8</span></button>
+      <span class="pbline">PB <b>40</b> · 12 Oct</span>
+    </span>
+  </li>
+  <li class="ex ">
+    <span class="num"><span class="n">02</span><span class="tk">✓</span></span>
+    <span class="mid">
+      <span class="name">Flat Bench Press</span>
+      <span class="meta">Chest <span class="count">1/4</span></span>
+      <span class="restline">90–120s rest</span>
+      <span class="tagline alt">dumbbell ⇄ barbell · weekly</span><span class="tagline note">Dumbbell Bench Press  ⇄  Barbell Bench Press</span>
+    </span>
+    <span class="side">
+      <span class="prescribe">3 × 8–10</span>
+      <button class="pill has" style="--pc:var(--p1)">30<span class="u">kg</span><span class="xr">×8</span></button>
+      <span class="pbline">PB <b>40</b> · 12 Oct</span>
+    </span>
+  </li>
+  <li class="ex ">
+    <span class="num"><span class="n">03</span><span class="tk">✓</span></span>
+    <span class="mid">
+      <span class="name">Lat Pulldown</span>
+      <span class="meta">Lats <span class="count">1/2</span></span>
+      <span class="restline">90–120s rest</span>
+      
+    </span>
+    <span class="side">
+      <span class="prescribe">3 × 8–12</span>
+      <button class="pill has" style="--pc:var(--p1)">45<span class="u">kg</span><span class="xr">×10</span></button>
+      <span class="pbline">PB <b>40</b> · 12 Oct</span>
+    </span>
+  </li>
+  <li class="ex ">
+    <span class="num"><span class="n">04</span><span class="tk">✓</span></span>
+    <span class="mid">
+      <span class="name">Romanian Deadlift</span>
+      <span class="meta">Hamstrings <span class="count">1/3</span></span>
+      <span class="restline">90–120s rest</span>
+      <span class="tagline note">barbell — unchanged, as it has always been</span>
+    </span>
+    <span class="side">
+      <span class="prescribe">3 × 8–10</span>
+      <button class="pill has" style="--pc:var(--p1)">60<span class="u">kg</span><span class="xr">×8</span></button>
+      <span class="pbline">PB <b>40</b> · 12 Oct</span>
+    </span>
+  </li>
+  <li class="ex ">
+    <span class="num"><span class="n">05</span><span class="tk">✓</span></span>
+    <span class="mid">
+      <span class="name">Dumbbell Lateral Raises</span>
+      <span class="meta">Side delts <span class="count">1/3</span></span>
+      <span class="restline">45–75s rest</span>
+      <span class="tagline note">dumbbells today · cable version is Wednesday</span>
+    </span>
+    <span class="side">
+      <span class="prescribe">3 × 12–15</span>
+      <button class="pill has" style="--pc:var(--p1)">10<span class="u">kg</span><span class="xr">×13</span></button>
+      <span class="pbline blank">no PB yet</span>
+    </span>
+  </li>
+  <li class="ex ">
+    <span class="num"><span class="n">06</span><span class="tk">✓</span></span>
+    <span class="mid">
+      <span class="name">Cable Triceps Pushdown</span>
+      <span class="meta">Triceps <span class="count">1/2</span></span>
+      <span class="restline">45–75s rest</span>
+      
+    </span>
+    <span class="side">
+      <span class="prescribe">2 × 10–15</span>
+      <button class="pill has" style="--pc:var(--p1)">25<span class="u">kg</span><span class="xr">×12</span></button>
+      <span class="pbline blank">no PB yet</span>
+    </span>
+  </li>
+  <li class="ex ">
+    <span class="num"><span class="n">07</span><span class="tk">✓</span></span>
+    <span class="mid">
+      <span class="name">Dumbbell Biceps Curls</span>
+      <span class="meta">Biceps <span class="count">1/2</span></span>
+      <span class="restline">45–75s rest</span>
+      
+    </span>
+    <span class="side">
+      <span class="prescribe">2 × 10–15</span>
+      <button class="pill has" style="--pc:var(--p1)">12.5<span class="u">kg</span><span class="xr">×12</span></button>
+      <span class="pbline blank">no PB yet</span>
+    </span>
+  </li></ol>
+</div>
+<div class="pv-hdr" id="wednesday">
+  <h2>Wednesday</h2>
+  <div class="sub">Day 2 · Full Body + Conditioning · 11 exercises · 29 working sets · 75–85 min as a pair</div>
+  <p style="font-size:15px;color:var(--chalk);opacity:.9;margin-top:10px;line-height:1.55">
+  Rebuilt around what you actually do — hack squat, incline bench, a row — then the new muscle work. Biceps and
+  triceps are here as two separate exercises (two muscles, two records); the app offers to merge them into a
+  superset when you are short on time, which saves about 6 minutes.</p>
+  <ol>
+  <li class="ex ">
+    <span class="num"><span class="n">01</span><span class="tk">✓</span></span>
+    <span class="mid">
+      <span class="name">Hack Squat</span>
+      <span class="meta">Quads <span class="count">2/3</span></span>
+      <span class="restline">90–120s rest</span>
+      <span class="tagline note">goblet squat dropped — hack squat only, as you asked</span>
+    </span>
+    <span class="side">
+      <span class="prescribe">3 × 8–12</span>
+      <button class="pill has" style="--pc:var(--p1)">60<span class="u">kg</span><span class="xr">×10</span></button>
+      <span class="pbline">PB <b>40</b> · 12 Oct</span>
+    </span>
+  </li>
+  <li class="ex ">
+    <span class="num"><span class="n">02</span><span class="tk">✓</span></span>
+    <span class="mid">
+      <span class="name">Incline Bench Press</span>
+      <span class="meta">Chest <span class="count">2/4</span></span>
+      <span class="restline">90–120s rest</span>
+      <span class="tagline alt">dumbbell ⇄ barbell · weekly</span>
+    </span>
+    <span class="side">
+      <span class="prescribe">3 × 8–12</span>
+      <button class="pill has" style="--pc:var(--p1)">22.5<span class="u">kg</span><span class="xr">×10</span></button>
+      <span class="pbline">PB <b>40</b> · 12 Oct</span>
+    </span>
+  </li>
+  <li class="ex ">
+    <span class="num"><span class="n">03</span><span class="tk">✓</span></span>
+    <span class="mid">
+      <span class="name">Seated Cable Row or Machine Row</span>
+      <span class="meta">Mid back <span class="count">1/2</span></span>
+      <span class="restline">90–120s rest</span>
+      <span class="tagline alt">cable ⇄ machine · weekly</span>
+    </span>
+    <span class="side">
+      <span class="prescribe">3 × 8–12</span>
+      <button class="pill has" style="--pc:var(--p1)">40<span class="u">kg</span><span class="xr">×10</span></button>
+      <span class="pbline">PB <b>40</b> · 12 Oct</span>
+    </span>
+  </li>
+  <li class="ex ">
+    <span class="num"><span class="n">04</span><span class="tk">✓</span></span>
+    <span class="mid">
+      <span class="name">Leg Curl</span>
+      <span class="meta">Hamstrings <span class="count">2/3</span></span>
+      <span class="restline">45–75s rest</span>
+      
+    </span>
+    <span class="side">
+      <span class="prescribe">2 × 10–15</span>
+      <button class="pill has" style="--pc:var(--p1)">35<span class="u">kg</span><span class="xr">×12</span></button>
+      <span class="pbline blank">no PB yet</span>
+    </span>
+  </li>
+  <li class="ex ">
+    <span class="num"><span class="n">05</span><span class="tk">✓</span></span>
+    <span class="mid">
+      <span class="name">Shoulder Press</span>
+      <span class="meta">Front delts <span class="count">1/1</span></span>
+      <span class="restline">90–120s rest</span>
+      
+    </span>
+    <span class="side">
+      <span class="prescribe">2 × 8–12</span>
+      <button class="pill has" style="--pc:var(--p1)">17.5<span class="u">kg</span><span class="xr">×10</span></button>
+      <span class="pbline blank">no PB yet</span>
+    </span>
+  </li>
+  <li class="ex ">
+    <span class="num"><span class="n">06</span><span class="tk">✓</span></span>
+    <span class="mid">
+      <span class="name">Pec Fly</span>
+      <span class="meta">Chest <span class="count">3/4</span></span>
+      <span class="restline">45–75s rest</span>
+      <span class="tagline new">new · deep chest stretch, pairs with the incline press</span>
+    </span>
+    <span class="side">
+      <span class="prescribe">3 × 10–15</span>
+      <button class="pill has" style="--pc:var(--p1)">40<span class="u">kg</span><span class="xr">×12</span></button>
+      <span class="pbline blank">no PB yet</span>
+    </span>
+  </li>
+  <li class="ex ">
+    <span class="num"><span class="n">07</span><span class="tk">✓</span></span>
+    <span class="mid">
+      <span class="name">Cable Lateral Raise</span>
+      <span class="meta">Side delts <span class="count">2/3</span></span>
+      <span class="restline">45–75s rest</span>
+      <span class="tagline new">new · the cable half of your raises</span>
+    </span>
+    <span class="side">
+      <span class="prescribe">3 × 12–15</span>
+      <button class="pill has" style="--pc:var(--p1)">7.5<span class="u">kg</span><span class="xr">×13</span></button>
+      <span class="pbline blank">no PB yet</span>
+    </span>
+  </li>
+  <li class="ex ">
+    <span class="num"><span class="n">08</span><span class="tk">✓</span></span>
+    <span class="mid">
+      <span class="name">Face Pull</span>
+      <span class="meta">Rear delts <span class="count">1/2</span></span>
+      <span class="restline">45–75s rest</span>
+      <span class="tagline new">new · alternates weekly with Reverse Pec Deck</span><span class="tagline alt">face pull ⇄ reverse pec deck</span>
+    </span>
+    <span class="side">
+      <span class="prescribe">3 × 12–15</span>
+      <button class="pill has" style="--pc:var(--p1)">20<span class="u">kg</span><span class="xr">×15</span></button>
+      <span class="pbline blank">no PB yet</span>
+    </span>
+  </li>
+  <li class="ex ">
+    <span class="num"><span class="n">09</span><span class="tk">✓</span></span>
+    <span class="mid">
+      <span class="name">Calf Raise</span>
+      <span class="meta">Calves <span class="count">1/2</span></span>
+      <span class="restline">45–75s rest</span>
+      <span class="tagline new">new · slow down, big stretch at the bottom</span>
+    </span>
+    <span class="side">
+      <span class="prescribe">3 × 10–15</span>
+      <button class="pill has" style="--pc:var(--p1)">80<span class="u">kg</span><span class="xr">×12</span></button>
+      <span class="pbline blank">no PB yet</span>
+    </span>
+  </li>
+  <li class="ex ">
+    <span class="num"><span class="n">10</span><span class="tk">✓</span></span>
+    <span class="mid">
+      <span class="name">Biceps Curls</span>
+      <span class="meta">Biceps <span class="count">2/2</span></span>
+      <span class="restline">45–75s rest</span>
+      <span class="tagline opt">optional · merge with the triceps below as a superset (2 taps)</span>
+    </span>
+    <span class="side">
+      <span class="prescribe">2 × 12–15</span>
+      <button class="pill has" style="--pc:var(--p1)">12.5<span class="u">kg</span><span class="xr">×12</span></button>
+      <span class="pbline blank">no PB yet</span>
+    </span>
+  </li>
+  <li class="ex ">
+    <span class="num"><span class="n">11</span><span class="tk">✓</span></span>
+    <span class="mid">
+      <span class="name">Triceps Pushdowns</span>
+      <span class="meta">Triceps <span class="count">2/2</span></span>
+      <span class="restline">45–75s rest</span>
+      <span class="tagline opt">optional · separate muscle, separate record — superset when short on time</span>
+    </span>
+    <span class="side">
+      <span class="prescribe">2 × 12–15</span>
+      <button class="pill has" style="--pc:var(--p1)">25<span class="u">kg</span><span class="xr">×12</span></button>
+      <span class="pbline blank">no PB yet</span>
+    </span>
+  </li></ol>
+  <div class="removedwrap">
+  <span class="lbl">Removed from the plan — your history stays forever</span>
+  <ul>
+    <li>Goblet Squat <span>you do hack squat only</span></li>
+    <li>Hip Thrust <span>3 sets</span></li>
+    <li>Plank <span>2 sets</span></li>
+    <li>Cable Crunch <span>2 sets</span></li>
+    <li>Dead Bug <span>2 sets</span></li>
+  </ul>
+</div>
+</div>
+<div class="pv-hdr" id="friday">
+  <h2>Friday</h2>
+  <div class="sub">Day 3 · Full Body + Higher Reps · 11 exercises · 28 working sets · 75–85 min as a pair</div>
+  <p style="font-size:15px;color:var(--chalk);opacity:.9;margin-top:10px;line-height:1.55">
+  Leg press only. RDL and the row alternate the same way as Wednesday, so each variant keeps one clean history.
+  Calves ride on the leg press you are already on, the rear delts get their second weekly dose, and it finishes
+  with three walks instead of a plank.</p>
+  <ol>
+  <li class="ex ">
+    <span class="num"><span class="n">01</span><span class="tk">✓</span></span>
+    <span class="mid">
+      <span class="name">Leg Press</span>
+      <span class="meta">Quads <span class="count final">3/3</span></span>
+      <span class="restline">90–120s rest</span>
+      <span class="tagline note">squat option dropped — leg press only, as you asked</span>
+    </span>
+    <span class="side">
+      <span class="prescribe">3 × 10–12</span>
+      <button class="pill has" style="--pc:var(--p1)">70<span class="u">kg</span><span class="xr">×10</span></button>
+      <span class="pbline">PB <b>40</b> · 12 Oct</span>
+    </span>
+  </li>
+  <li class="ex ">
+    <span class="num"><span class="n">02</span><span class="tk">✓</span></span>
+    <span class="mid">
+      <span class="name">Chest Press Machine</span>
+      <span class="meta">Chest <span class="count final">4/4</span></span>
+      <span class="restline">90–120s rest</span>
+      
+    </span>
+    <span class="side">
+      <span class="prescribe">3 × 8–12</span>
+      <button class="pill has" style="--pc:var(--p1)">50<span class="u">kg</span><span class="xr">×10</span></button>
+      <span class="pbline">PB <b>40</b> · 12 Oct</span>
+    </span>
+  </li>
+  <li class="ex ">
+    <span class="num"><span class="n">03</span><span class="tk">✓</span></span>
+    <span class="mid">
+      <span class="name">Lat Pulldown or Pull-up Practice</span>
+      <span class="meta">Lats <span class="count final">2/2</span></span>
+      <span class="restline">90–120s rest</span>
+      <span class="tagline alt">lat pulldown ⇄ pull-up practice · weekly</span><span class="tagline note">no assist machine — practice days use your current ladder level</span>
+    </span>
+    <span class="side">
+      <span class="prescribe">3 × 8–12</span>
+      <button class="pill has" style="--pc:var(--p1)">45<span class="u">kg</span><span class="xr">×10</span></button>
+      <span class="pbline">PB <b>40</b> · 12 Oct</span>
+    </span>
+  </li>
+  <li class="ex ">
+    <span class="num"><span class="n">04</span><span class="tk">✓</span></span>
+    <span class="mid">
+      <span class="name">Romanian Deadlift</span>
+      <span class="meta">Hamstrings <span class="count final">3/3</span></span>
+      <span class="restline">90–120s rest</span>
+      <span class="tagline alt">dumbbell ⇄ barbell · weekly</span><span class="tagline note">your dumbbell and barbell numbers stay separate</span>
+    </span>
+    <span class="side">
+      <span class="prescribe">3 × 10–12</span>
+      <button class="pill has" style="--pc:var(--p1)">32.5<span class="u">kg</span><span class="xr">×10</span></button>
+      <span class="pbline">PB <b>40</b> · 12 Oct</span>
+    </span>
+  </li>
+  <li class="ex ">
+    <span class="num"><span class="n">05</span><span class="tk">✓</span></span>
+    <span class="mid">
+      <span class="name">Seated Cable Row or Machine Row</span>
+      <span class="meta">Mid back <span class="count final">2/2</span></span>
+      <span class="restline">90–120s rest</span>
+      <span class="tagline alt">cable ⇄ machine · weekly · same pair as Wednesday</span>
+    </span>
+    <span class="side">
+      <span class="prescribe">2 × 10–12</span>
+      <button class="pill has" style="--pc:var(--p1)">40<span class="u">kg</span><span class="xr">×10</span></button>
+      <span class="pbline">PB <b>40</b> · 12 Oct</span>
+    </span>
+  </li>
+  <li class="ex ">
+    <span class="num"><span class="n">06</span><span class="tk">✓</span></span>
+    <span class="mid">
+      <span class="name">Dumbbell Lateral Raises</span>
+      <span class="meta">Side delts <span class="count final">3/3</span></span>
+      <span class="restline">45–75s rest</span>
+      <span class="tagline note">dumbbells</span>
+    </span>
+    <span class="side">
+      <span class="prescribe">2 × 12–15</span>
+      <button class="pill has" style="--pc:var(--p1)">10<span class="u">kg</span><span class="xr">×13</span></button>
+      <span class="pbline blank">no PB yet</span>
+    </span>
+  </li>
+  <li class="ex ">
+    <span class="num"><span class="n">07</span><span class="tk">✓</span></span>
+    <span class="mid">
+      <span class="name">Calf Raise</span>
+      <span class="meta">Calves <span class="count final">2/2</span></span>
+      <span class="restline">45–75s rest</span>
+      <span class="tagline new">new · on the leg press you are already sitting on</span>
+    </span>
+    <span class="side">
+      <span class="prescribe">3 × 10–15</span>
+      <button class="pill has" style="--pc:var(--p1)">80<span class="u">kg</span><span class="xr">×12</span></button>
+      <span class="pbline blank">no PB yet</span>
+    </span>
+  </li>
+  <li class="ex ">
+    <span class="num"><span class="n">08</span><span class="tk">✓</span></span>
+    <span class="mid">
+      <span class="name">Biceps Curls</span>
+      <span class="meta">Biceps <span class="count final">2/2</span></span>
+      <span class="restline">45–75s rest</span>
+      
+    </span>
+    <span class="side">
+      <span class="prescribe">2 × 12–15</span>
+      <button class="pill has" style="--pc:var(--p1)">12.5<span class="u">kg</span><span class="xr">×12</span></button>
+      <span class="pbline blank">no PB yet</span>
+    </span>
+  </li>
+  <li class="ex ">
+    <span class="num"><span class="n">09</span><span class="tk">✓</span></span>
+    <span class="mid">
+      <span class="name">Triceps Pushdowns</span>
+      <span class="meta">Triceps <span class="count final">2/2</span></span>
+      <span class="restline">45–75s rest</span>
+      
+    </span>
+    <span class="side">
+      <span class="prescribe">2 × 12–15</span>
+      <button class="pill has" style="--pc:var(--p1)">25<span class="u">kg</span><span class="xr">×12</span></button>
+      <span class="pbline blank">no PB yet</span>
+    </span>
+  </li>
+  <li class="ex ">
+    <span class="num"><span class="n">10</span><span class="tk">✓</span></span>
+    <span class="mid">
+      <span class="name">Reverse Pec Deck</span>
+      <span class="meta">Rear delts <span class="count final">2/2</span></span>
+      <span class="restline">45–75s rest</span>
+      <span class="tagline new">new · the second weekly dose for your rear delts</span>
+    </span>
+    <span class="side">
+      <span class="prescribe">2 × 12–15</span>
+      <button class="pill has" style="--pc:var(--p1)">30<span class="u">kg</span><span class="xr">×14</span></button>
+      <span class="pbline blank">no PB yet</span>
+    </span>
+  </li>
+  <li class="ex ">
+    <span class="num"><span class="n">11</span><span class="tk">✓</span></span>
+    <span class="mid">
+      <span class="name">Farmer's Carry</span>
+      <span class="meta">Core · grip · traps <span class="count">—</span></span>
+      <span class="restline">60–90s rest</span>
+      <span class="tagline new">new · walks, not planks — core, grip and traps in 3 trips</span>
+    </span>
+    <span class="side">
+      <span class="prescribe">3 × 30–40m</span>
+      <button class="pill has" style="--pc:var(--p1)">24<span class="u">kg</span></button>
+      <span class="pbline blank">no PB yet</span>
+    </span>
+  </li></ol>
+  <details class="ladderbox" style="margin-top:22px">
+    <summary>Pull-up ladder — level 3 of 7 · next target: 3 × 5 negatives at 5s</summary>
+    <div class="ladderbody">
+      <p style="font-size:14.5px;color:var(--muted);line-height:1.6">This is how it will look: <b style="color:var(--chalk)">collapsed at the bottom of every session</b>,
+      so it costs you no screen space. Tap it when you want to practise or log a set — the app times your hangs and
+      your 5-second descents, and moves you up a level when you hit the target twice.</p>
+      <div style="margin-top:12px"><div class="lvl"><span class="n">1</span><span class="b"><span class="t">Dead hang <span style="color:var(--muted);font-size:13px">3 × 20–30s</span></span><span class="d">Grip and shoulder resilience, and being comfortable in the bottom position you cannot yet pull out of.</span></span></div><div class="lvl"><span class="n">2</span><span class="b"><span class="t">Scapular pull-ups <span style="color:var(--muted);font-size:13px">3 × 5–8</span></span><span class="d"><b>The missing link.</b> Hang, then pull your shoulder blades down without bending the elbows. That first inch is what most people never train.</span><span class="you add">add this one now — it is the missing link</span></span></div><div class="lvl now"><span class="n">3</span><span class="b"><span class="t">Negatives <span style="color:var(--muted);font-size:13px">3 × 3 @ 5s</span></span><span class="d">Where you are now: get up there and lower for a true 5 seconds. The app counts the seconds so you cannot cheat the descent by dropping.</span><span class="you">you are about here</span></span></div><div class="lvl"><span class="n">4</span><span class="b"><span class="t">Negatives <span style="color:var(--muted);font-size:13px">3 × 5 @ 5s</span></span><span class="d">Same, more volume. Hit it twice in a row and the ladder moves you on by itself.</span></span></div><div class="lvl"><span class="n">5</span><span class="b"><span class="t">Bottom-half reps <span style="color:var(--muted);font-size:13px">3 × 3</span></span><span class="d">Dead hang → pull to 90° → lower. Trains the exact range you told me you are missing.</span></span></div><div class="lvl"><span class="n">6</span><span class="b"><span class="t">Band-assisted pull-ups <span style="color:var(--muted);font-size:13px">3 × 3–5</span></span><span class="d">No assist machine, so bands instead. Logged as a band level (heavy → medium → light), because bands cannot be measured in kilos.</span></span></div><div class="lvl"><span class="n">7</span><span class="b"><span class="t">Full pull-up <span style="color:var(--muted);font-size:13px">1 rep</span></span><span class="d">Then 2, then 3, then 5. You are closer than you think.</span></span></div></div>
+      <p style="font-size:13.5px;color:var(--chalk);opacity:.85;margin-top:14px;line-height:1.6">
+      Optional accessories, any session: <b>inverted rows</b> 2 × 8–10 (the best single builder of your first pull-up)
+      and <b>jump-to-top holds</b> 3 × 10s.</p>
+    </div>
+  </details>
+  <p class="collapsenote">Shown collapsed above exactly as it will sit on your screen. No assisted pull-up machine needed anywhere in this plan.</p>
+</div>
+
+<div class="pv-hdr" id="variants">
+  <h2>Weekly alternation</h2>
+  <div class="sub">How the app will show which one is live today</div>
+  <p style="font-size:15px;color:var(--chalk);opacity:.9;margin-top:10px;line-height:1.55">
+  Yes — the row always names the variant that is live <b>today</b>, in your colour, and the app decides it from
+  what you actually did last time rather than from the calendar. No week A / week B to keep track of, and nothing
+  to remember after a holiday or a skipped week. Both variants keep their own weight and their own PB.</p>
+
+  <p class="sub" style="margin-top:22px">This week — dumbbells (because you did barbell last time)</p>
+  <ol>
+  <li class="ex">
+    <span class="num"><span class="n">02</span><span class="tk">✓</span></span>
+    <span class="mid">
+      <span class="name">Flat Bench Press</span>
+      <span class="meta">Chest <span class="count">1/4</span></span>
+      <span class="restline">90–120s rest</span>
+      <span class="tagline alt">today: dumbbell ⇄ barbell</span><span class="tagline note">Dumbbell Bench Press</span>
+    </span>
+    <span class="side">
+      <span class="prescribe">3 × 8–10</span>
+      <button class="pill logged" style="--pc:var(--p1)">30<span class="u">kg</span><span class="xr">×8</span></button>
+      <span class="pbline">PB <b>30</b> · 12 Oct</span>
+    </span>
+  </li></ol>
+
+  <p class="sub" style="margin-top:26px">Next week — barbell (the app switches on its own)</p>
+  <ol>
+  <li class="ex">
+    <span class="num"><span class="n">02</span><span class="tk">✓</span></span>
+    <span class="mid">
+      <span class="name">Flat Bench Press</span>
+      <span class="meta">Chest <span class="count">1/4</span></span>
+      <span class="restline">90–120s rest</span>
+      <span class="tagline alt">today: barbell ⇄ dumbbell</span><span class="tagline note">Barbell Bench Press</span>
+    </span>
+    <span class="side">
+      <span class="prescribe">3 × 8–10</span>
+      <button class="pill logged" style="--pc:var(--p1)">80<span class="u">kg</span><span class="xr">×8</span></button>
+      <span class="pbline">PB <b>30</b> · 12 Oct</span>
+    </span>
+  </li></ol>
+
+  <p class="collapsenote">If you fancy the other one anyway, the log sheet has both chips and one tap switches it —
+  and that tap is what decides next week. Same for the row (cable ⇄ machine), the incline press and the RDL.</p>
+</div>
+<div class="pv-hdr">
+  <h2>Week volume</h2>
+  <div class="sub">Direct working sets per muscle</div>
+  <table class="vtable">
+    <tr><th>Muscle</th><th style="text-align:right">Sets/week</th><th>From</th></tr>
+    %s
+    <tr><td><b>Total</b></td><td class="n"><b>76</b></td><td style="color:var(--muted)">19 Mon · 29 Wed · 28 Fri</td></tr>
+  </table>
+  <p class="intro" style="margin-top:14px">Your plan was 61 sets. This is 76, and the 9 sets of hip thrust / plank / crunch /
+  dead bug were spent on chest, side delts, rear delts and calves — the muscles that change how you look. Every muscle is
+  inside the 10–20 sets/week range, most of them once you count indirect work. Sessions run longer, though:
+  <b>Wednesday and Friday are now 75–85 minutes as a pair.</b> If that is too long, the cut list is in WORKOUT.md §6.</p>
+</div><footer>Preview only — a drawing of the new plan using the app's real styles. Nothing is wired up and none of your data was touched.</footer></body></html>
