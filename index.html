@@ -822,6 +822,14 @@
   .plate.bar b{color:var(--pc,var(--accent));}
   .plate.none{font-size:12px;color:var(--muted);}
 
+
+  /* X25 / X79 — long-press hint and the time-trimmed session */
+  li.ex.cut{opacity:.55;}
+  li.ex.cut .num{opacity:.6;}
+  .cuttag{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--muted);border:1px solid var(--line);border-radius:2px;padding:2px 5px;margin-left:7px;vertical-align:middle;}
+  .taphint{position:relative;}
+
   @keyframes rise{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
   @keyframes fade{from{opacity:0;}to{opacity:1;}}
   @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
@@ -1276,6 +1284,7 @@ function settingsDefault(){
     lastBackup:0,
     haptics:true,
     contrast:'normal',
+    short:{},
     repsCleanedAt:0,
     sync:{ pin:'', room:'', lastSync:0, lastErr:'', busy:false, upTs:0, downTs:0, count:0 }
   };
@@ -1700,8 +1709,9 @@ const REFERENCE = `
   </div>
 </details>`;
 
-function dayRowHTML(day, idx, p, dayKey){
+function dayRowHTML(day, idx, p, dayKey, keep){
   const e = day.ex[idx];
+  const cut = Array.isArray(keep) && !keep.includes(idx);
   const badge = BADGE[day.n + ':' + idx] || { i:1, n:1 };
   const final = badge.i === badge.n && badge.n > 1;
   const slotKey = slotKeyOf(day.n, idx);
@@ -1762,11 +1772,11 @@ function dayRowHTML(day, idx, p, dayKey){
     e.supersetWith != null ? 'superset' : ''
   ].filter(Boolean).join(' · ');
 
-  return `<li class="ex ${done?'done':''}" data-i="${idx}" role="button" tabindex="0"
+  return `<li class="ex ${done?'done':''}${cut?' cut':''}" data-i="${idx}" role="button" tabindex="0"
       aria-label="${esc(e.name)}, ${esc(e.sets)}. Tap to log." aria-pressed="${done}">
     <span class="num"><span class="n">${String(idx+1).padStart(2,'0')}</span><span class="tk">✓</span></span>
     <span class="mid">
-      <span class="name">${esc(e.name)}</span>
+      <span class="name">${esc(e.name)}${cut ? '<span class="cuttag">left out today</span>' : ''}</span>
       <span class="meta">${esc(e.muscle)}
         <span class="count${final?' final':''}">${badge.i}/${badge.n}</span>${
           e.also ? ` <span class="also">· also ${esc(e.also)}</span>` : ''}${doing}</span>
@@ -1968,7 +1978,9 @@ function renderSession(){
   const date = todayKey();
   const done = ticksFor(p.id, day.n, date);
   const order = orderFor(p.id, day.n, date, day.ex.length);
-  const rows = order.map(i => dayRowHTML(day, i, p, date)).join('');
+  const trim = shortFor(p.id, day.n, date);
+  const trimmed = trim ? trim.keep : null;
+  const rows = order.map(i => dayRowHTML(day, i, p, date, trimmed)).join('');
 
   const prevScroll = window.scrollY;
   const lastKey = sessionKey;
@@ -2003,6 +2015,7 @@ function renderSession(){
       <div class="cta-row" style="margin-top:18px">
         <button class="mini-btn" id="platebtn" type="button">Plate calculator</button>
         <button class="mini-btn" id="searchbtn2" type="button">Search my log</button>
+        <button class="mini-btn ${trim ? 'accent' : ''}" id="shortbtn" type="button">${trim ? `Trimmed to ${trim.mins} min` : 'Short on time?'}</button>
       </div>
 
       <div class="block">
@@ -2036,6 +2049,7 @@ function renderSession(){
     const pill = ev.target.closest('.pill');
     const li = ev.target.closest('li.ex');
     if (li && pill) ev.stopPropagation();
+    if (Date.now() < suppressTapUntil) return;      // a long press just handled this row
     if (li) openLogSheet(+li.dataset.i);
   });
   list.addEventListener('keydown', ev => {
@@ -2044,6 +2058,7 @@ function renderSession(){
     if (li){ ev.preventDefault(); openLogSheet(+li.dataset.i); }
   });
   document.getElementById('platebtn').addEventListener('click', openPlateSheet);
+  document.getElementById('shortbtn').addEventListener('click', openShortSheet);
   document.getElementById('searchbtn2').addEventListener('click', openSearchSheet);
   document.getElementById('reset').addEventListener('click', () => {
     if (!done.length) return;
@@ -2052,6 +2067,7 @@ function renderSession(){
   });
   bindSyncButtons();
   bindLadderPanel(p);
+  bindLongPress();
   if (scrollToTop) window.scrollTo(0,0);
   else window.scrollTo(0, prevScroll);
 }
@@ -3815,6 +3831,146 @@ function openEraseSheet(){
     }
     wipeLocal();
   });
+}
+
+/* ============================================================
+   X25 — long-press a pill: log last time's weight and reps in one
+   gesture, no sheet. A plain tap still opens the sheet.
+   ============================================================ */
+let suppressTapUntil = 0;
+function quickLog(idx){
+  const p = me();
+  const day = currentDay();
+  const slot = day.ex[idx];
+  const key = slotKeyOf(day.n, idx);
+  const canon = chosenCanonFor(p.id, key, slot);
+  if (isBWChoice(slot, canon)){ toast('That one is ticked, not weighed — tap to tick it'); return; }
+  const st = personStats(p.id, canon);
+  const ref = liveLift(p.id, canon, todayKey()) || (st ? st.last : null);
+  if (!ref || ref.weight == null){
+    toast('Nothing to repeat yet — tap it to log a weight first');
+    return;
+  }
+  const reps = lastReps(ref);
+  writeLift(idx, [{ id:p.id, name:p.name }], { w:ref.weight, reps:reps != null ? [reps] : null, repsMode:'last' });
+  toast(`Repeated ${wFmt(ref.weight)} ${UNIT}${reps != null ? ' × ' + reps : ''} · ${esc(labelForCanon(canon, slot))}`, personDotColor(p.id), undoLast);
+}
+function bindLongPress(){
+  const list = document.getElementById('list');
+  if (!list) return;
+  let timer = null, moved = false, fired = false;
+  const drop = () => { if (timer){ clearTimeout(timer); timer = null; } };
+  list.addEventListener('pointerdown', ev => {
+    const li = ev.target.closest('li.ex');
+    if (!li) return;
+    moved = false; fired = false;
+    const idx = +li.dataset.i;
+    timer = setTimeout(() => {
+      timer = null; fired = true; suppressTapUntil = Date.now() + 700;
+      buzz(22);
+      quickLog(idx);
+    }, 450);
+  });
+  list.addEventListener('pointermove', ev => { moved = true; drop(); });
+  list.addEventListener('pointerup', drop);
+  list.addEventListener('pointercancel', drop);
+  list.addEventListener('pointerleave', drop);
+  list.addEventListener('scroll', drop, { passive:true });
+  window.addEventListener('scroll', drop, { passive:true });
+  list.addEventListener('contextmenu', ev => { if (ev.target.closest('li.ex')) ev.preventDefault(); });
+}
+
+/* ============================================================
+   X79 — short on time: trim today to a number of minutes
+   ============================================================ */
+function shortFor(pid, dayN, date){
+  const raw = (S.short && S.short[pid]) || null;
+  if (!raw) return null;
+  if (raw.key !== dayN + ':' + date) return null;   // yesterdays never leak into today
+  return raw;
+}
+function setShortFor(pid, dayN, date, keep, mins){
+  S.short = S.short || {};
+  S.short[pid] = keep ? { key:dayN + ':' + date, keep:keep.slice(), mins } : null;
+  saveSettings();
+  render();
+}
+/* Compounds first, then one movement per muscle, then the rest — the honest way to cut. */
+function trimOrder(day){
+  const seenMuscle = new Set();
+  const scored = day.ex.map((e, i) => {
+    let score = 0;
+    if (e.type === 'compound') score += 100;
+    if (e.supersetWith != null) score += 8;
+    if (!seenMuscle.has(e.muscle)){ score += 30; seenMuscle.add(e.muscle); }
+    score -= i;                                  // earlier in the plan wins ties
+    return { i, e, score };
+  });
+  return scored.sort((a, b) => b.score - a.score).map(x => x.i);
+}
+function trimFor(mins, day){
+  const order = trimOrder(day);
+  const keep = [];
+  let used = 8;                                   // warm-up
+  const sorted = order.slice().sort((a, b) => day.ex[a].sets === undefined ? 0 : 0);
+  for (const i of order){
+    const e = day.ex[i];
+    const sets = parseInt(e.sets, 10) || 3;
+    const perSet = e.type === 'compound' ? 3.2 : 2.2;    // minutes: work + rest
+    const cost = sets * perSet + 1.5;                    // + the walk and the load
+    if (used + cost <= mins || keep.length < 3){
+      keep.push(i); used += cost;
+    }
+  }
+  return { keep:keep.sort((a, b) => a - b), used:Math.round(used) };
+}
+function openShortSheet(){
+  const p = me();
+  const day = currentDay();
+  const date = todayKey();
+  const cur = shortFor(p.id, day.n, date);
+  const body = `
+    <p style="font-size:15px;line-height:1.65;color:var(--chalk);opacity:.92">
+      How long have you got? The app keeps the big lifts and one movement per muscle, drops the rest
+      <b>for today only</b>, and tells you what it left out. Your plan and your history are untouched.</p>
+    <div class="modal-sec">
+      <span class="lbl">Time</span>
+      <div class="choicechips" id="shortmins">
+        ${[25, 35, 45, 60].map(m => `<button data-mins="${m}" aria-pressed="${cur && cur.mins === m}">${m} min</button>`).join('')}
+      </div>
+    </div>
+    <div id="shortpreview"></div>
+    ${cur ? `<div class="cta-row" style="margin-top:16px"><button class="cta ghost" id="shortoff">Back to the full session</button></div>` : ''}`;
+  openOverlay(overlayShell('Short on time?', 'trim today, keep the essentials', body));
+  bindOverlayClicks();
+  const paint = m => {
+    const t = trimFor(m, day);
+    const kept = t.keep.map(i => day.ex[i]);
+    const cut = day.ex.filter((e, i) => !t.keep.includes(i));
+    document.getElementById('shortpreview').innerHTML = `
+      <div class="hint-row" style="border-style:solid">
+        <b>${kept.length} exercises</b> · about <b>${t.used} minutes</b> including the warm-up.<br><br>
+        ${kept.map(e => esc(e.name)).join(' · ')}
+      </div>
+      ${cut.length ? `<div class="hint-row" style="margin-top:12px">Left out today: ${cut.map(e => esc(e.name)).join(', ')}.
+        Do them if the time appears — nothing is lost if you don't.</div>` : ''}
+      <div class="cta-row" style="margin-top:16px">
+        <button class="cta primary" id="shortgo" style="--pc:${personDotColor(p.id)}">Trim today's session</button>
+      </div>`;
+    document.getElementById('shortgo').addEventListener('click', () => {
+      setShortFor(p.id, day.n, date, t.keep, m);
+      closeOverlay();
+      toast(`Today trimmed to ${kept.length} exercises`, personDotColor(p.id));
+    });
+  };
+  document.querySelectorAll('#shortmins [data-mins]').forEach(b => b.addEventListener('click', () => {
+    const m = Number(b.dataset.mins);
+    document.querySelectorAll('#shortmins [data-mins]').forEach(x => x.setAttribute('aria-pressed', String(Number(x.dataset.mins) === m)));
+    paint(m);
+  }));
+  const off = document.getElementById('shortoff');
+  if (off) off.addEventListener('click', () => { setShortFor(p.id, day.n, date, null, 0); closeOverlay(); });
+  paint(cur ? cur.mins : 45);
 }
 
 /* ============================================================

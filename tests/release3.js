@@ -102,6 +102,21 @@ ok(/<title>Session<\/title>/.test(html) && /apple-mobile-web-app-title/.test(htm
   ok(/!document\.getElementById\('overlayroot'\)\.innerHTML/.test(html),
      'an update is only adopted when no sheet is open, so it can never interrupt a session');
 
+
+  console.log('\n=== a brand new phone (no data at all) ===');
+  {
+    const fresh = new JSDOM(html, { url:'https://example.org/', runScripts:'dangerously', pretendToBeVisual:true });
+    const fw = fresh.window, fd = fw.document;
+    await wait(600);
+    const text = fd.getElementById('app').textContent;
+    ok(fd.getElementById('splash') === null || fd.getElementById('splash').classList.contains('gone'),
+       'the splash clears on a first-ever launch too');
+    ok(/Danny|Kieran|get started|start/i.test(text), 'and the app asks who is using it rather than showing a broken screen',
+       text.slice(0, 80).replace(/\s+/g,' '));
+    ok(fd.getElementById('bootskeleton').classList.contains('gone'), 'the skeleton is gone');
+    fresh.window.close();
+  }
+
   console.log('\n' + pass + ' passed, ' + fail + ' failed');
   win.close();
   process.exit(fail ? 1 : 0);

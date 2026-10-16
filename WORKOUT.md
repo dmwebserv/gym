@@ -121,6 +121,13 @@ screen space. Open it when you want to practise or log a set.
 **Optional accessories, any session:** inverted rows 2 × 8–10 — **you have a Smith machine, so set the bar low
 in it and you're set** (the single best builder of a first pull-up) — and jump-to-top holds 3 × 10s.
 
+**In the app, on the gym floor:** hold your finger on a weight pill for half a second and it logs last time's
+weight and reps instantly, ticks the exercise and gets out of your way — a normal tap still opens the sheet.
+The sheet itself now lists your last three sessions for that lift so you can pick the next weight without
+leaving it. There's a plate calculator (per side, with the bar weight) and a search across everything you've
+ever logged. And if you're short of time, "Short on time?" trims today to 25/35/45/60 minutes — big lifts
+first, one movement per muscle — for **today only**, marking what it left out rather than hiding it.
+
 **In the app:** the ladder is a collapsible panel at the bottom of every session, closed by default so it
 takes no screen space. Tap it when you want to practise or log; the app keeps your level, moves you up
 when you ask it to, and records band levels by name rather than pretending to measure a band in kilos.

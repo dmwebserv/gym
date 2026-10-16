@@ -235,6 +235,82 @@ const txt = () => $('#app').textContent;
   ok(/at least two letters/.test($('#qres').textContent), 'one letter asks for more rather than searching');
   q('closeOverlay()');
 
+
+  console.log('\n=== X25 — long-press repeats last time ===');
+  q("view='session'; render();");
+  await wait(200);
+  {
+    // a clean slate for slot 0: one older session to repeat, nothing logged today
+    q(`(function(){
+      const d = currentDay(), date = todayKey();
+      const c = chosenCanonFor('danny', slotKeyOf(d.n, 0), d.ex[0]);
+      // one clean previous session for this lift, and nothing logged today
+      for (const k of Object.keys(logOf('danny').lifts))
+        if (logOf('danny').lifts[k].ex === c) delete logOf('danny').lifts[k];
+      logOf('danny').lifts['l:danny:repeat:test'] = { id:'l:danny:repeat:test', kind:'lift', pid:'danny',
+        ex:c, name:d.ex[0].name, date:'${TODAY}', weight:66, reps:[9], repsMode:'last', ts:Date.now() - 172800000, day:d.n };
+      delete logOf('danny').ticks[tickKey(d.n, date)];
+      saveLog('danny', true); render();
+    })()`);
+    await wait(220);
+    const canon0 = q(`chosenCanonFor('danny', slotKeyOf(currentDay().n, 0), currentDay().ex[0])`);
+    ok(q(`personStats('danny', ${JSON.stringify(canon0)}).last.weight`) === 66,
+       'the previous session to repeat is in place (66 kg)');
+    const li = $$('#list li.ex')[0];
+    const pill = li.querySelector('.pill');
+    pill.dispatchEvent(new win.PointerEvent('pointerdown', { bubbles:true }));
+    await wait(700);                                    // longer than the 450ms press
+    const logged = q(`(logOf('danny').lifts['l:danny:' + ${JSON.stringify(canon0)} + ':' + todayKey()] || {}).weight`);
+    ok(logged === 66, "holding a pill logs last time's weight with no sheet at all", String(logged));
+    ok(q(`(logOf('danny').lifts['l:danny:' + ${JSON.stringify(canon0)} + ':' + todayKey()] || {}).repsMode`) === 'last',
+       'and it is written the same way the sheet writes it');
+    ok(q(`ticksFor('danny', currentDay().n, todayKey()).includes(0)`), 'and the exercise is ticked off too');
+    ok(/Repeated 66/.test($('#toast').textContent), 'the toast says what it repeated', $('#toast').textContent.trim());
+    pill.dispatchEvent(new win.PointerEvent('pointerup', { bubbles:true }));
+    tap(li);
+    await wait(150);
+    ok(!$('#overlayroot').innerHTML, 'and the tap that ends the press does not also open the sheet');
+    await wait(700);
+    tap($$('#list li.ex')[0].querySelector('.pill'));
+    await wait(220);
+    ok(!!$('#winput'), 'a quick tap still opens the sheet as before');
+    q('closeOverlay()');
+  }
+
+  console.log('\n=== X79 — short on time ===');
+  tap($('#shortbtn'));
+  await wait(220);
+  ok(!!$('#shortmins'), 'the sheet asks how long you have');
+  const trim45 = JSON.parse(q(`JSON.stringify(trimFor(45, currentDay()))`));
+  const trim25 = JSON.parse(q(`JSON.stringify(trimFor(25, currentDay()))`));
+  const totalEx = q('currentDay().ex.length');
+  ok(trim45.keep.length > 0 && trim45.keep.length <= totalEx, '45 minutes keeps a sensible subset', trim45.keep.length + '/' + totalEx);
+  ok(trim25.keep.length <= trim45.keep.length, '25 minutes keeps no more than 45', trim25.keep.length + ' vs ' + trim45.keep.length);
+  const keptFirst = q(`trimFor(30, currentDay()).keep.includes(0)`);
+  ok(keptFirst, 'the first big lift of the day always survives a cut');
+  q(`setShortFor('danny', currentDay().n, todayKey(), trimFor(30, currentDay()).keep, 30); render();`);
+  await wait(220);
+  const cut = $$('#list li.ex.cut').length;
+  ok(cut > 0, 'the trimmed rows are marked on the session', cut + ' left out');
+  ok(/left out today/.test(txt()), 'and say so in words, not just greyed out');
+  ok(/Trimmed to 30 min/.test(txt()), 'the button shows that today is trimmed');
+  ok($$('#list li.ex').length === totalEx, 'nothing is removed from the plan — all rows are still listed');
+  q(`setShortFor('danny', currentDay().n, todayKey(), null, 0); render();`);
+  await wait(200);
+  ok($$('#list li.ex.cut').length === 0, 'and it clears completely');
+  q(`S.short['danny'] = { key:(currentDay().n + ':1999-01-01'), keep:[0], mins:25 }; saveSettings(); render();`);
+  await wait(200);
+  ok($$('#list li.ex.cut').length === 0, 'yesterday\'s trim never leaks into today');
+  q("S.short = {}; saveSettings(); render();");
+  await wait(150);
+
+  console.log('\n=== the log sheet still behaves ===');
+  tap($$('#list li.ex')[0].querySelector('.pill'));
+  await wait(200);
+  ok(!!$('#winput') && !!$('#savebtn'), 'it opens with the weight field and save button');
+  ok(!!$('.l3'), 'with the last three sessions listed');
+  q('closeOverlay()');
+
   console.log('\n' + pass + ' passed, ' + fail + ' failed');
   win.close();
   process.exit(fail ? 1 : 0);
