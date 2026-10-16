@@ -666,6 +666,162 @@
   .contrast-high .restline{opacity:1;}
   .contrast-high li.ex.done{opacity:.66;}
   .contrast-high .block p{opacity:1;}
+
+  /* ============================================================
+     Release 4 — progress, celebration, the two of you
+     ============================================================ */
+  /* PB banner: slides down over the top for a moment, then leaves */
+  #pbbanner{position:fixed;left:0;right:0;top:0;z-index:150;pointer-events:none;
+    transform:translateY(-110%);transition:transform .38s cubic-bezier(.2,.9,.25,1);}
+  #pbbanner.show{transform:translateY(0);}
+  #pbbanner .pbin{
+    margin:max(env(safe-area-inset-top),8px) 10px 0;padding:13px 16px;border-radius:6px;
+    background:linear-gradient(180deg,#F5C518,#E8B609);color:#15190F;
+    display:flex;align-items:center;gap:12px;box-shadow:0 12px 30px rgba(0,0,0,.45);
+  }
+  #pbbanner .pbstar{font-size:26px;line-height:1;flex:none;
+    animation:pop .5s cubic-bezier(.2,1.6,.3,1) both;}
+  #pbbanner .pbtxt{display:flex;flex-direction:column;gap:3px;min-width:0;}
+  #pbbanner .pbtxt b{font-family:'IBM Plex Mono',monospace;font-size:19px;font-weight:600;letter-spacing:-.01em;}
+  #pbbanner .pbtxt span{font-size:12.5px;opacity:.82;letter-spacing:.01em;}
+  @keyframes pop{from{transform:scale(.4) rotate(-25deg);}to{transform:scale(1) rotate(0);}}
+  @media (prefers-reduced-motion:reduce){ #pbbanner{transition:none;} #pbbanner .pbstar{animation:none;} }
+
+  /* session summary */
+  .summary{
+    margin-top:20px;border:1px solid var(--line);border-left:3px solid var(--pc,var(--accent));
+    background:var(--surface);border-radius:4px;padding:16px 18px;
+  }
+  .summary .shead{display:flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;
+    font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--pc,var(--accent));font-weight:600;}
+  .summary .sdot{width:7px;height:7px;border-radius:50%;background:var(--pc,var(--accent));}
+  .summary .srow{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:12px;
+    font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--chalk);}
+  .summary .srow b{color:var(--pc,var(--accent));font-size:15px;}
+  .summary .sbest{margin-top:11px;font-size:13.5px;color:var(--chalk);opacity:.9;}
+  .summary .sbest b{font-family:'IBM Plex Mono',monospace;font-weight:600;}
+  .summary .spb{margin-top:9px;font-size:13.5px;color:var(--accent);}
+  .summary .sdelta{margin-top:9px;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.02em;color:var(--muted);}
+  .summary .sdelta.up{color:#7FD18B;} .summary .sdelta.down{color:var(--d3);}
+
+  /* the small view switch, shared by Progress and the PB sort */
+  .views{display:flex;gap:6px;margin-top:20px;}
+  .views button{
+    flex:1;background:var(--surface);border:1px solid var(--line);border-radius:3px;
+    color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.08em;
+    text-transform:uppercase;padding:11px 4px;cursor:pointer;appearance:none;
+  }
+  .views button[aria-pressed="true"]{background:var(--pc,var(--accent));border-color:var(--pc,var(--accent));color:var(--base);font-weight:600;}
+  .views button:focus-visible{outline:2px solid var(--chalk);outline-offset:2px;}
+  .views.small button{font-size:10.5px;padding:8px 4px;letter-spacing:.06em;}
+
+  /* month comparison */
+  .cmpline{display:flex;align-items:baseline;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);}
+  .cmpline:last-child{border-bottom:none;}
+  .cmpline .nm{flex:1;min-width:0;font-size:14.5px;font-weight:600;letter-spacing:-.01em;}
+  .cmpline .was{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--muted);text-decoration:line-through;}
+  .cmpline .to{font-family:'IBM Plex Mono',monospace;font-size:14px;color:var(--chalk);}
+  .cmpline .dl{font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--muted);min-width:46px;text-align:right;}
+  .cmpline .dl.up{color:#7FD18B;} .cmpline .dl.down{color:var(--d3);}
+
+  /* the PB wall */
+  .wallrow{display:grid;grid-template-columns:auto 1fr auto;grid-template-areas:"m n w" ". d w";
+    gap:2px 10px;align-items:center;padding:11px 0;border-bottom:1px solid var(--line);}
+  .wallrow:last-child{border-bottom:none;}
+  .wallrow .wm{grid-area:m;font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--muted);white-space:nowrap;}
+  .wallrow .wn{grid-area:n;font-size:15.5px;font-weight:700;letter-spacing:-.015em;}
+  .wallrow .wd{grid-area:d;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--muted);}
+  .wallrow .ww{grid-area:w;font-family:'IBM Plex Mono',monospace;font-size:19px;font-weight:600;
+    color:var(--pc,var(--accent));white-space:nowrap;text-align:right;}
+  .wallrow .ww .u{font-size:10px;color:var(--muted);margin-left:2px;}
+  .wallrow .ww .xr{font-size:12.5px;opacity:.72;margin-left:5px;}
+
+  .nudge{display:flex;align-items:center;gap:14px;margin-top:18px;padding:14px 16px;
+    border:1px dashed var(--line);border-radius:4px;}
+  .nudge .nb{font-family:'IBM Plex Mono',monospace;font-size:20px;font-weight:600;color:var(--pc,var(--accent));flex:none;}
+  .nudge .nt{font-size:13.5px;color:var(--chalk);opacity:.88;line-height:1.5;}
+  .nudge .nt b{color:var(--chalk);}
+
+  /* the twelve-week grid */
+  .hmgrid{margin-top:14px;display:flex;flex-direction:column;gap:4px;}
+  .hmweek{display:flex;align-items:center;gap:6px;}
+  .hmweek .hw{font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:var(--muted);width:16px;flex:none;text-align:right;}
+  .hmc{width:100%;max-width:26px;height:20px;border-radius:2px;background:var(--surface);
+    border:1px solid var(--line);flex:1;display:inline-block;}
+  .hmc.l0{}
+  .hmc.l1{background:color-mix(in srgb, var(--pc,var(--accent)) 30%, var(--surface));border-color:transparent;}
+  .hmc.l2{background:color-mix(in srgb, var(--pc,var(--accent)) 60%, var(--surface));border-color:transparent;}
+  .hmc.l3{background:var(--pc,var(--accent));border-color:transparent;}
+  .hmc.future{opacity:.28;border-style:dashed;}
+  .hmkey{display:flex;align-items:center;gap:8px;margin-top:12px;font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;}
+  .hmkey .hmc{width:16px;height:16px;flex:none;}
+
+  /* muscle frequency this week */
+  .mfreq{display:flex;align-items:center;gap:10px;padding:7px 0;}
+  .mfreq .fm{flex:none;width:104px;font-size:12.5px;color:var(--chalk);opacity:.85;}
+  .mfreq .fbar{flex:1;height:8px;border-radius:4px;background:var(--surface);border:1px solid var(--line);overflow:hidden;}
+  .mfreq .fbar span{display:block;height:100%;background:var(--pc,var(--accent));border-radius:4px;}
+  .mfreq .fv{flex:none;font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--muted);width:42px;text-align:right;}
+
+  /* the two of you */
+  .vsrow{padding:12px 0;border-bottom:1px solid var(--line);}
+  .vsrow:last-child{border-bottom:none;}
+  .vsrow .vn{display:block;font-size:15px;font-weight:700;letter-spacing:-.015em;margin-bottom:8px;}
+  .vsrow .vcol{display:block;position:relative;margin:5px 0;}
+  .vsrow .vbar{position:absolute;left:0;top:0;bottom:0;opacity:.28;border-radius:2px;}
+  .vsrow .vv{position:relative;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--chalk);
+    padding:5px 8px;white-space:nowrap;}
+  .vsrow .vv .u{font-size:10px;color:var(--muted);margin-left:2px;}
+  .two-lists{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:12px;}
+  .two-lists .tl{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--muted);display:block;margin-bottom:8px;}
+  .tinyrow{font-size:13px;padding:4px 0;color:var(--chalk);opacity:.88;}
+  .tinyrow.muted{opacity:.5;}
+  .feedrow{display:flex;align-items:baseline;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);}
+  .feedrow:last-child{border-bottom:none;}
+  .feedrow .fpdot{width:7px;height:7px;border-radius:50%;flex:none;align-self:center;}
+  .feedrow .ftxt{flex:1;min-width:0;font-size:14px;color:var(--chalk);opacity:.9;}
+  .feedrow .ftxt b{font-weight:700;opacity:1;}
+  .feedrow .fpb{font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.15em;color:var(--accent);margin-left:4px;}
+  .feedrow .fwhen{flex:none;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--muted);white-space:nowrap;}
+  .pbline.partner{display:flex;align-items:center;justify-content:flex-end;gap:5px;}
+  .pbline .pdot{width:6px;height:6px;border-radius:50%;flex:none;}
+
+
+  /* X38 — the last three sessions, inside the log sheet */
+  .l3{display:flex;flex-direction:column;gap:0;margin-top:12px;border-top:1px solid var(--line);}
+  .l3label{font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--muted);padding:10px 0 6px;}
+  .l3row{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:7px 0;
+    border-bottom:1px solid var(--line);}
+  .l3row:last-of-type{border-bottom:none;}
+  .l3row .l3w{font-family:'IBM Plex Mono',monospace;font-size:16px;font-weight:600;color:var(--chalk);}
+  .l3row.now .l3w{color:var(--pc,var(--accent));}
+  .l3row .l3w .u{font-size:10px;color:var(--muted);margin-left:2px;font-weight:400;}
+  .l3row .l3w .l3x{font-size:12.5px;opacity:.72;margin-left:5px;}
+  .l3row .l3d{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--muted);white-space:nowrap;}
+  .l3row .l3pb{color:var(--accent);letter-spacing:.12em;font-size:9.5px;}
+  .l3same{font-size:12px;color:var(--muted);padding:9px 0 2px;font-style:italic;}
+
+
+  /* X144 — plate calculator */
+  .stepper-row{display:flex;align-items:center;gap:10px;margin-top:10px;}
+  .stepper-row input{flex:1;text-align:center;background:var(--base);border:1px solid var(--line);border-radius:3px;
+    color:var(--chalk);font-family:'IBM Plex Mono',monospace;font-size:26px;font-weight:600;padding:12px;min-width:0;}
+  .stepper-row .step{flex:none;width:52px;height:52px;border-radius:3px;background:var(--surface);
+    border:1px solid var(--line);color:var(--chalk);font-size:22px;line-height:1;cursor:pointer;}
+  .stepper-row .step:active{background:var(--line);}
+  .plate-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;}
+  .plate{display:flex;flex-direction:column;align-items:center;gap:2px;min-width:52px;padding:9px 10px;
+    border:1px solid var(--line);border-radius:3px;background:var(--surface);}
+  .plate b{font-family:'IBM Plex Mono',monospace;font-size:15px;font-weight:600;color:var(--chalk);}
+  .plate span{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--muted);}
+  .plate.bar{border-color:var(--pc,var(--accent));}
+  .plate.bar b{color:var(--pc,var(--accent));}
+  .plate.none{font-size:12px;color:var(--muted);}
+
   @keyframes rise{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
   @keyframes fade{from{opacity:0;}to{opacity:1;}}
   @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
@@ -719,6 +875,8 @@
 </div>
 
 <div id="overlayroot"></div>
+<!-- X158: a personal best gets one clear moment, over the top of anything else -->
+<div id="pbbanner" aria-live="polite"></div>
 <div class="toast" id="toast" role="status"></div>
 
 <script>
@@ -939,7 +1097,8 @@ const esc = s => String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>'
 const uid = p => p + '_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,8);
 const todayKey = () => new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD local
 const fmtGB = (d, withYear) => {
-  const dt = new Date(d + 'T00:00:00');
+  const dt = new Date(String(d) + 'T00:00:00');
+  if (isNaN(dt.getTime())) return String(d == null ? '' : d);   // never print "Invalid Date"
   return dt.toLocaleDateString('en-GB', withYear ? {day:'numeric',month:'short',year:'numeric'} : {day:'numeric',month:'short'});
 };
 const pad = n => String(n).padStart(2,'0');
@@ -1574,6 +1733,12 @@ function dayRowHTML(day, idx, p, dayKey){
     } else {
       pbHTML = `<span class="pbline blank">no PB yet</span>`;
     }
+    /* X183 — the other person's PB for the same lift, named so it is never mistaken for yours */
+    for (const other of S.people){
+      if (other.id === p.id) continue;
+      const theirs = pbOf(other.id, chosen);
+      if (theirs) pbHTML += `<span class="pbline partner"><span class="pdot" style="background:${personDotColor(other.id)}"></span>${esc(other.name)}'s PB <b>${wFmt(theirs.weight)}</b>${lastReps(theirs) ? ` ×${lastReps(theirs)}` : ''}</span>`;
+    }
   }
 
   /* which variant is live today: always named, never left to memory */
@@ -1816,6 +1981,7 @@ function renderSession(){
       <h1>Day <span class="idx">${day.n}</span></h1>
       <div class="focus">${esc(day.title)}</div>
       <div class="stats">${day.ex.length} exercises &nbsp;·&nbsp; ${setCount(day)} working sets &nbsp;·&nbsp; ${day.mins}</div>
+      ${done.length === day.ex.length ? sessionSummaryHTML(p.id, day, date) : ''}
       ${rest}
 
       <div class="block">
@@ -1832,6 +1998,11 @@ function renderSession(){
           <button class="reset" id="reset" hidden>Reset</button>
         </div>
         <ol id="list">${rows}</ol>
+      </div>
+
+      <div class="cta-row" style="margin-top:18px">
+        <button class="mini-btn" id="platebtn" type="button">Plate calculator</button>
+        <button class="mini-btn" id="searchbtn2" type="button">Search my log</button>
       </div>
 
       <div class="block">
@@ -1872,6 +2043,8 @@ function renderSession(){
     const li = ev.target.closest('li.ex');
     if (li){ ev.preventDefault(); openLogSheet(+li.dataset.i); }
   });
+  document.getElementById('platebtn').addEventListener('click', openPlateSheet);
+  document.getElementById('searchbtn2').addEventListener('click', openSearchSheet);
   document.getElementById('reset').addEventListener('click', () => {
     if (!done.length) return;
     if (!confirm(`Clear ${p.name}'s ticks for today? (Lift logs are kept.)`)) return;
@@ -1986,7 +2159,7 @@ function openLogSheet(idx){
       ${slot.supersetWith != null ? `<span>Superset: <b>with #${slot.supersetWith + 1}</b></span>` : ''}
     </div>
 
-    <div class="hint-row" id="lastrow">${lastHintHTML(last, pb, lift, isBW)}</div>
+    <div class="hint-row" id="lastrow">${lastHintHTML(last, pb, lift, isBW, p.id, chosen)}</div>
 
     ${isBW ? `
       <div class="modal-sec">
@@ -2117,7 +2290,7 @@ function openLogSheet(idx){
         ri.value = r2 != null ? r2 : '';
       }
       const lr = document.getElementById('lastrow');
-      if (lr) lr.innerHTML = lastHintHTML(curLast, curPb, curLift, isBW);
+      if (lr) lr.innerHTML = lastHintHTML(curLast, curPb, curLift, isBW, p.id, chosenCanonFor(p.id, slotKeyOf(day.n, idx), slot));
       const note = document.getElementById('note');
       if (note) note.innerHTML = noteText(curLift, doneNow);
       const lb = root.querySelector('[data-last]');
@@ -2235,7 +2408,7 @@ function multiRepRowsHTML(lift, presc){
   return `<div class="setrows">${rows}</div>`;
 }
 
-function lastHintHTML(last, pb, lift, isBW){
+function lastHintHTML(last, pb, lift, isBW, pid, canon){
   if (isBW) return 'Nothing to weigh — just tick it off when your sets are done.';
   let parts = [];
   if (last){
@@ -2249,7 +2422,26 @@ function lastHintHTML(last, pb, lift, isBW){
     parts.push(`PB: <b style="color:var(--pc)">${wFmt(pb.weight)} ${UNIT}</b>${r ? ' × ' + r : ''} <span style="opacity:.6">· ${fmtGB(pb.date,true)}</span>`);
   }
   const beat = last && pb && lift && lift.weight > pb.weight;
-  return `<div class="${beat ? 'pb-new' : ''}">${parts.join('<br>')}</div>`;
+  // X38 — the last three times, so you can pick your next weight without leaving the sheet
+  const recent = (pid && canon)
+    ? liftsOf(pid).filter(e => e.ex === canon).sort((a, b) => (b.ts || 0) - (a.ts || 0)).slice(0, 3)
+    : [];
+  let history = '';
+  if (recent.length){
+    history = `<div class="l3">
+      <span class="l3label">Last ${recent.length === 1 ? 'session' : recent.length + ' sessions'}</span>
+      ${recent.map((e, i) => {
+        const r = lastReps(e);
+        const pbMark = pb && e.id === pb.id ? ' <span class="l3pb">PB</span>' : '';
+        return `<span class="l3row${i === 0 ? ' now' : ''}">
+          <span class="l3w">${wFmt(e.weight)}<span class="u">${UNIT}</span>${r ? `<span class="l3x">×${r}</span>` : ''}</span>
+          <span class="l3d">${esc(fmtGB(e.date, true))}${pbMark}</span></span>`;
+      }).join('')}
+      ${recent.length > 1 && recent[0].weight === recent[1].weight && recent[1].weight === (recent[2] || {}).weight
+        ? '<span class="l3same">Same weight three times — add a little, or add a rep.</span>' : ''}
+    </div>`;
+  }
+  return `<div class="${beat ? 'pb-new' : ''}">${parts.join('<br>')}</div>${history}`;
 }
 
 /* Reads the sheet, guards against typos, then writes. */
@@ -2321,7 +2513,9 @@ function writeLift(idx, targets, payload){
   const slot = day.ex[idx];
   const slotKey = slotKeyOf(day.n, idx);
   const date = todayKey();
-  const { w, reps, repsMode } = payload;
+  const { w, repsMode } = payload;
+  const reps = Array.isArray(payload.reps) ? payload.reps
+             : (payload.reps == null ? null : [payload.reps]);
   const snap = snapshotBefore(targets.map(t => t.id));
   const before = {};
   for (const t of targets){
@@ -2356,6 +2550,13 @@ function writeLift(idx, targets, payload){
   if (targets.length > 1) msg += ' — both of you';
   if (pbNames.length) msg += ` 🏆 PB${pbNames.length > 1 ? ' for both' : ' for ' + esc(pbNames[0])}`;
   toast(msg, personDotColor(main.id), undoLast);
+  // X158 — a real PB gets the moment it deserves, but only in the tab that did it
+  if (pbNames.length){
+    const pbList = targets.filter(t => pbNames.includes(t.name)).map(t => ({
+      name:t.name, entry:{ weight:w, reps:reps || null }
+    }));
+    celebratePB(pbList);
+  }
   render();
 }
 
@@ -2468,55 +2669,14 @@ function renderProgress(){
   setPersonAccent();
   const p = me();
   const lifts = liftsOf(p.id);
-  const date = todayKey();
 
-  // aggregate by canon
-  const map = new Map();
-  for (const e of lifts){
-    if (!map.has(e.ex)) map.set(e.ex, { ex:e.ex, name:CANON_LABEL[e.ex] || e.name || e.ex, entries:[] });
-    map.get(e.ex).entries.push(e);
-  }
-  const groups = [];
-  for (const [ex, g] of map){
-    g.entries.sort((a,b)=>a.ts-b.ts);
-    let pb = null;
-    for (const e of g.entries) if (!pb || e.weight > pb.weight) pb = e;
-    g.pb = pb;
-    g.muscle = muscleFor(ex);
-    groups.push(g);
-  }
-  groups.sort((a,b) => (b.pb.weight - a.pb.weight));
+  let body = progressHeader(p, lifts);
+  if (progressView === 'pbs')       body += progressPBsView(p);
+  else if (progressView === 'map')  body += progressMapView(p);
+  else if (progressView === 'two')  body += progressTwoView(p);
+  else                              body += progressLiftsView(p, lifts);
 
-  let body = `
-    <div class="eyebrow"><span class="who">${esc(p.name)}</span> &nbsp;·&nbsp; PROGRESS</div>
-    <h1 class="small">Lift <span class="idx" style="color:${personDotColor(p.id)}">history</span></h1>
-    <div class="sumline">
-      <div class="statcard"><span class="v" style="color:${personDotColor(p.id)}">${groups.length}</span><span class="k">lifts logged</span></div>
-      <div class="statcard"><span class="v" style="color:${personDotColor(p.id)}">${groups.filter(g=>g.entries.length>=2).length}</span><span class="k">with a trend</span></div>
-      <div class="statcard"><span class="v" style="color:${personDotColor(p.id)}">${liftCount(lifts)}</span><span class="k">total sessions</span></div>
-    </div>`;
-
-  if (!groups.length){
-    body += `<div class="empty">Nothing logged yet.<br>Tap an exercise in the SESSION tab and enter a weight.<br>Your PBs and history build up here.</div>`;
-  } else {
-    for (const g of groups){
-      const pbReps = lastReps(g.pb);
-      body += `
-      <div class="block" style="margin-top:22px">
-        <div class="pr-row" data-ex="${g.ex}">
-          <span class="rn"><span class="nm">${esc(g.name)}</span>
-            <span class="mus">${esc(g.muscle)} · ${esc(String(g.entries.length))} logged</span></span>
-          <span class="spark">${sparkSVG(g.entries.map(e=>e.weight))}</span>
-          <span class="pbv"><span class="w">${wFmt(g.pb.weight)}</span>
-            <span class="d">PB${pbReps ? ' × ' + pbReps : ''} · ${fmtGB(g.pb.date)}</span></span>
-        </div>
-      </div>`;
-    }
-  }
-  body += `<p style="margin-top:20px;font-size:13px;color:var(--muted);line-height:1.6;font-family:'IBM Plex Mono',monospace;letter-spacing:.02em">
-    PB = the heaviest weight you've logged for that lift, with the date you first hit it${''}.
-    Tap a row to see every session — and to edit or delete one.</p>
-    <div style="margin-top:26px;border-top:1px solid var(--line);padding-top:14px">
+  body += `<div style="margin-top:26px;border-top:1px solid var(--line);padding-top:14px">
       ${syncFooterHTML()}
       ${netNoteHTML()}
       ${backupNudgeHTML()}
@@ -2524,11 +2684,467 @@ function renderProgress(){
 
   document.getElementById('app').innerHTML = `<div class="anim">${body}</div>`;
   document.querySelectorAll('.pr-row').forEach(r => r.addEventListener('click', () => openHistory(r.dataset.ex)));
+  document.querySelectorAll('[data-pv]').forEach(b => b.addEventListener('click', () => {
+    progressView = b.dataset.pv; render();
+  }));
+  document.querySelectorAll('[data-pbsort]').forEach(b => b.addEventListener('click', () => {
+    pbSort = b.dataset.pbsort; render();
+  }));
   bindSyncButtons();
-  window.scrollTo(0,0);
-  // pull fresh updates from the other phone whenever Progress opens
+  window.scrollTo(0, 0);
   if (syncConfigured() && S.sync.pin && !syncInFlight) doSync(false);
 }
+
+/* ============================================================
+   Release 4 — Progress, motivation and the two of you
+   ============================================================ */
+
+/* ---------- shared helpers ---------- */
+function isoDate(d){ return d.toLocaleDateString('en-CA'); }
+function dateFromKey(k){ return new Date(k + 'T12:00:00'); }
+function weekStartKey(offsetWeeks){
+  const d = new Date();
+  d.setHours(12,0,0,0);
+  const dow = (d.getDay() + 6) % 7;          // Monday = 0
+  d.setDate(d.getDate() - dow + (offsetWeeks || 0) * 7);
+  return isoDate(d);
+}
+function agoText(dateStr){
+  const then = dateFromKey(dateStr).getTime();
+  const days = Math.round((Date.now() - then) / 86400000);
+  if (days <= 0) return 'today';
+  if (days === 1) return 'yesterday';
+  if (days < 7) return days + ' days ago';
+  if (days < 14) return 'last week';
+  if (days < 60) return Math.round(days / 7) + ' weeks ago';
+  return Math.round(days / 30) + ' months ago';
+}
+function entriesOn(pid, date){
+  return liftsOf(pid).filter(e => e.date === date);
+}
+function volumeOn(pid, date){
+  return entriesOn(pid, date).reduce((n, e) => n + (e.weight || 0) * (lastReps(e) || 1), 0);
+}
+function dayVolume(pid, dow, date){
+  return volumeOn(pid, date);
+}
+/* the most recent earlier date on which this person logged anything */
+function previousSessionDate(pid, beforeDate){
+  const dates = [...new Set(liftsOf(pid).map(e => e.date))].filter(d => d < beforeDate).sort();
+  return dates.length ? dates[dates.length - 1] : null;
+}
+function sameDayLastTime(pid, dow, beforeDate){
+  const dates = [...new Set(ticksForDates(pid, dow))].filter(d => d < beforeDate).sort();
+  return dates.length ? dates[dates.length - 1] : null;
+}
+function ticksForDates(pid, dow){
+  const t = logOf(pid).ticks || {};
+  return Object.keys(t).filter(k => +k.split(':')[0] === dow && (t[k].items || []).length).map(k => k.split(':')[1]);
+}
+function pbOf(pid, canon){
+  let pb = null;
+  for (const e of liftsOf(pid)) if (e.ex === canon && (!pb || e.weight > pb.weight)) pb = e;
+  return pb;
+}
+function allPBs(pid){
+  const map = new Map();
+  for (const e of liftsOf(pid)){
+    const cur = map.get(e.ex);
+    if (!cur || e.weight > cur.weight) map.set(e.ex, e);
+  }
+  return [...map.values()].map(e => ({
+    ex:e.ex, name:CANON_LABEL[e.ex] || e.name || e.ex, muscle:muscleFor(e.ex), entry:e, weight:e.weight, date:e.date
+  }));
+}
+
+/* ---------- session summary (X157) and PB celebration (X158) ---------- */
+function sessionSummaryHTML(pid, day, date){
+  const entries = entriesOn(pid, date);
+  if (!entries.length) return '';
+  const dows = ['', 'MON', 'WED', 'FRI'];
+  const sets = day.ex.length;
+  const vol = entries.reduce((n, e) => n + (e.weight || 0) * (lastReps(e) || 1), 0);
+  const best = entries.slice().sort((a, b) => (b.weight || 0) - (a.weight || 0))[0];
+  const ts = entries.map(e => e.ts).filter(Boolean).sort((a, b) => a - b);
+  const mins = ts.length > 1 ? Math.max(1, Math.round((ts[ts.length-1] - ts[0]) / 60000)) : 0;
+  const pbs = entries.filter(e => {
+    const all = liftsOf(pid).filter(x => x.ex === e.ex && x.date <= e.date && !isDeleted(x));
+    return all.length > 1 && e.weight >= Math.max(...all.map(x => x.weight));
+  });
+  const prev = sameDayLastTime(pid, day.n, date);
+  const prevVol = prev ? volumeOn(pid, prev) : 0;
+  const delta = prevVol ? vol - prevVol : 0;
+
+  return `
+    <div class="summary" role="status">
+      <div class="shead"><span class="sdot"></span> Session complete</div>
+      <div class="srow">
+        <span><b>${entries.length}</b> of ${sets} logged</span>
+        ${vol ? `<span><b>${Math.round(vol).toLocaleString('en-GB')}</b> kg moved</span>` : ''}
+        ${mins ? `<span><b>${mins}</b> min</span>` : ''}
+      </div>
+      ${best ? `<div class="sbest">Best set: <b>${esc(best.name)} ${wFmt(best.weight)} ${UNIT}${lastReps(best) ? ' ×' + lastReps(best) : ''}</b></div>` : ''}
+      ${pbs.length ? `<div class="spb">🏆 ${pbs.length === 1 ? 'A PB today' : pbs.length + ' PBs today'}: ${pbs.map(e => esc(e.name) + ' ' + wFmt(e.weight)).join(' · ')}</div>` : ''}
+      ${delta ? `<div class="sdelta ${delta > 0 ? 'up' : 'down'}">${delta > 0 ? '+' : ''}${Math.round(delta).toLocaleString('en-GB')} kg against last ${esc(String(day.label).toUpperCase())}${prev ? ' (' + esc(fmtGB(prev)) + ')' : ''}</div>` : ''}
+    </div>`;
+}
+function celebratePB(list){
+  const el = document.getElementById('pbbanner');
+  if (!el) return;
+  const who = list.length > 1 ? 'both of you' : (list[0].name + "'s");
+  const first = list[0];
+  el.innerHTML = `
+    <div class="pbin">
+      <span class="pbstar">🏆</span>
+      <span class="pbtxt">
+        <b>${wFmt(first.entry.weight)} ${UNIT}${lastReps(first.entry) ? ' × ' + lastReps(first.entry) : ''}</b>
+        <span>${esc(first.name)} — a new PB for ${esc(who)}${list.length > 1 ? ' · ' + esc(list.slice(1).map(x => x.name).join(', ')) : ''}</span>
+      </span>
+    </div>`;
+  el.classList.add('show');
+  clearTimeout(celebratePB.timer);
+  celebratePB.timer = setTimeout(() => el.classList.remove('show'), 3600);
+}
+
+/* ---------- the Progress screen, in four views ---------- */
+let progressView = 'lifts';
+
+function progressTabsHTML(){
+  const views = [['lifts','Lifts'], ['pbs','PBs'], ['map','Map'], ['two','You two']];
+  return `<div class="views">${views.map(([v, label]) =>
+    `<button data-pv="${v}" aria-pressed="${progressView === v}">${label}</button>`).join('')}</div>`;
+}
+
+function progressHeader(p, lifts){
+  const groups = new Set(lifts.map(e => e.ex)).size;
+  const dates = [...new Set(lifts.map(e => e.date))].sort();
+  const streak = sessionStreak(p.id);
+  return `
+    <div class="eyebrow"><span class="who">${esc(p.name)}</span> &nbsp;·&nbsp; PROGRESS</div>
+    <h1 class="small">Lift <span class="idx" style="color:${personDotColor(p.id)}">history</span></h1>
+    <div class="sumline">
+      <div class="statcard"><span class="v" style="color:${personDotColor(p.id)}">${groups}</span><span class="k">lifts logged</span></div>
+      <div class="statcard"><span class="v" style="color:${personDotColor(p.id)}">${dates.length}</span><span class="k">sessions</span></div>
+      <div class="statcard"><span class="v" style="color:${personDotColor(p.id)}">${streak}</span><span class="k">week streak</span></div>
+    </div>
+    ${progressTabsHTML()}`;
+}
+
+function progressLiftsView(p, lifts){
+  const map = new Map();
+  for (const e of lifts){
+    if (!map.has(e.ex)) map.set(e.ex, { ex:e.ex, name:CANON_LABEL[e.ex] || e.name || e.ex, entries:[] });
+    map.get(e.ex).entries.push(e);
+  }
+  const groups = [];
+  for (const [ex, g] of map){
+    g.entries.sort((a, b) => a.ts - b.ts);
+    let pb = null;
+    for (const e of g.entries) if (!pb || e.weight > pb.weight) pb = e;
+    g.pb = pb;
+    g.muscle = muscleFor(ex);
+    groups.push(g);
+  }
+  groups.sort((a, b) => (b.pb.weight - a.pb.weight));
+
+  let body = monthCompareHTML(p);
+  if (!groups.length){
+    body += `<div class="empty">Nothing logged yet.<br>Tap an exercise in the SESSION tab and enter a weight.<br>Your PBs and history build up here.</div>`;
+    return body;
+  }
+  for (const g of groups){
+    const pbReps = lastReps(g.pb);
+    body += `
+    <div class="block" style="margin-top:22px">
+      <div class="pr-row" data-ex="${g.ex}">
+        <span class="rn"><span class="nm">${esc(g.name)}</span>
+          <span class="mus">${esc(g.muscle)} · ${esc(String(g.entries.length))} logged</span></span>
+        <span class="spark">${sparkSVG(g.entries.map(e => e.weight))}</span>
+        <span class="pbv"><span class="w">${wFmt(g.pb.weight)}</span>
+          <span class="d">PB${pbReps ? ' × ' + pbReps : ''} · ${fmtGB(g.pb.date)}</span></span>
+      </div>
+    </div>`;
+  }
+  body += `<p style="margin-top:20px;font-size:13px;color:var(--muted);line-height:1.6;font-family:'IBM Plex Mono',monospace;letter-spacing:.02em">
+    PB = the heaviest weight you've logged for that lift, with the date you first hit it.
+    Tap a row to see every session — and to edit or delete one.</p>`;
+  return body;
+}
+
+/* X168 — this month against last month, per lift */
+function monthCompareHTML(p){
+  const lifts = liftsOf(p.id);
+  const now = new Date();
+  const thisM = isoDate(now).slice(0, 7);
+  const lm = new Date(now); lm.setMonth(lm.getMonth() - 1);
+  const lastM = isoDate(lm).slice(0, 7);
+  const bestIn = m => {
+    const map = new Map();
+    for (const e of lifts) if (e.date.slice(0, 7) === m){
+      const cur = map.get(e.ex);
+      if (!cur || e.weight > cur.weight) map.set(e.ex, e);
+    }
+    return map;
+  };
+  const a = bestIn(thisM), b = bestIn(lastM);
+  const rows = [];
+  for (const [ex, e] of a){
+    const was = b.get(ex);
+    if (!was) continue;
+    rows.push({ name:CANON_LABEL[ex] || e.name || ex, now:e.weight, then:was.weight, delta:e.weight - was.weight });
+  }
+  if (!rows.length) return '';
+  rows.sort((x, y) => Math.abs(y.delta) - Math.abs(x.delta));
+  const monthName = m => new Date(m + '-15T12:00:00').toLocaleDateString('en-GB', { month:'long' });
+  return `
+    <div class="block">
+      <div class="block-label">This month vs last</div>
+      <p style="font-size:14px;opacity:.75">Best set per lift — ${esc(monthName(thisM))} against ${esc(monthName(lastM))}.</p>
+      ${rows.map(r => `
+        <div class="cmpline">
+          <span class="nm">${esc(r.name)}</span>
+          <span class="was">${wFmt(r.then)}</span>
+          <span class="to">${wFmt(r.now)} ${UNIT}</span>
+          <span class="dl ${r.delta > 0 ? 'up' : (r.delta < 0 ? 'down' : '')}">${r.delta > 0 ? '+' : ''}${r.delta ? wFmt(r.delta) : '—'}</span>
+        </div>`).join('')}
+    </div>`;
+}
+
+/* X120 — the PR wall, and the nudge towards the next milestone (X174) */
+let pbSort = 'weight';
+function progressPBsView(p){
+  const list = allPBs(p.id);
+  if (!list.length) return `<div class="empty">No PBs yet.<br>Log a weight and your wall starts here.</div>`;
+  const sorted = list.slice().sort((a, b) =>
+    pbSort === 'recent' ? (b.date > a.date ? 1 : b.date < a.date ? -1 : 0) :
+    pbSort === 'name'   ? a.name.localeCompare(b.name) :
+    (b.weight - a.weight));
+  const total = list.length;
+  const dates = [...new Set(liftsOf(p.id).map(e => e.date))];
+  const bodies = [
+    { label:'lifts with a PB', v:total, next:Math.ceil((total + 1) / 10) * 10 },
+    { label:'sessions logged', v:dates.length, next:Math.ceil((dates.length + 1) / 25) * 25 }
+  ].filter(m => m.next > m.v).slice(0, 2);
+  return `
+    <div class="block" style="border-top:none;padding-top:4px;margin-top:8px">
+      <div class="block-label">The wall · ${total} personal best${total === 1 ? '' : 's'}</div>
+      <div class="views small" style="margin-bottom:14px">
+        ${[['weight','Heaviest'], ['recent','Newest'], ['name','A–Z']].map(([v, l]) =>
+          `<button data-pbsort="${v}" aria-pressed="${pbSort === v}">${l}</button>`).join('')}
+      </div>
+      ${sorted.map(x => `
+        <div class="wallrow">
+          <span class="wm">${esc(x.muscle || '—')}</span>
+          <span class="wn">${esc(x.name)}</span>
+          <span class="ww">${wFmt(x.weight)}<span class="u">${UNIT}</span>${lastReps(x.entry) ? `<span class="xr">×${lastReps(x.entry)}</span>` : ''}</span>
+          <span class="wd">${esc(fmtGB(x.date, true))}</span>
+        </div>`).join('')}
+    </div>
+    ${bodies.map(m => `
+      <div class="nudge">
+        <span class="nb">${m.next - m.v}</span>
+        <span class="nt">more ${esc(m.label.replace('with a PB',''))} to <b>${m.next}</b> — you're on ${m.v}.</span>
+      </div>`).join('')}`;
+}
+
+/* X108 — twelve weeks at a glance, and this week against the plan */
+function progressMapView(p){
+  const weeks = 12;
+  const grid = [];
+  for (let w = weeks - 1; w >= 0; w--){
+    const startKey = weekStartKey(-w);
+    const cols = DAYS.map(d => {
+      // the date for that training day inside that week
+      const start = dateFromKey(startKey);
+      const offset = (d.dow - 1 + 7) % 7;           // Monday = 1
+      const dt = new Date(start); dt.setDate(start.getDate() + offset);
+      const key = isoDate(dt);
+      const t = logOf(p.id).ticks[tickKey(d.dow, key)];
+      const items = t ? (t.items || []).length : 0;
+      return { key, dow:d.n, items, future: key > todayKey() };
+    });
+    grid.push({ week:w + 1, cols });
+  }
+  const cell = c => {
+    if (c.future) return `<span class="hmc future" title="${c.key}"></span>`;
+    const lvl = c.items === 0 ? 0 : c.items <= 4 ? 1 : c.items <= 7 ? 2 : 3;
+    return `<span class="hmc l${lvl}" title="${c.key} — ${c.items} logged"></span>`;
+  };
+  const gridHTML = grid.map(g => `
+    <div class="hmweek">
+      <span class="hw">${g.week}</span>
+      ${g.cols.map(cell).join('')}
+    </div>`).join('');
+
+  const totalDays = ticksForDates(p.id, 1).length + ticksForDates(p.id, 3).length + ticksForDates(p.id, 5).length;
+  const last12 = grid.reduce((n, g) => n + g.cols.reduce((m, c) => m + (c.items ? 1 : 0), 0), 0);
+
+  // this week: what the plan asks per muscle vs what has actually been logged
+  const ws = weekStartKey(0);
+  const thisWeek = liftsOf(p.id).filter(e => e.date >= ws);
+  const plan = new Map();
+  for (const d of DAYS) for (const e of d.ex) plan.set(e.muscle, (plan.get(e.muscle) || 0) + 1);
+  const done = new Map();
+  for (const e of thisWeek) done.set(muscleFor(e.ex), (done.get(muscleFor(e.ex)) || 0) + 1);
+  const rows = [...plan.entries()].sort((a, b) => b[1] - a[1]);
+
+  return `
+    <div class="block" style="border-top:none;padding-top:4px;margin-top:8px">
+      <div class="block-label">Twelve weeks</div>
+      <p style="font-size:14px;opacity:.75">One square per session day. Filled by how much of the session was logged —
+         light, mid, full. Numbered by week, newest at the bottom.</p>
+      <div class="hmgrid">${gridHTML}</div>
+      <div class="hmkey"><span class="hmc l0"></span> none <span class="hmc l1"></span> started
+        <span class="hmc l2"></span> most <span class="hmc l3"></span> full</div>
+      <div class="sumline" style="margin-top:18px">
+        <div class="statcard"><span class="v" style="color:${personDotColor(p.id)}">${totalDays}</span><span class="k">sessions all time</span></div>
+        <div class="statcard"><span class="v" style="color:${personDotColor(p.id)}">${last12}</span><span class="k">in 12 weeks</span></div>
+        <div class="statcard"><span class="v" style="color:${personDotColor(p.id)}">${streakWeeks(p.id)}</span><span class="k">weeks in a row</span></div>
+      </div>
+    </div>
+    <div class="block">
+      <div class="block-label">This week against the plan</div>
+      <p style="font-size:14px;opacity:.75">How many exercises hit each muscle so far this week (Monday to today).</p>
+      ${rows.map(([mus, want]) => {
+        const got = Math.min(done.get(mus) || 0, want);
+        const pct = want ? Math.round(got / want * 100) : 0;
+        return `<div class="mfreq">
+          <span class="fm">${esc(mus)}</span>
+          <span class="fbar"><span style="width:${pct}%"></span></span>
+          <span class="fv">${got}/${want}</span>
+        </div>`;
+      }).join('')}
+    </div>`;
+}
+
+/* X123 + X163 — the two of you */
+function progressTwoView(p){
+  const others = S.people.filter(x => x.id !== p.id);
+  if (!others.length) return `<div class="empty">Only one person in this room.</div>`;
+  const other = others[0];
+  const mine = new Map(allPBs(p.id).map(x => [x.ex, x]));
+  const theirs = new Map(allPBs(other.id).map(x => [x.ex, x]));
+  const shared = [...new Set([...mine.keys(), ...theirs.keys()])].filter(ex => mine.has(ex) && theirs.has(ex));
+  const mineOnly = [...mine.keys()].filter(ex => !theirs.has(ex));
+  const theirsOnly = [...theirs.keys()].filter(ex => !mine.has(ex));
+
+  const bar = (ex) => {
+    const a = mine.get(ex), b = theirs.get(ex);
+    const mx = Math.max(a.weight, b.weight, 1);
+    return `
+      <div class="vsrow">
+        <span class="vn">${esc(a.name)}</span>
+        <span class="vcol">
+          <span class="vbar" style="width:${Math.round(a.weight / mx * 100)}%;background:${personDotColor(p.id)}"></span>
+          <span class="vv">${esc(p.name)} ${wFmt(a.weight)}<span class="u">${UNIT}</span></span>
+        </span>
+        <span class="vcol">
+          <span class="vbar" style="width:${Math.round(b.weight / mx * 100)}%;background:${personDotColor(other.id)}"></span>
+          <span class="vv">${esc(other.name)} ${wFmt(b.weight)}<span class="u">${UNIT}</span></span>
+        </span>
+      </div>`;
+  };
+
+  const feed = liftsOf(other.id)
+    .filter(e => !isDeleted(e))
+    .sort((a, b) => (b.ts || 0) - (a.ts || 0))
+    .slice(0, 8)
+    .map(e => {
+      const before = liftsOf(other.id).filter(x => x.ex === e.ex && x.ts < e.ts);
+      const best = before.reduce((m, x) => Math.max(m, x.weight), 0);
+      const isPB = e.weight > best && before.length > 0;
+      return `
+        <div class="feedrow">
+          <span class="fpdot" style="background:${personDotColor(other.id)}"></span>
+          <span class="ftxt"><b>${esc(e.name)}</b> ${wFmt(e.weight)} ${UNIT}${lastReps(e) ? ' × ' + lastReps(e) : ''}${isPB ? ' <span class="fpb">PB</span>' : ''}</span>
+          <span class="fwhen">${esc(agoText(e.date))}</span>
+        </div>`;
+    }).join('');
+
+  return `
+    <div class="block" style="border-top:none;padding-top:4px;margin-top:8px">
+      <div class="block-label">Lifts you both do · ${shared.length}</div>
+      <p style="font-size:14px;opacity:.75">Bars are drawn against the heavier of the two. Dumbbell numbers are per hand,
+         and a machine and a cable are different lifts, so compare only what is genuinely the same.</p>
+      ${shared.length ? shared.sort().map(bar).join('') : '<div class="empty">No lift logged by both of you yet.</div>'}
+    </div>
+    ${mineOnly.length || theirsOnly.length ? `
+    <div class="block">
+      <div class="block-label">Only one of you has logged</div>
+      <div class="two-lists">
+        <div><span class="tl">${esc(p.name)}</span>
+          ${mineOnly.length ? mineOnly.map(ex => `<div class="tinyrow">${esc(CANON_LABEL[ex] || ex)}</div>`).join('') : '<div class="tinyrow muted">nothing yet</div>'}</div>
+        <div><span class="tl">${esc(other.name)}</span>
+          ${theirsOnly.length ? theirsOnly.map(ex => `<div class="tinyrow">${esc(CANON_LABEL[ex] || ex)}</div>`).join('') : '<div class="tinyrow muted">nothing yet</div>'}</div>
+      </div>
+    </div>` : ''}
+    <div class="block">
+      <div class="block-label">${esc(other.name)}'s latest</div>
+      ${feed || '<div class="empty">Nothing logged yet.</div>'}
+    </div>
+    <div class="block">
+      <div class="block-label">On this day</div>
+      ${onThisDayHTML(p)}
+    </div>`;
+}
+
+/* X118 + X184 — memories */
+function onThisDayHTML(p){
+  const today = todayKey();
+  const md = today.slice(5);                                  // MM-DD
+  const yearsAgo = new Date().getFullYear() - 1 + '-' + md;
+  const hits = liftsOf(p.id).filter(e => (e.date.slice(5) === md) || (e.date === yearsAgo));
+  const first = liftsOf(p.id).slice().sort((a, b) => (a.ts || 0) - (b.ts || 0))[0];
+  let out = '';
+  if (hits.length){
+    out += `<p style="font-size:14px;opacity:.8">On this date before:</p>` + hits.slice(0, 6).map(e =>
+      `<div class="feedrow"><span class="fpdot" style="background:${personDotColor(p.id)}"></span>
+        <span class="ftxt"><b>${esc(e.name)}</b> ${wFmt(e.weight)} ${UNIT}${lastReps(e) ? ' × ' + lastReps(e) : ''}</span>
+        <span class="fwhen">${esc(agoText(e.date))}</span></div>`).join('');
+  }
+  if (first){
+    const days = Math.round((Date.now() - dateFromKey(first.date).getTime()) / 86400000);
+    if (days >= 30){
+      out += `<div class="nudge"><span class="nb">${days >= 365 ? (days / 365).toFixed(1).replace('.0','') + 'y' : Math.round(days / 30) + 'm'}</span>
+        <span class="nt">since you logged your first lift — <b>${esc(first.name)}</b>, ${wFmt(first.weight)} ${UNIT}, ${esc(fmtGB(first.date))}. Keep going.</span></div>`;
+    }
+  }
+  if (!out) out = `<div class="tinyrow muted">Nothing from this date to show yet — it builds up as you log.</div>`;
+  return out;
+}
+
+/* ---------- streaks ---------- */
+function sessionStreak(pid){
+  const weeks = new Set();
+  for (const dow of [1, 3, 5]) for (const d of ticksForDates(pid, dow)) weeks.add(weekStartKeyOf(d));
+  let n = 0;
+  for (let i = 0; i < 260; i++){
+    if (weeks.has(weekStartKey(-i))) n++;
+    else if (i > 0) break;
+  }
+  return n;
+}
+function streakWeeks(pid){
+  const perWeek = new Map();
+  for (const dow of [1, 3, 5]) for (const d of ticksForDates(pid, dow)){
+    const w = weekStartKeyOf(d);
+    perWeek.set(w, (perWeek.get(w) || 0) + 1);
+  }
+  let n = 0;
+  for (let i = 0; i < 260; i++){
+    const w = weekStartKey(-i);
+    if ((perWeek.get(w) || 0) > 0) n++;
+    else if (i > 0) break;
+  }
+  return n;
+}
+function weekStartKeyOf(dateKey){
+  const d = dateFromKey(dateKey);
+  const dow = (d.getDay() + 6) % 7;
+  d.setDate(d.getDate() - dow);
+  return isoDate(d);
+}
+
 function muscleFor(ex){
   for (const d of DAYS) for (const e of d.ex) if (e.canon === ex || (e.opts && e.opts.some(o=>o.id===ex))) return e.muscle;
   return MUSCLE_FALLBACK[ex] || '';
@@ -3199,6 +3815,129 @@ function openEraseSheet(){
     }
     wipeLocal();
   });
+}
+
+/* ============================================================
+   X144 — plate calculator
+   Per side, from a standard set, with the bar weight optional.
+   ============================================================ */
+const PLATES = [25, 20, 15, 10, 5, 2.5, 1.25];
+let plateBar = 20;
+function plateMath(target, bar){
+  const perSide = (target - bar) / 2;
+  if (target <= 0) return { error:'Pick a weight above zero.' };
+  if (perSide < 0) return { error:`That is lighter than the bar (${bar} kg) — use a lighter bar or dumbbells.` };
+  let left = Math.round(perSide * 100) / 100;
+  const out = [];
+  for (const pl of PLATES){
+    const n = Math.floor((left + 1e-9) / pl);
+    if (n > 0){ out.push({ plate:pl, n }); left = Math.round((left - n * pl) * 100) / 100; }
+  }
+  return { perSide:Math.round(perSide * 100) / 100, plates:out, remainder:left, bar };
+}
+function plateHTML(target, bar){
+  const r = plateMath(target, bar);
+  if (r.error) return `<div class="hint-row" style="border-color:var(--d3)">${esc(r.error)}</div>`;
+  return `
+    <div class="hint-row" style="border-style:solid">
+      <b>${wFmt(r.bar)} kg bar</b> + <b>${wFmt(r.perSide)} kg per side</b>${r.remainder ? ` <span style="opacity:.7">(${wFmt(r.remainder)} kg cannot be made exactly)</span>` : ''}
+    </div>
+    <div class="plate-row">
+      ${r.plates.map(p => `<span class="plate"><b>${wFmt(p.plate)}</b><span>×${p.n}</span></span>`).join('') || '<span class="plate none">no plates needed</span>'}
+      <span class="plate bar"><b>bar</b><span>${wFmt(r.bar)}</span></span>
+    </div>`;
+}
+function openPlateSheet(){
+  const body = `
+    <p style="font-size:15px;line-height:1.65;color:var(--chalk);opacity:.92">
+      What to load on each side. Assumes a standard set: 25, 20, 15, 10, 5, 2.5 and 1.25 kg plates,
+      one of each per side of the bar you pick.</p>
+    <div class="modal-sec">
+      <span class="lbl">Target weight (${UNIT})</span>
+      <div class="stepper-row">
+        <button class="step" data-plate="-5" aria-label="Five kilos less">−</button>
+        <input id="plwt" type="text" inputmode="decimal" value="${wFmt(lastPlateTarget())}" aria-label="Target weight">
+        <button class="step" data-plate="5" aria-label="Five kilos more">+</button>
+      </div>
+    </div>
+    <div class="modal-sec">
+      <span class="lbl">Bar</span>
+      <div class="choicechips" id="platebars">
+        ${[20,15,10,0].map(b => `<button data-bar="${b}" aria-pressed="${plateBar === b}">${b === 0 ? 'no bar' : b + ' kg'}</button>`).join('')}
+      </div>
+      <div class="choicehint">Dumbbells are per hand, so there is nothing to load — this is for a barbell or a plate-loaded machine.</div>
+    </div>
+    <div id="plateres">${plateHTML(lastPlateTarget(), plateBar)}</div>`;
+  openOverlay(overlayShell('Plate calculator', 'per side, so you can load it once', body));
+  bindOverlayClicks();
+  const input = document.getElementById('plwt');
+  const paint = () => { document.getElementById('plateres').innerHTML = plateHTML(parseWeight(input.value) || 0, plateBar); };
+  input.addEventListener('input', paint);
+  document.querySelectorAll('[data-plate]').forEach(b => b.addEventListener('click', () => {
+    input.value = String(Math.max(0, (parseWeight(input.value) || 0) + Number(b.dataset.plate)));
+    paint();
+  }));
+  document.querySelectorAll('#platebars [data-bar]').forEach(b => b.addEventListener('click', () => {
+    plateBar = Number(b.dataset.bar);
+    document.querySelectorAll('#platebars [data-bar]').forEach(x => x.setAttribute('aria-pressed', String(Number(x.dataset.bar) === plateBar)));
+    paint();
+  }));
+}
+function lastPlateTarget(){
+  const last = liftsOf(me().id).sort((a, b) => (b.ts || 0) - (a.ts || 0))[0];
+  return last ? Math.round(last.weight) : 60;
+}
+
+/* ============================================================
+   X50 — search the whole log
+   ============================================================ */
+function openSearchSheet(){
+  const body = `
+    <div class="modal-sec" style="margin-top:4px">
+      <input id="q" type="search" placeholder="Exercise, weight, or a word from a note…"
+        aria-label="Search your log" autocomplete="off"
+        style="width:100%;background:var(--base);border:1px solid var(--line);border-radius:3px;
+        color:var(--chalk);font-family:inherit;font-size:16px;padding:13px 14px">
+    </div>
+    <div id="qres"></div>`;
+  openOverlay(overlayShell('Search', 'everything you have ever logged', body));
+  bindOverlayClicks();
+  const input = document.getElementById('q');
+  const run = () => {
+    const term = input.value.trim().toLowerCase();
+    const box = document.getElementById('qres');
+    if (term.length < 2){ box.innerHTML = '<div class="hint-row">Type at least two letters.</div>'; return; }
+    const hits = [];
+    for (const p of S.people){
+      for (const e of Object.values(logOf(p.id).lifts)){
+        if (isDeleted(e) || e.kind !== 'lift') continue;
+        const name = CANON_LABEL[e.ex] || e.name || e.ex;
+        const hay = [name, e.name, e.ex, e.date, e.note, String(e.weight)].filter(Boolean).join(' ').toLowerCase();
+        if (hay.includes(term)) hits.push({ p, e, name });
+      }
+    }
+    if (!hits.length){ box.innerHTML = `<div class="hint-row">Nothing matching “${esc(input.value)}”.</div>`; return; }
+    hits.sort((a, b) => (b.e.ts || 0) - (a.e.ts || 0));
+    const shown = hits.slice(0, 60);
+    box.innerHTML = `<div class="hint-row" style="border-style:solid">${hits.length} match${hits.length === 1 ? '' : 'es'}${hits.length > shown.length ? `, newest ${shown.length}` : ''}</div>` +
+      shown.map((h, i) => `
+        <div class="feedrow" data-hit="${i}">
+          <span class="fpdot" style="background:${personDotColor(h.p.id)}"></span>
+          <span class="ftxt"><b>${esc(h.name)}</b> ${wFmt(h.e.weight)} ${UNIT}${lastReps(h.e) ? ' × ' + lastReps(h.e) : ''}
+            ${h.e.note ? `<span style="opacity:.7"> — ${esc(h.e.note)}</span>` : ''}</span>
+          <span class="fwhen">${esc(fmtGB(h.e.date, true))}</span>
+        </div>`).join('');
+    box.querySelectorAll('[data-hit]').forEach(row => row.addEventListener('click', () => {
+      const h = shown[Number(row.dataset.hit)];
+      closeOverlay();
+      if (h.p.id !== me().id){ S.sel = h.p.id; saveSettings(); }
+      view = 'progress'; progressView = 'lifts';
+      openHistory(h.e.ex);
+    }));
+  };
+  input.addEventListener('input', run);
+  run();
+  setTimeout(() => input.focus(), 60);
 }
 
 function wipeLocal(){
