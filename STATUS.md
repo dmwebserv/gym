@@ -3,7 +3,7 @@
 **Read this first when you pick this up.** It's the single page: what's decided, what's built, what's
 left, and where the detail lives.
 
-Last updated: **16 October 2026** · **Releases 1, 2, 3 and 4 are built, tested and merged to `main` (PR #3), plus restore and sync hardening from Release 5.** 320 automated checks pass.
+Last updated: **16 October 2026** · **Releases 1, 2, 3 and 4 are built, tested and merged to `main` (PR #3), plus restore and sync hardening from Release 5, plus the fixes and polish found by using it.** 419 automated checks pass.
 
 ---
 
@@ -171,6 +171,45 @@ X153 timed notification (see §6), X226 calendar events.
   SQL semantics: deletes stick, an older stale copy cannot resurrect a deleted record, an offline lift
   catches up, and a brand-new phone recovers the whole room.
 
+**Fixed after the first look on the phone (17 October)**
+
+- **The pull-up ladder really was plain text.** Its stylesheet block had never landed — the panel,
+  its rungs and its buttons had no CSS at all, which is why moving up and down seemed to change only a
+  number. It now has a proper panel, and the stage you are on is highlighted **and labelled "you are
+  here"**, the rungs you have passed are ticked, the stage number appears in both the summary and the
+  body, and **the panel stays open while you move up and down** instead of folding itself away.
+- **The log sheet's options looked unavailable.** The variant chips ("Which one today?"), the ghost
+  buttons (Cancel, Go back, Move up a level) and the small tool buttons were all drawn in the same grey
+  as disabled text. Everything you can tap now reads as chalk on a raised surface; **dim is reserved for
+  things that genuinely cannot be tapped** (like "Move down" at stage 1).
+- **Swiping between days now works** — left for the next session day, right for the previous one — with
+  ‹ › arrows either side of the MON/WED/FRI tabs so the gesture is discoverable. It ignores scrolling,
+  small drags, slow drags, and does nothing while a sheet is open.
+- **A new test suite exists for exactly this class of bug**: it fails the build if any class the app
+  renders has no stylesheet rule, and if any tap target resolves to disabled-grey. `tests/interaction.js`,
+  47 checks. That is what I should have had before shipping the ladder.
+
+**Polish pass (second round of phone feedback)**
+
+- **Undo now covers everything, not just weights.** Moving an exercise to the end ("do it later"), swapping
+  to a substitute, putting it back, moving the ladder up or down, marking it practised, choosing a band,
+  trimming today to a shorter session, clearing the day's ticks, and arranging a row — every one of them
+  now offers **Undo** in the notice. The undo stack was extended to snapshot layout choices
+  (today's order, swaps, one-day picks, trims, remembered choices) as well as the log, so undoing a
+  rearrangement genuinely puts the session back the way it was.
+- **Rows can be arranged by tapping.** Rearrange → each row gets ▲ ▼. It is **today only** — the plan is
+  never rewritten — it is undoable, and it animates so you can see what moved. Tapping was chosen over
+  dragging on purpose: a drag has to fight the page scroll, the day swipe and the long-press-to-repeat,
+  and goes wrong exactly when you are in a hurry. (Say the word if you want a real drag as well.)
+- **Notices now span the width of the screen**, message on the left, Undo on the right, clear of the
+  notch and the home bar. No more small pill in the corner.
+- **The jitter is fixed, and here is what it was:** every repaint replayed a 400 ms entrance animation on
+  the whole page — so ticking a box, logging a lift or moving a row re-animated the entire screen.
+  The animation is now tied to genuinely arriving somewhere new (different tab, day or person), data
+  changes update in place, and the transition itself is shorter and softer (280 ms, no bounce). Row
+  backgrounds, pills, buttons, the progress bar and the sheets all have proper transitions now, and
+  reduced-motion still turns all of it off.
+
 **Also fixed while I was in there:** the app no longer reports "Connected ✦" without checking your PIN;
 a wrong PIN is no longer saved before the store accepts it; ticks now roll over correctly if the app is
 left open past midnight; "Erase local data" clears the injected-storage path too; and the Settings sheet
@@ -248,7 +287,8 @@ Say any of: **"Read STATUS.md and finish Release 5"**, or name a single item, or
 - **Never delete.** Deletions are tombstones that sync, so the other phone can't resurrect them.
 - **Single file, no build step, no dependencies.** It's why the app is instant and hand-editable.
 - **Any restore or import merges (newest wins) and never overwrites newer data.**
-- **Run `tests/` before merging anything that touches `index.html`.** Seven files, 320 checks, about
-  45 seconds.
+- **Run `tests/` before merging anything that touches `index.html`.** Nine files, 419 checks, about
+  90 seconds. `tests/interaction.js` will catch a missed stylesheet block, which is how the ladder shipped
+  unstyled.
 - **Nothing third-party loads at runtime** — not the fonts, not a script, not an icon. The sync room is
   the only network call the app ever makes, and it is never cached.
