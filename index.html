@@ -247,6 +247,13 @@
   }
   .pbline b{color:var(--pc,var(--accent));font-weight:600;}
   .pbline.blank{opacity:.55;}
+  .pill .xr{font-size:12.5px;opacity:.72;margin-left:4px;letter-spacing:0;}
+  .pill.logged .xr{opacity:.9;}
+  .choicehint{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--muted);margin-top:8px;letter-spacing:.02em;line-height:1.5;}
+  .bothnote{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--muted);margin-top:9px;line-height:1.55;}
+  .datein{background:var(--base);border:1px solid var(--line);border-radius:3px;color:var(--chalk);
+    font-family:'IBM Plex Mono',monospace;font-size:14px;padding:9px 11px;outline:none;}
+  .datein:focus{border-color:var(--accent);}
 
   /* completed */
   li.ex.done{opacity:.4;}
@@ -464,6 +471,11 @@
     display:none;
   }
   .toast.show{display:block;}
+  .toast .undobtn{
+    background:none;border:1px solid currentColor;color:inherit;font-family:inherit;
+    font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
+    padding:5px 9px;border-radius:3px;margin-left:10px;cursor:pointer;vertical-align:middle;
+  }
 
   /* progress tab */
   .sumline{
@@ -495,8 +507,9 @@
   .spark{flex:none;width:74px;height:28px;}
   .spark svg{width:100%;height:100%;display:block;}
   .empty{padding:30px 6px;text-align:center;color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:12.5px;letter-spacing:.04em;line-height:1.8;}
-  .hist-item{padding:13px 0;border-bottom:1px solid var(--line);}
+  .hist-item{padding:13px 0;border-bottom:1px solid var(--line);cursor:pointer;transition:opacity .15s;}
   .hist-item:last-child{border-bottom:none;}
+  .hist-item:active{opacity:.6;}
   .hist-item .hrow{display:flex;align-items:baseline;justify-content:space-between;gap:10px;}
   .hist-item .hdate{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;}
   .hist-item .hw{font-family:'IBM Plex Mono',monospace;font-size:17px;font-weight:600;}
@@ -741,6 +754,98 @@ const wFmt = w => { const x = Math.round(w*100)/100; return Number.isInteger(x) 
 const setCount = d => d.ex.reduce((t,e) => t + parseInt(e.sets,10), 0);
 const now = () => Date.now();
 
+/* ============================================================
+   Release 1 helpers — additive only. Old records (reps:[10,10,10],
+   no repsMode) keep working exactly as they are; nothing is rewritten.
+   ============================================================ */
+function isDeleted(e){ return !!(e && e.deleted); }
+/* the reps that matter: the last one you entered (last set) */
+function lastReps(e){
+  if (!e || !Array.isArray(e.reps)) return null;
+  for (let i = e.reps.length - 1; i >= 0; i--){
+    const v = parseInt(e.reps[i], 10);
+    if (v > 0) return v;
+  }
+  return null;
+}
+function repsModeOf(e){ return (e && e.repsMode) || 'all'; }
+function repsLabel(e){ const r = lastReps(e); return r ? ('× ' + r) : ''; }
+/* The headline is always the last set, so a record means the same thing whether it
+   was logged before this change or after it. Only genuinely multi-set records get
+   a second line, and it says how many sets it holds rather than pretending to be one. */
+function repsDetail(e){
+  if (!e || !Array.isArray(e.reps) || !e.reps.length) return '';
+  const filled = e.reps.filter(r => parseInt(r, 10) > 0);
+  if (repsModeOf(e) === 'last' || filled.length <= 1) return '';
+  return `${filled.length} sets recorded · ${e.reps.map(r => r || '·').join(' · ')}`;
+}
+/* today's live entry for a lift (ignores deleted tombstones) */
+function liveLift(pid, canon, date){
+  const e = logOf(pid).lifts['l:' + pid + ':' + canon + ':' + date];
+  return (e && !isDeleted(e)) ? e : null;
+}
+/* tolerate "27,5", " 27.5 kg ", and a stray second decimal point */
+function parseWeight(v){
+  if (v == null) return null;
+  let s = String(v).trim().replace(/\s+/g,'').replace(/,/g,'.').replace(/[^0-9.]/g,'');
+  if (!s) return null;
+  const parts = s.split('.');
+  if (parts.length > 2) s = parts[0] + '.' + parts[1];
+  const n = parseFloat(s);
+  return (isFinite(n) && n > 0) ? n : null;
+}
+function parseRepInput(v){
+  const n = parseInt(String(v == null ? '' : v).replace(/[^0-9]/g,''), 10);
+  return (isFinite(n) && n > 0) ? Math.min(n, 100) : null;
+}
+const isPerHand = slot => /dumbbell|lateral raise/i.test(slot.name || '');
+
+/* ---- Undo: memory only, deliberately gone on reload ---- */
+let undoStack = [];
+function snapshotBefore(pids){
+  const s = {};
+  for (const pid of pids) s[pid] = JSON.stringify(logOf(pid));
+  return s;
+}
+function registerUndo(snap){
+  undoStack.push(snap);
+  if (undoStack.length > 5) undoStack.shift();
+}
+/* Puts the previous state back *and* re-stamps it, so the undo travels to the
+   other phone (sync is newest-wins). A record the action created becomes a
+   tombstone rather than simply vanishing, so it can't be pulled back down. */
+function undoLast(){
+  const snap = undoStack.pop();
+  if (!snap) return;
+  for (const pid of Object.keys(snap)){
+    let before = { lifts:{}, ticks:{} };
+    try { before = JSON.parse(snap[pid]); } catch(e){}
+    const cur = logOf(pid);
+    const outLifts = {};
+    const ids = new Set(Object.keys(before.lifts||{}).concat(Object.keys(cur.lifts||{})));
+    for (const id of ids){
+      const bE = (before.lifts||{})[id] || null;
+      const cE = (cur.lifts||{})[id] || null;
+      if (JSON.stringify(bE) === JSON.stringify(cE)){ if (cE) outLifts[id] = cE; continue; }
+      if (bE) outLifts[id] = Object.assign({}, bE, { ts: now() });
+      else outLifts[id] = { id, kind:'lift', pid, deleted:true, ts: now() };
+    }
+    cur.lifts = outLifts;
+    const outTicks = {};
+    const tks = new Set(Object.keys(before.ticks||{}).concat(Object.keys(cur.ticks||{})));
+    for (const k of tks){
+      const bT = (before.ticks||{})[k] || null;
+      const cT = (cur.ticks||{})[k] || null;
+      if (JSON.stringify(bT) === JSON.stringify(cT)){ if (cT) outTicks[k] = cT; continue; }
+      outTicks[k] = { items: bT ? (bT.items||[]).slice() : [], ts: now() };
+    }
+    cur.ticks = outTicks;
+    saveLog(pid, true);
+  }
+  toast('Undone');
+  render();
+}
+
 // deterministic sha-256 hex (compact, public-domain style implementation)
 const sha256 = (() => {
   const K=[0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
@@ -805,7 +910,7 @@ let toastTimer = null;
 
 function settingsDefault(){
   return {
-    v:3,
+    v:4,
     onboarded:false,
     owner:PEOPLE_DEF[0].id,
     sel:PEOPLE_DEF[0].id,
@@ -825,9 +930,9 @@ function logOf(pid){
 }
 function tickKey(dow, date){ return dow + ':' + date; }
 
-/* all lift entries for a person, newest first */
+/* all lift entries for a person, newest first (deleted ones hidden) */
 function liftsOf(pid){
-  return Object.values(logOf(pid).lifts).sort((a,b) => b.ts - a.ts);
+  return Object.values(logOf(pid).lifts).filter(e => !isDeleted(e)).sort((a,b) => b.ts - a.ts);
 }
 function liftsByCanon(pid, canon){
   return liftsOf(pid).filter(e => e.ex === canon);
@@ -944,13 +1049,17 @@ async function migrateLegacy(){
 /* ============================================================
    Toast
    ============================================================ */
-function toast(msg, colorVar){
+function toast(msg, colorVar, undoFn){
   const el = document.getElementById('toast');
   el.style.setProperty('--pc', colorVar || 'var(--accent)');
-  el.innerHTML = msg;
+  el.innerHTML = msg + (undoFn ? ' <button class="undobtn" type="button">Undo</button>' : '');
   el.classList.add('show');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.classList.remove('show'), 2600);
+  if (undoFn){
+    const b = el.querySelector('.undobtn');
+    if (b) b.addEventListener('click', () => { el.classList.remove('show'); undoFn(); });
+  }
+  toastTimer = setTimeout(() => el.classList.remove('show'), undoFn ? 6500 : 2600);
 }
 
 /* ============================================================
@@ -1088,7 +1197,7 @@ const REFERENCE = `
     <div class="ref-row"><span class="k">Compound lifts — leg press, squat, bench, RDL, rows</span><span class="v">90–120s</span></div>
     <div class="ref-row"><span class="k">Isolation — curls, raises, pushdowns</span><span class="v">45–75s</span></div>
     <div class="ref-row"><span class="k">Core</span><span class="v">30–60s</span></div>
-    <p style="margin-top:14px">When you can hit the <strong>top</strong> of the rep range on <strong>every</strong> set with solid form and still have 1–3 reps in reserve, add the smallest increment available next session.</p>
+    <p style="margin-top:14px">When you hit the <strong>top</strong> of the rep range on your <strong>last set</strong> with solid form and still have 1–3 reps in reserve, add the smallest increment available next session.</p>
   </div>
 </details>
 
@@ -1122,16 +1231,18 @@ function dayRowHTML(day, idx, p, dayKey){
   } else {
     const st = personStats(p.id, chosen);
     const pb = st && st.pb;
-    const lastW = (st && st.last) ? st.last.weight : null;
-    const displayW = todayLift ? todayLift.weight : (lastW != null ? lastW : null);
+    const ref = todayLift || (st ? st.last : null);   // today's entry, else last time
+    const displayW = ref ? ref.weight : null;
+    const displayR = lastReps(ref);
     const logged = !!todayLift;
     pillHTML = `
-      <button class="pill ${logged?'logged':(displayW!=null?'has':'')}" data-i="${idx}" aria-label="Log weight for ${esc(e.name)}">
-        ${displayW != null ? wFmt(displayW) : '—'}<span class="u">${UNIT}</span>
+      <button class="pill ${logged?'logged':(displayW!=null?'has':'')}" data-i="${idx}" aria-label="Log weight and reps for ${esc(e.name)}">
+        ${displayW != null ? wFmt(displayW) : '—'}<span class="u">${UNIT}</span>${displayR ? `<span class="xr">×${displayR}</span>` : ''}
       </button>`;
     if (pb){
       const pbDate = fmtGB(pb.date, true);
-      pbHTML = `<span class="pbline">PB <b>${wFmt(pb.weight)}</b> · ${esc(pbDate)}</span>`;
+      const pbReps = lastReps(pb);
+      pbHTML = `<span class="pbline">PB <b>${wFmt(pb.weight)}</b>${pbReps ? ` ×${pbReps}` : ''} · ${esc(pbDate)}</span>`;
     } else {
       pbHTML = `<span class="pbline blank">no PB yet</span>`;
     }
@@ -1166,8 +1277,7 @@ function todayLiftFor(pid, day, idx){
   const canon = chosenCanonFor(pid, slotKey, slot);
   if (slot.bw) return null;
   const d = todayKey();
-  const e = logOf(pid).lifts['l:' + pid + ':' + canon + ':' + d];
-  return e || null;
+  return liveLift(pid, canon, d);
 }
 
 function renderSession(){
@@ -1218,7 +1328,7 @@ function renderSession(){
 
       <div class="block">
         <div class="block-label">The session</div>
-        <div class="taphint">Tap an exercise to log your weight</div>
+        <div class="taphint">Tap an exercise to log weight and reps</div>
         <div class="progress">
           <div class="bar"><span id="barfill"></span></div>
           <div class="ptext" id="ptext"></div>
@@ -1238,8 +1348,8 @@ function renderSession(){
       </div>
 
       <footer>
-        Tap a weight pill to log what you lifted — it ticks the exercise off too.
-        Below every pill is your <b style="color:var(--accent)">PB</b> for that lift.
+        Tap a weight pill to log what you lifted — weight and last-set reps — and it ticks the exercise off too.
+        The number under the pill is your last set; below that is your <b style="color:var(--accent)">PB</b> for that lift.
         ${syncFooterHTML()}
         <br><br>
         General fitness plan for healthy adults. Swap exercises if the kit is taken,
@@ -1330,7 +1440,7 @@ function bindSyncButtons(){
 }
 
 /* ============================================================
-   Log sheet
+   Log sheet  (Release 1: last-set reps, undo, log-for-both, typo guard)
    ============================================================ */
 function openLogSheet(idx){
   const p = me();
@@ -1341,18 +1451,23 @@ function openLogSheet(idx){
   const doneNow = ticksFor(p.id, day.n, date).includes(idx);
   const isBW = !!slot.bw;
   const chosen = chosenCanonFor(p.id, slotKey, slot);
-  const lift = logOf(p.id).lifts['l:' + p.id + ':' + chosen + ':' + date] || null;
+  const lift = liveLift(p.id, chosen, date);
   const st = personStats(p.id, chosen);
   const pb = st ? st.pb : null;
   const last = st ? st.last : null;
   const presc = parsePresc(slot.sets);
   const colorVar = personDotColor(p.id);
+  const ref = lift || last;                      // what the sheet pre-fills from
+  const refReps = lastReps(ref);
+  const partner = S.people.find(x => x.id !== p.id) || null;
+  const canBoth = !!partner && !isBW;
+  const unitHint = isPerHand(slot) ? `${UNIT} per dumbbell` : `${UNIT} per working set`;
 
-  const sheetId = 'logsheet';
   const body = `
     ${slot.opts ? `<div class="modal-sec" style="margin-top:14px"><span class="lbl">Which one today?</span>
       <div class="choicechips" data-choices>${slot.opts.map(o =>
-        `<button data-c="${o.id}" aria-pressed="${chosen===o.id}">${esc(o.name)}</button>`).join('')}</div></div>` : ''}
+        `<button data-c="${o.id}" aria-pressed="${chosen===o.id}">${esc(o.name)}</button>`).join('')}</div>
+      <div class="choicehint">Your choice is remembered and offered again next time.</div></div>` : ''}
 
     <div class="presc-line">
       <span>Set: <b>${esc(slot.sets)}</b></span>
@@ -1369,9 +1484,9 @@ function openLogSheet(idx){
     <div class="modal-sec" id="wsec">
       <div class="winput-wrap">
         <input class="winput" id="winput" type="text" inputmode="decimal" autocomplete="off"
-          value="${lift ? wFmt(lift.weight) : (last ? wFmt(last.weight) : '')}"
+          value="${ref ? wFmt(ref.weight) : ''}"
           placeholder="—" aria-label="Weight in ${UNIT}">
-        <span class="wunit">${UNIT} per working set</span>
+        <span class="wunit">${unitHint}</span>
       </div>
       <div class="quickchips">
         <button class="qchip small" data-add="-2.5">−2.5</button>
@@ -1381,58 +1496,84 @@ function openLogSheet(idx){
       </div>
 
       <div class="reps-block" id="repsblock">
-        <div class="reps-title"><span>Reps per set <span style="text-transform:none;letter-spacing:.02em;color:var(--muted)">(optional)</span></span>
-          <button class="toggle" id="repstoggle">${lift && lift.reps ? 'hide' : 'edit'}</button></div>
-        ${repRowsHTML(lift, presc)}
+        <div class="reps-title">
+          <span>Reps · last set</span>
+          <button class="toggle" id="repstoggle">log every set</button>
+        </div>
+        <div class="setrows" id="repsingle">
+          <div class="setrow"><span class="s">Last set</span>
+            <div class="setstepper">
+              <button data-d="-1" aria-label="fewer reps">−</button>
+              <input type="text" inputmode="numeric" value="${refReps != null ? refReps : ''}"
+                placeholder="${presc ? presc.max : '—'}" aria-label="Reps in the last set">
+              <button data-d="1" aria-label="more reps">+</button>
+            </div>
+          </div>
+        </div>
+        <div class="setrows" id="repsmulti" style="display:none">${multiRepRowsHTML(lift, presc)}</div>
+        <div class="choicehint" id="rephint">Only the last set is saved — that's the one that counts.</div>
       </div>
+
+      ${canBoth ? `
+      <div class="reps-block" style="margin-top:18px">
+        <div class="reps-title"><span>Who is this for?</span></div>
+        <div class="choicechips" data-both>
+          <button data-bothv="0" aria-pressed="true">Just ${esc(p.name)}</button>
+          <button data-bothv="1" aria-pressed="false">${esc(p.name)} + ${esc(partner.name)}</button>
+        </div>
+        <div class="bothnote" id="bothnote" style="display:none">
+          Saves the same weight and reps for both of you — each against their own exercise choice — and ticks it off for both.
+        </div>
+      </div>` : ''}
     </div>`}
 
     <div class="cta-row">
       ${isBW
         ? `<button class="cta primary" id="tickbtn" style="--pc:${colorVar}">${doneNow ? 'Untick this exercise' : 'Tick it done'}<span class="sub">bodyweight — nothing to log</span></button>`
         : lift
-          ? `<button class="cta primary" id="savebtn" style="--pc:${colorVar}">Update to ${wFmt(lift.weight)} ${UNIT}<span class="sub">saves &amp; keeps it ticked</span></button>
+          ? `<button class="cta primary" id="savebtn" style="--pc:${colorVar}">Update</button>
              <button class="cta ghost" data-close>Close</button>`
-          : `<button class="cta primary" id="savebtn" style="--pc:${colorVar}">Log ${UNIT}<span class="sub">saves &amp; ticks it off</span></button>
+          : `<button class="cta primary" id="savebtn" style="--pc:${colorVar}">Log</button>
              <button class="cta ghost" id="tickbtn">${doneNow ? 'Untick' : 'Done without a weight'}</button>`}
     </div>
-    <p id="note" style="text-align:center;margin-top:14px;font-size:12.5px;color:var(--muted);line-height:1.5">
-      ${lift ? `Logged today at <b style="color:var(--chalk)">${wFmt(lift.weight)} ${UNIT}</b>${lift.reps ? ' · ' + lift.reps.join('/') + ' reps' : ''} — updating replaces it.`
-        : doneNow ? 'This exercise is ticked today without a weight.' : 'Tap Log to record the weight, or Done to just tick it.'}
-    </p>`;
+    <p id="note" style="text-align:center;margin-top:14px;font-size:12.5px;color:var(--muted);line-height:1.5">${noteText(lift, doneNow)}</p>`;
 
-  const title = `${esc(slot.name)}`;
-  const sub = `${esc(p.name)} · ${isBW ? 'bodyweight' : esc(slot.sets)}`;
-  openOverlay(overlayShell(title, sub, body, {center:true}));
+  openOverlay(overlayShell(`${esc(slot.name)}`, `${esc(p.name)} · ${isBW ? 'bodyweight' : esc(slot.sets)}`, body, {center:true}));
   bindOverlayClicks();
-  document.querySelectorAll('#overlayroot [data-close]').forEach(b => b.addEventListener('click', closeOverlay));
 
   const root = document.getElementById('ov');
   root.style.setProperty('--pc', colorVar);
 
   let curLift = lift, curLast = last, curPb = pb;
+  let both = false;
   const autoVal = () => curLift ? wFmt(curLift.weight) : (curLast ? wFmt(curLast.weight) : '');
   let autoRef = autoVal();
 
-  // Update the identity-dependent parts in place — no full sheet rebuild,
-  // so switching between e.g. Goblet Squat and Hack Squat is instant.
-  const refreshIdentity = () => {
-    const lr = document.getElementById('lastrow');
-    if (lr) lr.innerHTML = lastHintHTML(curLast, curPb, curLift, isBW);
-    const note = document.getElementById('note');
-    if (note){
-      note.innerHTML = curLift
-        ? `Logged today at <b style="color:var(--chalk)">${wFmt(curLift.weight)} ${UNIT}</b>${curLift.reps ? ' · ' + curLift.reps.join('/') + ' reps' : ''} — updating replaces it.`
-        : (doneNow ? 'This exercise is ticked today without a weight.' : 'Tap Log to record the weight, or Done to just tick it.');
-    }
-    const lb = root.querySelector('[data-last]');
-    if (lb && !isBW){
-      lb.dataset.has = curLast ? '1' : '';
-      lb.textContent = curLast ? `last ${wFmt(curLast.weight)}` : '';
-      lb.style.display = curLast ? '' : 'none';
-    }
-    if (!isBW) updateSaveBtn();
-  };
+  const multiOn = () => { const m = document.getElementById('repsmulti'); return !!m && m.style.display !== 'none'; };
+  function singleRep(){
+    const el = document.querySelector('#repsingle .setstepper input');
+    return el ? parseRepInput(el.value) : null;
+  }
+  function lastEnteredRep(){
+    const inputs = [...document.querySelectorAll('#repsmulti .setstepper input')];
+    for (let i = inputs.length - 1; i >= 0; i--){ const v = parseRepInput(inputs[i].value); if (v) return v; }
+    return null;
+  }
+  function updateSaveBtn(){
+    const el = document.getElementById('winput');
+    const b = document.getElementById('savebtn');
+    if (!el || !b) return;
+    const w = parseWeight(el.value);
+    const r = multiOn() ? lastEnteredRep() : singleRep();
+    const base = curLift ? 'Update to' : 'Log';
+    const wTxt = w != null ? `${wFmt(w)} ${UNIT}` : UNIT;
+    const sub = both
+      ? `for ${esc(p.name)} + ${esc(partner.name)}`
+      : (curLift ? 'saves &amp; keeps it ticked' : 'saves &amp; ticks it off');
+    b.innerHTML = `${base} ${wTxt}${r ? ' × ' + r : ''}<span class="sub">${sub}</span>`;
+    b.classList.toggle('can', w != null);
+    b.style.opacity = w != null ? 1 : .45;
+  }
 
   if (slot.opts){
     root.querySelectorAll('[data-choices] button').forEach(b => b.addEventListener('click', () => {
@@ -1443,46 +1584,92 @@ function openLogSheet(idx){
       root.querySelectorAll('[data-choices] button').forEach(x =>
         x.setAttribute('aria-pressed', String(x.dataset.c === c)));
       const wi = document.getElementById('winput');
-      if (wi && !isBW){
-        const typed = wi.value.trim();
-        // only overwrite the pre-fill if the user hasn't typed their own number
-        if (!typed || typed === autoRef) wi.value = '';
-      }
-      curLift = logOf(p.id).lifts['l:' + p.id + ':' + c + ':' + date] || null;
+      const typedW = wi ? wi.value.trim() : '';
+      const ri = document.querySelector('#repsingle .setstepper input');
+      const typedR = ri ? String(ri.value).trim() : '';
+      const repsWereAuto = ri ? (typedR === '' || typedR === String(refReps != null ? refReps : '')) : true;
+      curLift = liveLift(p.id, c, date);
       const st2 = personStats(p.id, c);
       curLast = st2 ? st2.last : null;
       curPb = st2 ? st2.pb : null;
       autoRef = autoVal();
-      const wi2 = document.getElementById('winput');
-      if (wi2 && !isBW && !wi2.value.trim()) wi2.value = autoRef;
-      refreshIdentity();
+      if (wi && !isBW && (!typedW || typedW === autoRef)) wi.value = '';
+      if (wi && !isBW && !wi.value.trim()) wi.value = autoRef;
+      if (ri && repsWereAuto){
+        const r2 = lastReps(curLift || curLast);
+        ri.value = r2 != null ? r2 : '';
+      }
+      const lr = document.getElementById('lastrow');
+      if (lr) lr.innerHTML = lastHintHTML(curLast, curPb, curLift, isBW);
+      const note = document.getElementById('note');
+      if (note) note.innerHTML = noteText(curLift, doneNow);
+      const lb = root.querySelector('[data-last]');
+      if (lb){
+        lb.textContent = curLast ? `last ${wFmt(curLast.weight)}` : '';
+        lb.style.display = curLast ? '' : 'none';
+      }
+      if (!isBW) updateSaveBtn();
     }));
   }
 
   if (!isBW){
     const inp = document.getElementById('winput');
-    inp.addEventListener('input', () => updateSaveBtn());
+    inp.addEventListener('input', updateSaveBtn);
     root.querySelectorAll('[data-add]').forEach(b => b.addEventListener('click', () => {
-      const cur = parseFloat(inp.value);
-      const v = (isFinite(cur) ? cur : 0) + parseFloat(b.dataset.add);
+      const cur = parseWeight(inp.value);
+      const v = (cur != null ? cur : 0) + parseFloat(b.dataset.add);
       inp.value = v > 0 ? wFmt(v) : '';
       updateSaveBtn();
     }));
     const lastBtn = root.querySelector('[data-last]');
-    if (lastBtn) lastBtn.addEventListener('click', () => { inp.value = curLast ? wFmt(curLast.weight) : ''; updateSaveBtn(); });
-    document.getElementById('repstoggle').addEventListener('click', () => {
-      const rows = document.querySelector('#repsblock .setrows');
-      const showing = rows.style.display !== 'none';
-      rows.style.display = showing ? 'none' : '';
-      document.getElementById('repstoggle').textContent = showing ? 'edit' : 'hide';
+    if (lastBtn) lastBtn.addEventListener('click', () => {
+      inp.value = curLast ? wFmt(curLast.weight) : '';
+      updateSaveBtn();
     });
-    root.querySelectorAll('.setstepper button').forEach(b => b.addEventListener('click', () => {
-      const step = +b.dataset.d;
-      const input = b.parentElement.querySelector('input');
-      let v = parseInt(input.value,10) || 0;
-      v = Math.max(0, Math.min(60, v + step));
-      input.value = v;
+
+    /* one number by default, every set on request (the old way is still here) */
+    document.getElementById('repstoggle').addEventListener('click', () => {
+      const single = document.getElementById('repsingle');
+      const multi = document.getElementById('repsmulti');
+      const goingMulti = single.style.display !== 'none';
+      single.style.display = goingMulti ? 'none' : '';
+      multi.style.display = goingMulti ? '' : 'none';
+      document.getElementById('repstoggle').textContent = goingMulti ? 'log one set' : 'log every set';
+      document.getElementById('rephint').textContent = goingMulti
+        ? 'Each set is saved as you enter it.'
+        : "Only the last set is saved — that's the one that counts.";
+      if (goingMulti){
+        const v = singleRep();
+        const inputs = [...multi.querySelectorAll('.setstepper input')];
+        if (v) inputs.forEach(el => { if (!parseRepInput(el.value)) el.value = v; });
+      } else {
+        const el = single.querySelector('.setstepper input');
+        const v = lastEnteredRep();
+        if (el && v) el.value = v;
+      }
+      updateSaveBtn();
+    });
+    root.querySelectorAll('#repsingle .setstepper button, #repsmulti .setstepper button').forEach(b =>
+      b.addEventListener('click', () => {
+        const input = b.parentElement.querySelector('input');
+        const step = +b.dataset.d;
+        const cur = parseRepInput(input.value) || 0;
+        const next = Math.max(0, Math.min(100, cur + step));
+        input.value = next > 0 ? next : '';
+        updateSaveBtn();
+      }));
+    root.querySelectorAll('#repsingle .setstepper input, #repsmulti .setstepper input').forEach(el =>
+      el.addEventListener('input', updateSaveBtn));
+
+    const rb = root.querySelector('[data-both]');
+    if (rb) rb.querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
+      both = b.dataset.bothv === '1';
+      rb.querySelectorAll('button').forEach(x =>
+        x.setAttribute('aria-pressed', String((x.dataset.bothv === '1') === both)));
+      document.getElementById('bothnote').style.display = both ? 'block' : 'none';
+      updateSaveBtn();
     }));
+
     updateSaveBtn();
   }
 
@@ -1492,103 +1679,257 @@ function openLogSheet(idx){
     closeOverlay();
     toast(doneNow ? 'Unticked' : 'Ticked off — no weight logged', colorVar);
   });
-  if (!isBW){
-    document.getElementById('savebtn').addEventListener('click', () => saveLogSheet(idx));
+  if (!isBW) document.getElementById('savebtn').addEventListener('click', () => saveLogSheet(idx, { both }));
+}
+function noteText(lift, doneNow){
+  if (lift){
+    const r = lastReps(lift);
+    return `Logged today at <b style="color:var(--chalk)">${wFmt(lift.weight)} ${UNIT}${r ? ' × ' + r : ''}</b> — saving replaces it.`;
   }
-
-  function updateSaveBtn(){
-    const el = document.getElementById('winput');
-    const b = document.getElementById('savebtn');
-    if (!el || !b) return;
-    const w = parseFloat(el.value);
-    const base = lift ? 'Update to' : 'Log';
-    const wTxt = isFinite(w) && w > 0 ? `${wFmt(w)} ${UNIT}` : UNIT;
-    b.innerHTML = `${base} ${wTxt}<span class="sub">${lift ? 'saves &amp; keeps it ticked' : 'saves &amp; ticks it off'}</span>`;
-    b.classList.toggle('can', isFinite(w) && w > 0);
-    if (b.classList.contains('can')) b.style.opacity = 1; else b.style.opacity = .45;
-  }
+  return doneNow ? 'This exercise is ticked today without a weight.' : 'Tap Log to record it, or Done to just tick it off.';
 }
 
-function repRowsHTML(lift, presc){
+function multiRepRowsHTML(lift, presc){
   const sets = presc ? presc.sets : 3;
-  const max = presc ? presc.max : 12;
-  const cur = lift && lift.reps ? lift.reps : Array(sets).fill(max);
+  const cur = (lift && Array.isArray(lift.reps)) ? lift.reps : [];
   let rows = '';
   for (let i=0;i<sets;i++){
+    const v = (cur[i] != null && cur[i] > 0) ? cur[i] : '';
     rows += `<div class="setrow"><span class="s">Set ${i+1}</span>
       <div class="setstepper"><button data-d="-1" aria-label="fewer reps">−</button>
-      <input type="text" inputmode="numeric" value="${cur[i]}" aria-label="Reps in set ${i+1}">
+      <input type="text" inputmode="numeric" value="${v}" aria-label="Reps in set ${i+1}">
       <button data-d="1" aria-label="more reps">+</button></div></div>`;
   }
-  return `<div class="setrows" ${lift && lift.reps ? '' : 'style="display:none"'} data-open="${lift && lift.reps ? '1':'0'}">${rows}</div>`;
+  return `<div class="setrows">${rows}</div>`;
 }
 
 function lastHintHTML(last, pb, lift, isBW){
   if (isBW) return 'Nothing to weigh — just tick it off when your sets are done.';
   let parts = [];
   if (last){
-    const repTxt = last.reps ? last.reps.map(r => r || '·').join('·') : 'target';
-    parts.push(`Last: <b>${wFmt(last.weight)} ${UNIT}</b>${last.reps ? ' · ' + repTxt : ''} <span style="opacity:.6">· ${fmtGB(last.date)}</span>`);
+    const r = lastReps(last);
+    parts.push(`Last: <b>${wFmt(last.weight)} ${UNIT}</b>${r ? ' × ' + r : ''} <span style="opacity:.6">· ${fmtGB(last.date)}</span>`);
   } else {
     parts.push('No weight logged for this lift yet — start it off!');
   }
   if (pb){
-    parts.push(`PB: <b style="color:var(--pc)">${wFmt(pb.weight)} ${UNIT}</b> <span style="opacity:.6">· ${fmtGB(pb.date,true)}</span>`);
+    const r = lastReps(pb);
+    parts.push(`PB: <b style="color:var(--pc)">${wFmt(pb.weight)} ${UNIT}</b>${r ? ' × ' + r : ''} <span style="opacity:.6">· ${fmtGB(pb.date,true)}</span>`);
   }
   const beat = last && pb && lift && lift.weight > pb.weight;
-  const cls = beat ? 'pb-new' : '';
-  return `<div class="${cls}">${parts.join('<br>')}</div>`;
+  return `<div class="${beat ? 'pb-new' : ''}">${parts.join('<br>')}</div>`;
 }
 
-function saveLogSheet(idx){
+/* Reads the sheet, guards against typos, then writes. */
+function saveLogSheet(idx, opts){
+  opts = opts || {};
   const p = me();
   const day = currentDay();
   const slot = day.ex[idx];
   const slotKey = slotKeyOf(day.n, idx);
+  const multiIsOn = (() => { const m = document.getElementById('repsmulti'); return !!m && m.style.display !== 'none'; })();
+
+  let w = opts.w, reps = opts.reps, repsMode = opts.repsMode;
+  if (w == null){
+    w = parseWeight(document.getElementById('winput').value);
+    if (multiIsOn){
+      const vals = [...document.querySelectorAll('#repsmulti .setstepper input')].map(r => parseRepInput(r.value));
+      if (vals.some(v => v != null)){ reps = vals; repsMode = 'all'; }
+    } else {
+      const v = singleRepFromSheet();
+      if (v){ reps = [v]; repsMode = 'last'; }
+    }
+  }
+  if (w == null || w > MAXW){ toast('Enter a valid weight first'); return; }
+
+  const targets = [p].concat(opts.both ? S.people.filter(x => x.id !== p.id) : []);
+
+  if (!opts.confirmed){
+    const risky = [];
+    for (const t of targets){
+      const tc = chosenCanonFor(t.id, slotKey, slot);
+      const tst = personStats(t.id, tc);
+      if (tst && tst.pb && w > tst.pb.weight * 2 && (w - tst.pb.weight) >= 10)
+        risky.push({ name:t.name, pb:tst.pb });
+    }
+    if (risky.length){ confirmRiskyWeight(idx, { w, reps, repsMode, both: !!opts.both }, risky); return; }
+  }
+  writeLift(idx, targets, { w, reps, repsMode });
+}
+function singleRepFromSheet(){
+  const el = document.querySelector('#repsingle .setstepper input');
+  return el ? parseRepInput(el.value) : null;
+}
+function confirmRiskyWeight(idx, payload, risky){
+  const slot = currentDay().ex[idx];
+  const r = risky[0];
+  const body = `
+    <p style="font-size:15px;line-height:1.65;color:var(--chalk);opacity:.92">
+      <b>${wFmt(payload.w)} ${UNIT}</b> is more than double ${risky.length > 1 ? 'a' : esc(r.name) + "'s"} PB for
+      ${esc(slot.name)} (${wFmt(r.pb.weight)} ${UNIT}, ${fmtGB(r.pb.date, true)}).
+    </p>
+    <p style="font-size:14px;color:var(--muted);line-height:1.6;margin-top:10px">
+      A weight like that is the one mistake that permanently distorts your PB and trend, so this is the last check before it saves.</p>
+    <div class="cta-row">
+      <button class="cta ghost" data-close>Go back</button>
+      <button class="cta primary" id="riskyes">Yes, log it</button>
+    </div>`;
+  openOverlay(overlayShell('That looks heavy', 'double-check before it saves', body, {center:true}));
+  bindOverlayClicks();
+  document.getElementById('riskyes').addEventListener('click', () => {
+    closeOverlay();
+    saveLogSheet(idx, Object.assign({}, payload, { confirmed:true }));
+  });
+}
+
+/* The single write path for a logged lift — used by the sheet, the typo-confirm
+   and "log for both". Nothing here removes or rewrites anything that exists. */
+function writeLift(idx, targets, payload){
+  const day = currentDay();
+  const slot = day.ex[idx];
+  const slotKey = slotKeyOf(day.n, idx);
   const date = todayKey();
-  let canon = chosenCanonFor(p.id, slotKey, slot);
-  if (slot.opts){
-    const pressed = document.querySelector('#ov [data-choices] button[aria-pressed="true"]');
-    if (pressed && slot.opts.some(o => o.id === pressed.dataset.c)) canon = pressed.dataset.c;
+  const { w, reps, repsMode } = payload;
+  const snap = snapshotBefore(targets.map(t => t.id));
+  const before = {};
+  for (const t of targets){
+    before[t.id] = personStats(t.id, chosenCanonFor(t.id, slotKey, slot));
   }
-  const opt = slot.opts ? slot.opts.find(o => o.id === canon) : null;
-  const label = opt ? opt.name : slot.name;
-  const w = parseFloat(document.getElementById('winput').value);
-  if (!isFinite(w) || w <= 0 || w > MAXW){ toast('Enter a valid weight first'); return; }
-
-  // optional reps
-  let reps = null;
-  const rows = document.querySelectorAll('#repsblock .setstepper input');
-  if (rows.length){
-    const vals = [...rows].map(r => parseInt(r.value,10) || 0);
-    reps = vals;
-  }
-
-  const oldPb = personStats(p.id, canon);
-  const eid = 'l:' + p.id + ':' + canon + ':' + date;
-  const entry = {
-    id:eid, kind:'lift', pid:p.id, ex:canon, name:label,
-    date, weight:w, reps, ts:now(),
-    day: day.n
+  const labelFor = canon => {
+    const o = slot.opts && slot.opts.find(x => x.id === canon);
+    return o ? o.name : slot.name;
   };
-  logOf(p.id).lifts[eid] = entry;
-  saveLog(p.id, true);
+  for (const t of targets){
+    const canon = chosenCanonFor(t.id, slotKey, slot);
+    const eid = 'l:' + t.id + ':' + canon + ':' + date;
+    const entry = { id:eid, kind:'lift', pid:t.id, ex:canon, name:labelFor(canon), date,
+                    weight:w, reps:reps ? reps.slice() : null, ts:now(), day: day.n };
+    if (reps && repsMode) entry.repsMode = repsMode;
+    logOf(t.id).lifts[eid] = entry;
+    const done = ticksFor(t.id, day.n, date);
+    if (!done.includes(idx)){
+      logOf(t.id).ticks[tickKey(day.n, date)] = { items:done.concat([idx]).sort((a,b)=>a-b), ts:now() };
+    }
+    saveLog(t.id, true);
+  }
+  closeOverlay();
+  registerUndo(snap);
 
-  // tick it off
-  const done = ticksFor(p.id, day.n, date);
-  if (!done.includes(idx)){
-    const t = logOf(p.id).ticks;
-    t[tickKey(day.n, date)] = { items:done.concat([idx]).sort((a,b)=>a-b), ts:now() };
+  const main = targets[0];
+  const mainCanon = chosenCanonFor(main.id, slotKey, slot);
+  const r = lastReps({ reps });
+  const pbNames = targets.filter(t => {
+    const b = before[t.id];
+    return !(b && b.pb && b.pb.weight >= w);
+  }).map(t => t.name);
+
+  let msg = `Logged ${wFmt(w)} ${UNIT}${r ? ' × ' + r : ''} · ${esc(labelFor(mainCanon))}`;
+  if (targets.length > 1) msg += ' — both of you';
+  if (pbNames.length) msg += ` 🏆 PB${pbNames.length > 1 ? ' for both' : ' for ' + esc(pbNames[0])}`;
+  toast(msg, personDotColor(main.id), undoLast);
+  render();
+}
+
+/* ---- edit / delete a past record ---- */
+function openEditSheet(entryId){
+  const p = me();
+  const e = logOf(p.id).lifts[entryId];
+  if (!e || isDeleted(e)){ toast('That record is no longer here'); return; }
+  const colorVar = personDotColor(p.id);
+  const r = lastReps(e);
+  const body = `
+    <div class="modal-sec" style="margin-top:6px">
+      <span class="lbl">Weight</span>
+      <div class="winput-wrap" style="margin-top:2px">
+        <input class="winput" id="ewin" type="text" inputmode="decimal" value="${wFmt(e.weight)}" aria-label="Weight in ${UNIT}">
+        <span class="wunit">${UNIT}</span>
+      </div>
+      <div class="quickchips">
+        <button class="qchip small" data-add="-2.5">−2.5</button>
+        <button class="qchip" data-add="2.5">+2.5</button>
+        <button class="qchip" data-add="5">+5</button>
+      </div>
+    </div>
+    <div class="modal-sec">
+      <span class="lbl">Reps · last set</span>
+      <div class="setrow"><span class="s">${repsModeOf(e) === 'last' ? 'Last set' : 'Last set (of ' + ((e.reps||[]).length || 1) + ' sets)'}</span>
+        <div class="setstepper">
+          <button data-rd="-1" aria-label="fewer reps">−</button>
+          <input id="ewreps" type="text" inputmode="numeric" value="${r != null ? r : ''}" placeholder="—" aria-label="Reps in the last set">
+          <button data-rd="1" aria-label="more reps">+</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-sec">
+      <span class="lbl">Date</span>
+      <div class="setrow"><span class="s">Logged</span>
+        <input class="datein" id="ewdate" type="date" value="${esc(e.date)}" aria-label="Date logged"></div>
+      <div class="choicehint">Changing the date moves the record and leaves a hidden marker on the old day, so the other phone follows.</div>
+    </div>
+    <div class="cta-row">
+      <button class="cta primary" id="esave" style="--pc:${colorVar}">Save changes</button>
+      <button class="cta ghost" data-close>Cancel</button>
+    </div>
+    <div class="cta-row" style="margin-top:10px">
+      <button class="cta danger" id="edel">Delete this record</button>
+    </div>`;
+  openOverlay(overlayShell(`${esc(e.name || e.ex)}`, `edit a past record · ${esc(p.name)}`, body, {center:true}));
+  bindOverlayClicks();
+  const root = document.getElementById('ov');
+  root.querySelectorAll('[data-add]').forEach(b => b.addEventListener('click', () => {
+    const inp = document.getElementById('ewin');
+    const cur = parseWeight(inp.value);
+    const v = (cur != null ? cur : 0) + parseFloat(b.dataset.add);
+    inp.value = v > 0 ? wFmt(v) : '';
+  }));
+  root.querySelectorAll('[data-rd]').forEach(b => b.addEventListener('click', () => {
+    const input = document.getElementById('ewreps');
+    const cur = parseRepInput(input.value) || 0;
+    const next = Math.max(0, Math.min(100, cur + (+b.dataset.rd)));
+    input.value = next > 0 ? next : '';
+  }));
+  document.getElementById('esave').addEventListener('click', () => saveEdit(entryId));
+  document.getElementById('edel').addEventListener('click', () => deleteRecord(entryId));
+}
+function saveEdit(entryId){
+  const p = me();
+  const e = logOf(p.id).lifts[entryId];
+  if (!e) return;
+  const w = parseWeight(document.getElementById('ewin').value);
+  const rv = parseRepInput(document.getElementById('ewreps').value);
+  const newDate = document.getElementById('ewdate').value || e.date;
+  if (w == null || w > MAXW){ toast('Enter a valid weight first'); return; }
+  const snap = snapshotBefore([p.id]);
+  const entry = Object.assign({}, e, { weight:w, reps: rv ? [rv] : null, ts: now() });
+  if (rv) entry.repsMode = 'last'; else delete entry.repsMode;
+
+  if (newDate !== e.date){
+    const newId = 'l:' + p.id + ':' + e.ex + ':' + newDate;
+    entry.id = newId; entry.date = newDate;
+    logOf(p.id).lifts[newId] = entry;
+    logOf(p.id).lifts[entryId] = Object.assign({}, e, { deleted:true, ts: now() });
+  } else {
+    logOf(p.id).lifts[entryId] = entry;
   }
   saveLog(p.id, true);
-
+  registerUndo(snap);
   closeOverlay();
-
-  const isNewPb = !(oldPb && oldPb.pb && oldPb.pb.weight >= w);
-  toast(isNewPb
-    ? `🏆 NEW PB — ${wFmt(w)} ${UNIT} on ${esc(label)}`
-    : `Logged ${wFmt(w)} ${UNIT} · ${esc(label)}`, personDotColor(p.id));
+  toast(`Updated ${wFmt(w)} ${UNIT}${rv ? ' × ' + rv : ''} · ${esc(e.name || e.ex)}`, personDotColor(p.id), undoLast);
   render();
+  openHistory(e.ex);          // straight back to the list, so you can see it changed
+}
+function deleteRecord(entryId){
+  const p = me();
+  const e = logOf(p.id).lifts[entryId];
+  if (!e) return;
+  const snap = snapshotBefore([p.id]);
+  logOf(p.id).lifts[entryId] = Object.assign({}, e, { deleted:true, ts: now() });
+  saveLog(p.id, true);
+  registerUndo(snap);
+  closeOverlay();
+  toast(`Deleted ${wFmt(e.weight)} ${UNIT} · ${fmtGB(e.date, true)}`, personDotColor(p.id), undoLast);
+  render();
+  openHistory(e.ex);
 }
 
 /* ============================================================
@@ -1630,22 +1971,22 @@ function renderProgress(){
     body += `<div class="empty">Nothing logged yet.<br>Tap an exercise in the SESSION tab and enter a weight.<br>Your PBs and history build up here.</div>`;
   } else {
     for (const g of groups){
-      const repsTxt = g.pb.reps ? g.pb.reps.map(r=>r||'·').join('·') : '';
+      const pbReps = lastReps(g.pb);
       body += `
       <div class="block" style="margin-top:22px">
         <div class="pr-row" data-ex="${g.ex}">
           <span class="rn"><span class="nm">${esc(g.name)}</span>
-            <span class="mus">${esc(g.muscle)}${g.pb.reps ? ' · ' + esc(g.pb.reps.length) + ' sets logged' : ''}</span></span>
+            <span class="mus">${esc(g.muscle)} · ${esc(String(g.entries.length))} logged</span></span>
           <span class="spark">${sparkSVG(g.entries.map(e=>e.weight))}</span>
           <span class="pbv"><span class="w">${wFmt(g.pb.weight)}</span>
-            <span class="d">PB · ${fmtGB(g.pb.date)}</span></span>
+            <span class="d">PB${pbReps ? ' × ' + pbReps : ''} · ${fmtGB(g.pb.date)}</span></span>
         </div>
       </div>`;
     }
   }
   body += `<p style="margin-top:20px;font-size:13px;color:var(--muted);line-height:1.6;font-family:'IBM Plex Mono',monospace;letter-spacing:.02em">
-    PB = the heaviest weight you've logged for that lift, with the date you first hit it.
-    Tap a row to see every session.</p>
+    PB = the heaviest weight you've logged for that lift, with the date you first hit it${''}.
+    Tap a row to see every session — and to edit or delete one.</p>
     <div style="margin-top:26px;border-top:1px solid var(--line);padding-top:14px">
       ${syncFooterHTML()}
     </div>`;
@@ -1694,13 +2035,16 @@ function openHistory(ex){
 
   let hist = entries.slice().reverse().map(e => {
     const isPb = pb && e.weight === pb.weight && e.ts === pb.ts;
-    const repTxt = e.reps ? e.reps.map(r=>r||'·').join(' · ') : '';
-    return `<div class="hist-item">
+    const last = lastReps(e);
+    const detail = repsDetail(e);
+    return `<div class="hist-item" data-eid="${esc(e.id)}" role="button" tabindex="0"
+        aria-label="Edit the record from ${fmtGB(e.date, true)}">
       <div class="hrow">
         <span class="hdate">${fmtGB(e.date, true)}</span>
-        <span class="hw ${isPb?'pb-mark':''}">${wFmt(e.weight)} ${UNIT} ${isPb?'<span class="tag">· PB</span>':''}</span>
+        <span class="hw ${isPb?'pb-mark':''}">${wFmt(e.weight)} ${UNIT}${last ? ` <span style="color:var(--muted)">× ${last}</span>` : ''} ${isPb?'<span class="tag">· PB</span>':''}</span>
       </div>
-      ${repTxt ? `<div class="hreps">${repTxt} reps</div>` : '<div class="hreps">target reps (not entered)</div>'}
+      ${detail ? `<div class="hreps">${esc(detail)}</div>`
+               : (last ? '' : '<div class="hreps">weight only — no reps recorded</div>')}
     </div>`;
   }).join('');
 
@@ -1709,14 +2053,25 @@ function openHistory(ex){
       <div class="sumline" style="margin-top:0">
         <div class="statcard"><span class="v" style="color:${colorVar}">${pb ? wFmt(pb.weight) : '—'}</span><span class="k">PB ${UNIT} · ${pb ? fmtGB(pb.date,true) : ''}</span></div>
         <div class="statcard"><span class="v" style="color:${colorVar}">${entries.length}</span><span class="k">sessions</span></div>
-        <div class="statcard"><span class="v" style="color:${colorVar}">${entries.reduce((s,e)=>s+(e.reps?e.reps.reduce((a,b)=>a+(b||0),0):0),0)}</span><span class="k">total reps</span></div>
+        <div class="statcard"><span class="v" style="color:${colorVar}">${pb ? wFmt(pb.weight) + (lastReps(pb) ? '×' + lastReps(pb) : '') : '—'}</span><span class="k">best set</span></div>
       </div>
       ${entries.length >= 2 ? `<div style="margin-top:16px;text-align:center">${sparkSVG(entries.map(e=>e.weight)).replace('<span class="spark"','<span class="spark" style="width:100%;height:46px"')}</div>` : ''}
     </div>
-    <div class="modal-sec"><span class="lbl">Every logged session</span>${hist || '<div class="empty">Nothing yet.</div>'}</div>`;
+    <div class="modal-sec"><span class="lbl">Every logged session — tap one to edit or delete it</span>${hist || '<div class="empty">Nothing yet.</div>'}</div>`;
 
   openOverlay(overlayShell(`${esc(name)} — ${esc(p.name)}`, `PB &amp; full history · ${UNIT}`, body, {full:false, center:false}));
   bindOverlayClicks();
+  const hroot = document.getElementById('ov');
+  const openEd = ev => {
+    const item = ev.target.closest('.hist-item');
+    if (item && item.dataset.eid) openEditSheet(item.dataset.eid);
+  };
+  hroot.querySelectorAll('.hist-item').forEach(item => {
+    item.addEventListener('click', openEd);
+    item.addEventListener('keydown', ev => {
+      if (ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); openEditSheet(item.dataset.eid); }
+    });
+  });
 }
 
 /* ============================================================
@@ -2054,10 +2409,12 @@ function exportData(fmt){
   } else {
     name = `gym-weights-${stamp}.csv`;
     type = 'text/csv';
-    const rows = ['person,date,exercise,weight_kg,reps,note'];
+    const rows = ['person,date,exercise,weight_kg,reps,note,last_reps'];
     for (const p of S.people){
       for (const e of liftsOf(p.id)){
-        rows.push([p.name, e.date, e.name || e.ex, e.weight, e.reps ? e.reps.join('/') : '', e.note || ''].map(v => '"'+String(v).replace(/"/g,'""')+'"').join(','));
+        const lr = lastReps(e);
+        rows.push([p.name, e.date, e.name || e.ex, e.weight, e.reps ? e.reps.join('/') : '', e.note || '',
+                   lr != null ? lr : ''].map(v => '"'+String(v).replace(/"/g,'""')+'"').join(','));
       }
     }
     text = rows.join('\n');

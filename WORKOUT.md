@@ -1,6 +1,7 @@
 # The plan — final (v1)
 
-**App still untouched.** `index.html` and `supabase.sql` unchanged (verified with git).
+**App:** Release 1 (logging changes) is built. **This plan goes onto the phone in Release 2** — the app
+still shows the old exercise list until then.
 **On screen:** `preview/new-plan.html` — the whole plan rendered with the app's real styling.
 
 ---
@@ -114,11 +115,15 @@ screen space. Open it when you want to practise or log a set.
 | 3 | Negatives | 3 × 3 @ 5s | **Where you are now.** The app times the descent so you can't cheat it by dropping |
 | 4 | Negatives | 3 × 5 @ 5s | Same, more volume. Hit it twice and the ladder moves you up |
 | 5 | Bottom-half reps | 3 × 3 | Dead hang → 90° → lower. The exact range you said you're missing |
-| 6 | Band-assisted pull-ups | 3 × 3–5 | Bands instead of a machine. Logged as a **band level** (heavy → medium → light), because bands can't be measured in kg |
+| 6 | Band-assisted pull-ups | 3 × 3–5 | **You own bands** — no machine needed. Logged as a **band level** (heavy → medium → light), because bands can't be measured in kg |
 | 7 | Full pull-up | 1 rep | Then 2, then 3, then 5 |
 
-**Optional accessories, any session:** inverted rows 2 × 8–10 (the single best builder of a first pull-up) and
-jump-to-top holds 3 × 10s.
+**Optional accessories, any session:** inverted rows 2 × 8–10 — **you have a Smith machine, so set the bar low
+in it and you're set** (the single best builder of a first pull-up) — and jump-to-top holds 3 × 10s.
+
+**Also unlocked by the Smith machine:** on barbell weeks you can bench in it without needing a spotter, which
+matters most on the Flat and Incline Bench. Your choice — free weights first if you prefer, Smith when you're
+training on your own or going heavy.
 
 **What the app does:** shows your current level and next target · times your hangs and negatives out loud ·
 logs band work as a level · advances you automatically when you hit a target twice · keeps its own history so
