@@ -116,9 +116,9 @@
   .switch{display:flex;gap:6px;margin-bottom:26px;}
   .switch button{
     flex:1;
-    background:transparent;
+    background:var(--surface);
     border:1px solid var(--line);
-    color:var(--muted);
+    color:var(--chalk);
     font-family:'IBM Plex Mono',monospace;
     font-size:12px;
     font-weight:500;
@@ -127,6 +127,11 @@
     border-radius:3px;
     cursor:pointer;
     transition:color .15s,border-color .15s,background .15s;
+  }
+  .switch button.daynav{
+    flex:none;width:42px;
+    font-size:17px;font-weight:600;letter-spacing:0;line-height:1;
+    padding:10px 0 11px;
   }
   .switch button[aria-pressed="true"]{
     color:var(--base);
@@ -297,7 +302,7 @@
   .ptext{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.12em;color:var(--muted);white-space:nowrap;}
   .ptext.complete{color:var(--accent);}
   .reset{
-    background:none;border:1px solid var(--line);color:var(--muted);
+    background:var(--surface);border:1px solid var(--line);color:var(--chalk);
     font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.12em;
     text-transform:uppercase;padding:6px 10px;border-radius:3px;cursor:pointer;
   }
@@ -327,6 +332,33 @@
   .ref-row:last-child{border-bottom:none;}
   .ref-row .k{flex:1;color:var(--chalk);}
   .ref-row .v{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--accent);white-space:nowrap;text-align:right;}
+
+  /* ---- pull-up ladder ---- */
+  .ladderbox{margin-top:4px;}
+  .ladderbox summary{color:var(--chalk);}
+  .ladderbody{padding:14px 15px 16px;}
+  .lvl{
+    display:flex;gap:10px;align-items:flex-start;
+    padding:9px 10px;border:1px solid transparent;border-radius:4px;
+  }
+  .lvl + .lvl{margin-top:3px;}
+  .lvl .n{
+    flex:none;width:23px;height:23px;border-radius:50%;margin-top:1px;
+    display:flex;align-items:center;justify-content:center;
+    border:1px solid var(--line);background:var(--base);
+    font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;color:var(--muted);
+  }
+  .lvl .b{display:flex;flex-direction:column;gap:3px;min-width:0;}
+  .lvl .t{font-size:14.5px;font-weight:600;color:var(--chalk);line-height:1.4;}
+  .lvl .d{font-size:12.5px;line-height:1.55;color:var(--muted);}
+  .lvl.now{background:var(--surface);border-color:var(--line);}
+  .lvl.now .n{border-color:var(--accent);color:var(--accent);}
+  .here{
+    display:inline-block;margin-left:8px;padding:2px 7px;border-radius:2px;vertical-align:2px;
+    background:var(--accent);color:var(--base);
+    font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;
+    letter-spacing:.14em;text-transform:uppercase;white-space:nowrap;
+  }
 
   /* ---- bottom tabs ---- */
   .tabbar{
@@ -406,7 +438,7 @@
   .presc-line b{color:var(--chalk);font-weight:600;}
   .choicechips{display:flex;gap:8px;margin-top:4px;}
   .choicechips button{
-    flex:1;border:1px solid var(--line);background:transparent;color:var(--muted);
+    flex:1;border:1px solid var(--line);background:var(--surface);color:var(--chalk);
     font-size:14.5px;font-weight:600;padding:11px 8px;border-radius:3px;cursor:pointer;
     transition:all .15s;
   }
@@ -451,6 +483,8 @@
     color:var(--muted);text-transform:uppercase;
   }
   .reps-title .toggle{color:var(--accent);text-transform:uppercase;font-size:10px;letter-spacing:.12em;border:none;background:none;cursor:pointer;font-family:inherit;}
+  .setrows{border:1px solid var(--line);border-radius:4px;background:var(--base);padding:2px 12px;}
+  .setrows .setrows{border:none;border-radius:0;background:transparent;padding:0;}
   .setrow{
     display:flex;align-items:center;justify-content:space-between;gap:10px;
     padding:10px 0;border-bottom:1px solid var(--line);
@@ -481,7 +515,7 @@
   }
   .cta:active{transform:scale(.98);}
   .cta.primary{background:var(--pc,var(--accent));color:var(--base);}
-  .cta.ghost{background:transparent;border:1px solid var(--line);color:var(--muted);font-weight:600;}
+  .cta.ghost{background:var(--surface);border:1px solid var(--line);color:var(--chalk);font-weight:600;}
   .cta.danger{background:transparent;border:1px solid var(--d3);color:var(--d3);}
   .cta:disabled{opacity:.4;cursor:default;}
   .cta:focus-visible{outline:2px solid var(--chalk);outline-offset:2px;}
@@ -562,7 +596,7 @@
   .tctl button{flex:none;min-width:112px;}
   .tpresets{display:flex;gap:8px;margin-top:20px;flex-wrap:wrap;justify-content:center;}
   .tpreset{
-    border:1px solid var(--line);background:var(--base);color:var(--muted);
+    border:1px solid var(--line);background:var(--surface);color:var(--chalk);
     font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;letter-spacing:.04em;
     padding:10px 14px;border-radius:3px;cursor:pointer;
   }
@@ -590,7 +624,7 @@
   }
   .name-edit input:focus{border-color:var(--accent);}
   .mini-btn{
-    border:1px solid var(--line);background:var(--base);color:var(--muted);
+    border:1px solid var(--line);background:var(--surface);color:var(--chalk);
     font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;letter-spacing:.1em;
     padding:9px 13px;border-radius:3px;cursor:pointer;text-transform:uppercase;
   }
@@ -708,7 +742,7 @@
   .views{display:flex;gap:6px;margin-top:20px;}
   .views button{
     flex:1;background:var(--surface);border:1px solid var(--line);border-radius:3px;
-    color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.08em;
+    color:var(--chalk);font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.08em;
     text-transform:uppercase;padding:11px 4px;cursor:pointer;appearance:none;
   }
   .views button[aria-pressed="true"]{background:var(--pc,var(--accent));border-color:var(--pc,var(--accent));color:var(--base);font-weight:600;}
@@ -1590,12 +1624,17 @@ function renderPersons(){
 function renderSwitch(){
   const el = document.getElementById('switch');
   const d = currentDay();
-  el.innerHTML = DAYS.map(x =>
-    `<button data-n="${x.n}" aria-pressed="${x.n === d.n}">${x.label}</button>`).join('');
-  el.querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
+  el.innerHTML =
+    `<button class="daynav" data-step="-1" aria-label="Previous day">‹</button>` +
+    DAYS.map(x =>
+      `<button data-n="${x.n}" aria-pressed="${x.n === d.n}">${x.label}</button>`).join('') +
+    `<button class="daynav" data-step="1" aria-label="Next day">›</button>`;
+  el.querySelectorAll('button[data-n]').forEach(b => b.addEventListener('click', () => {
     selDayN = +b.dataset.n;
     render();
   }));
+  el.querySelectorAll('button[data-step]').forEach(b =>
+    b.addEventListener('click', () => dayStep(+b.dataset.step)));
 }
 function openingDay(){
   const todayDow = new Date().getDay();
@@ -1604,6 +1643,38 @@ function openingDay(){
 }
 function currentDay(){
   return DAYS.find(x => x.n === selDayN) || openingDay();
+}
+/* One step through the programme days, wrapping MON ↔ WED ↔ FRI.
+   Shared by the ‹ › arrows in the switch and the swipe handler below. */
+function dayStep(delta){
+  const i = Math.max(0, DAYS.findIndex(x => x.n === currentDay().n));
+  selDayN = DAYS[(i + delta + DAYS.length) % DAYS.length].n;
+  render();
+}
+/* Swipe left/right on the session screen to move between days (X23).
+   Deliberately conservative: it must never fight with vertical scrolling,
+   taps on rows and buttons, typing, or an open sheet — so it needs a clear,
+   quick, mostly-horizontal drag that starts on plain content. */
+function bindDaySwipe(){
+  let x0 = null, y0 = null, t0 = 0;
+  document.addEventListener('touchstart', ev => {
+    x0 = null;
+    if (view !== 'session' || ev.touches.length !== 1) return;
+    if (ev.target.closest('input,textarea,select,button,summary,a,.overlay,.sheet,.tabbar,#topbar')) return;
+    x0 = ev.touches[0].clientX; y0 = ev.touches[0].clientY; t0 = Date.now();
+  }, { passive:true });
+  document.addEventListener('touchend', ev => {
+    if (x0 == null) return;
+    const dx = ev.changedTouches[0].clientX - x0;
+    const dy = ev.changedTouches[0].clientY - y0;
+    const dt = Date.now() - t0;
+    x0 = null;
+    if (view !== 'session') return;
+    if (document.querySelector('#overlayroot .overlay')) return;   // a sheet is open
+    if (Math.abs(dx) < 60 || dt > 800) return;
+    if (Math.abs(dx) < Math.abs(dy) * 1.6) return;                 // that was a scroll, not a swipe
+    dayStep(dx < 0 ? 1 : -1);                                      // swipe left → next day
+  }, { passive:true });
 }
 
 /* ============================================================
@@ -1805,6 +1876,7 @@ function dayRowHTML(day, idx, p, dayKey, keep){
    session, closed by default so it costs no screen space.
    ============================================================ */
 const BAND_LABEL = { 0:'no band', 1:'heavy band', 2:'medium band', 3:'light band' };
+let ladderOpen = false;   // remembered across renders, so logging a practise never slams the panel shut
 function ladderPanelHTML(p){
   const rec = ladderOf(p.id);
   const lvl = Math.min(LADDER.length, Math.max(1, (rec && rec.level) || 1));
@@ -1815,13 +1887,13 @@ function ladderPanelHTML(p){
   const levels = LADDER.map((x, i) => {
     const on = i === lvl - 1;
     return `<div class="lvl${on?' now':''}"><span class="n">${i+1}</span><span class="b">
-      <span class="t">${esc(x.t)} <span style="color:var(--muted);font-size:13px">${esc(x.target)}</span></span>
+      <span class="t">${esc(x.t)} <span style="color:var(--muted);font-size:13px">${esc(x.target)}</span>${on ? ' <span class="here">you are here</span>' : ''}</span>
       <span class="d">${esc(x.d)}</span></span></div>`;
   }).join('');
   return `
   <div class="block">
     <div class="block-label">Pull-ups</div>
-    <details class="ladderbox">
+    <details class="ladderbox"${ladderOpen ? ' open' : ''}>
       <summary>Pull-up ladder — level ${lvl} of ${LADDER.length}${bandNote}</summary>
       <div class="ladderbody">
         <p style="font-size:14.5px;color:var(--muted);line-height:1.6">
@@ -1847,6 +1919,8 @@ function ladderPanelHTML(p){
 }
 function bindLadderPanel(p){
   const root = document.getElementById('app');
+  const box = root.querySelector('.ladderbox');
+  if (box) box.addEventListener('toggle', () => { ladderOpen = box.open; });
   const done = root.querySelector('[data-ladder="done"]');
   if (done) done.addEventListener('click', () => {
     setLadder(p.id, { markDone:true });
@@ -4413,6 +4487,7 @@ function applyStartTab(){
   firstPaint();
 
   document.getElementById('gearbtn').addEventListener('click', openSettings);
+  bindDaySwipe();
   watchConnection();
   registerServiceWorker();
   if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
