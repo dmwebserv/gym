@@ -177,7 +177,7 @@ const txt = () => $('#app').textContent;
   ok(!$('#pbbanner').classList.contains('show'), 'a lighter set gets no banner — it has to be a real PB');
 
   console.log('\n=== X183 — whose PB is it ===');
-  q("view='session'; render();");
+  q("view='session'; selDayN=2; render();");
   await wait(200);
   const partnerLines = $$('#list .pbline.partner').map(e => e.textContent.replace(/\s+/g,' ').trim());
   ok(partnerLines.length >= 1, "the partner's PB is on the rows", partnerLines.length + ' rows');

@@ -3,7 +3,26 @@
 **Read this first when you pick this up.** It's the single page: what's decided, what's built, what's
 left, and where the detail lives.
 
-Last updated: **16 October 2026** · **Releases 1, 2, 3 and 4 are built, tested and merged to `main` (PR #3), plus restore and sync hardening from Release 5, plus the fixes and polish found by using it.** 419 automated checks pass.
+Last updated: **9 November 2026** · **v5.1 replaces the workout with the supplied 3-Day Gym Plan, fixes the iPhone 16 status-bar/Dynamic Island overlap, and gives the session a lighter UI.** Releases 1–4 and the data-safety work remain in place. **450 automated checks pass.**
+
+---
+
+## 0. Current update — v5.1 (9 November 2026)
+
+| Change | State |
+|---|---|
+| **The workout** | ✅ Replaced with the exact PDF plan: Monday **Strength A** (13 sets), Wednesday **Hypertrophy** (18 sets), Friday **Strength B** (13 sets), 44 sets/week. See `WORKOUT.md`. |
+| **Sets, reps, rest and timer** | ✅ Exact set/rep ranges and rest guidance are on each row. Timer presets are 3:30, 2:30, 1:30 and 1:15. |
+| **Historical data** | ✅ Nothing stored is rewritten or deleted. Existing PBs appear on reused rows; older generic bench records are read-only aliases; retired lifts remain in Progress, PBs, CSV and backups. |
+| **New exercises** | ✅ Chest-supported row, conventional deadlift, weighted pull-ups and hammer curls have their own canonical ids and use the same weight/reps/PB/undo/sync path. |
+| **iPhone 16 overlap** | ✅ iOS now reserves an opaque status bar and the body adds an explicit `env(safe-area-inset-top)` gap. The app-like zoom restriction remains by request. |
+| **Simpler UI** | ✅ Removed warm-up/finisher blocks, four generic reference guides, `1/3` badges, "also" notes, repeated footer hints and long Settings release notes. One collapsed progression note and one short tap hint remain. |
+| **Kept** | ✅ Pull-up ladder, optional superset, machine substitutes, plate calculator, search, short-on-time trim, rearranging, Progress, PBs, sync and backups. |
+| **Offline update** | ✅ `sw.js` cache version bumped to `session-v5-1`, so installed phones pick up the shell on their next online launch. |
+| **Tests** | ✅ All nine jsdom suites pass: **450 checks, 0 failures**. |
+
+> The sections below describe the earlier release history. Where they mention the old 76-set
+> programme, `WORKOUT.md` is now authoritative.
 
 ---
 
@@ -11,30 +30,30 @@ Last updated: **16 October 2026** · **Releases 1, 2, 3 and 4 are built, tested 
 
 | | State |
 |---|---|
-| **The workout** | Reworked, agreed, and **now built into the app** |
+| **The workout** | ✅ **v5.1:** the supplied 3-Day Gym Plan — Strength A, Hypertrophy, Strength B |
 | **Release 1 — how you log** | ✅ Built and tested: last-set reps, undo, edit/delete, log-for-both, typo guard |
-| **Release 2 — the new programme** | ✅ Built and tested: the new exercises, automatic weekly rotation, substitutes, the pull-up ladder |
+| **Release 2 — the programme** | Historical release record. The current plan is in §0 and `WORKOUT.md`; substitutes and the pull-up ladder remain |
 | **Release 3 — it feels like an app** | ✅ Built and tested: splash screen, boot skeleton, home-screen install with proper icons, offline works with no signal at all, top bar follows the day |
 | **Release 4 — Progress & motivation** | ✅ Built and tested: four Progress views (lifts, PB wall, 12-week map, you two), the session-complete summary, the PB moment, named partner PBs, last-three-sessions, plate calculator, search, short-on-time trim, superset hand-off |
 | **Data safety** | ✅ Built and tested: restore from a backup, safer erase, sync that only sends what changed |
 | **Your data** | Untouched. Nothing rewritten, migrated or deleted — proven by a test that boots the app on a phone full of old data |
-| **On your phones?** | **Yes** — merged to `main` via PR #3, which `dmwebserv.github.io/gym` serves. It goes live as soon as GitHub Pages rebuilds; the installed app picks the new version up on its next launch with signal |
-| **Next** | The remainder of Release 5, and the two deferred items listed in §9 |
+| **On your phones?** | v5.1 is on the working branch and ready to merge; once GitHub Pages rebuilds, the installed app adopts it on its next launch with signal |
+| **Next** | Merge/publish v5.1, then check the reserved status bar on the physical iPhone 16 |
 
 ## 2. Where everything is
 
 | File | What it is |
 |---|---|
 | **`STATUS.md`** | This file — the state of play |
-| `WORKOUT.md` | The plan as agreed, with the volume table, the ladder and the cut list |
-| `preview/new-plan.html` | The plan drawn on screen with the app's real styling — now also showing the weekly alternation |
+| `WORKOUT.md` | The current PDF plan, rest guidance, timer presets and historical-data mapping |
+| `preview/new-plan.html` | Archived visual preview of the superseded Release 2 plan — not the current routine |
 | `preview/reps-rows.html` | The four ways "last set" reps could be shown on a row (the choice is made) |
 | `SELECTED.md` | The check-list of everything you picked, with the flags |
 | `IMPROVEMENTS.md` | Round 1: 76 ideas + 11 bugs |
 | `IMPROVEMENTS-2.md` | Round 2: answers, specs, 58 ideas + 2 bugs |
 | `IMPROVEMENTS-3.md` | Round 3: the long list — 225 ideas (`X1`–`X225`) |
 | `index.html` | **The app.** Releases 1 and 2 are in. |
-| `tests/` | 224 automated checks that drive the real app |
+| `tests/` | 450 automated checks that drive the real app |
 | `manifest.webmanifest`, `sw.js`, `fonts/`, `pwa-*.png`, `splash-*.png` | What makes it install and work offline |
 | `supabase.sql` | The shared sync store. **Untouched.** |
 
