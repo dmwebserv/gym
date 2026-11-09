@@ -58,6 +58,7 @@ const q=js=>win.eval(js);
   // logging on top of old data pre-fills from the old record
   tap($('[data-close]')); await wait(80);
   tap($$('#tabnav button').find(b=>b.dataset.v==='session')); await wait(150);
+  q("selDayN=2; render();"); await wait(150);
   const legRow = $$('#list li.ex').find(r=>r.textContent.includes('Leg Press'));
   tap(legRow.querySelector('.pill')); await wait(150);
   ok($('#winput').value === '85', 'weight pre-fills from the old record (85)', $('#winput').value);

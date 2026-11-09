@@ -1,7 +1,7 @@
 {
   "name": "Session",
   "short_name": "Session",
-  "description": "Weight, reps and PBs for Danny and Kieran — Monday, Wednesday, Friday. Works offline.",
+  "description": "Weight, reps and PBs for Danny and Kieran — Strength A, Hypertrophy and Strength B, Monday to Friday. Works offline.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

@@ -1,167 +1,126 @@
-# The plan — final (v1)
+# The plan — 3-Day Gym Plan (v5.1)
 
-**App:** this plan is now **built into the app** (Release 2), along with Release 1 (last-set reps, undo,
-edit/delete, log-for-both). It reaches your phones when the branch is merged to `main`.
-**On screen:** `preview/new-plan.html` — the whole plan rendered with the app's real styling.
+**Source:** `3_day_gym_plan_updated.pdf`, supplied as a screenshot. The app now follows its
+exercises, set/rep ranges, suggested schedule, focus lines and rest guidance. It is built into
+`index.html`; the other Markdown files in the repository are historical release notes.
+
+**Suggested schedule:** Monday — Strength A · Wednesday — Hypertrophy · Friday — Strength B.
 
 ---
 
-## 1. Your questions, answered
+## 1. Day 1 — Strength A
 
-| Question | Answer |
-|---|---|
-| **Monday — Flat Press: bar or dumbbells?** | **Both, alternating weekly.** Renamed **Flat Bench Press**. Dumbbell one week, barbell the next — the app offers whichever you didn't do last time. The row shows which variant is live and you can switch with one tap. |
-| **Monday — RDL: bar or dumbbells?** | **Barbell.** It's unchanged — Monday's RDL has always been the barbell version. *Friday's* is the one that alternates. |
-| **Monday — Lateral Raises: dumbbells or cable?** | **Dumbbells** on Monday. The cable version is now Wednesday (your "extra lateral raise, alternating dumbbell and cable"). Friday is dumbbells too. |
-| **Wednesday — Incline Press: bar or dumbbells?** | **Both, alternating weekly.** Renamed **Incline Bench Press**. Dumbbell one week, barbell the next. |
-| **Wednesday — the row** | Renamed exactly as you said: **Seated Cable Row or Machine Row**, alternating weekly. |
-| **Wednesday — the superset** | Understood. Biceps and triceps are now **two separate exercises** — separate muscles, separate records, separate PBs. The app offers to **merge them into a superset** when you want it (2 taps), which saves ~6 minutes. Not merging is the default; nothing is combined unless you ask. |
-| **Friday — pull-up help** | Understood. It's a **collapsible panel at the bottom of every session**, closed by default so it costs no screen space. It tracks your ladder and gives the next target. **And since you have no assisted pull-up machine, the ladder has been rebuilt without one** — bands, negatives and bottom-half work instead. See §4. |
-| **Friday — RDL: dumbbell or bar?** | **Both, alternating weekly.** (It used to be dumbbell-only.) Your dumbbell and barbell numbers are kept completely separate — see §2. |
-| **Friday — the row** | Same pair as Wednesday: **cable ⇄ machine**, alternating weekly, so each variant keeps one clean history. |
+**Heavy squat and bench press focus.**
 
-## 2. X93, as you asked: separate records, shared rotation
+| # | Exercise | Sets | Reps | Rest |
+|---:|---|---:|---:|---|
+| 1 | Barbell back squat | 3 | 4–6 | 2–4 min |
+| 2 | Barbell bench press | 3 | 4–6 | 2–4 min |
+| 3 | Chest-supported row | 3 | 5–8 | 2–3 min |
+| 4 | Romanian deadlift | 2 | 6–8 | 2–3 min |
+| 5 | Cable triceps pushdown | 2 | 10–15 | 60–90 sec |
 
-- Dumbbell and barbell versions of the same lift are **two completely separate records**: separate weights, separate PBs, separate history lines. Same for cable and machine rows, and for dumbbell and cable lateral raises.
-- The only thing they share is the **rotation** ("which did I do last time?") and the **display name** ("RDL"), so you're never guessing which variant a number came from.
-- That's deliberate: 32.5 kg dumbbells is a very different session from a 90 kg barbell RDL, and merging them would make your PB chart meaningless.
-- Where an exercise works a muscle differently (a fly vs a press, a cable vs a dumbbell raise), it stays its own thing.
+**13 working sets.** Rest 2–4 min on squats and bench; 2–3 min on rows and Romanian deadlifts;
+60–90 sec on pushdowns.
 
-## 3. The plan
+## 2. Day 2 — Hypertrophy
 
-### MONDAY — *unchanged apart from the flat bench*
+**Muscle growth with controlled reps and moderate loads.**
 
-| # | Exercise | Sets × reps | Muscle | Variant |
-|---|---|---|---|---|
-| 1 | Leg Press | 3 × 8–10 | Quads | — |
-| 2 | **Flat Bench Press** | 3 × 8–10 | Chest | **dumbbell ⇄ barbell, weekly** |
-| 3 | Lat Pulldown | 3 × 8–12 | Lats | — |
-| 4 | Romanian Deadlift | 3 × 8–10 | Hamstrings | **barbell** (unchanged) |
-| 5 | Dumbbell Lateral Raises | 3 × 12–15 | Side delts | dumbbells |
-| 6 | Cable Triceps Pushdown | 2 × 10–15 | Triceps | — |
-| 7 | Dumbbell Biceps Curls | 2 × 10–15 | Biceps | — |
+| # | Exercise | Sets | Reps | Rest |
+|---:|---|---:|---:|---|
+| 1 | Leg press | 3 | 8–12 | 1–2 min |
+| 2 | Incline dumbbell bench press | 3 | 8–12 | 1–2 min |
+| 3 | Lat pulldown | 3 | 8–12 | 1–2 min |
+| 4 | Seated leg curl | 3 | 10–15 | 1–2 min |
+| 5 | Dumbbell lateral raise | 3 | 12–20 | 1–2 min |
+| 6 | Dumbbell biceps curl | 3 | 10–15 | 1–2 min |
 
-**19 sets · 60–75 min**
+**18 working sets.** Rest 1–2 min on most exercises; up to 3 min if needed to maintain
+performance. Curls and lateral raises can be supersetted — the app links the two rows and opens
+the second logging sheet after the first is saved.
 
-### WEDNESDAY — *rebuilt*
+## 3. Day 3 — Strength B
 
-| # | Exercise | Sets × reps | Muscle | Variant |
-|---|---|---|---|---|
-| 1 | Hack Squat | 3 × 8–12 | Quads | goblet squat dropped |
-| 2 | **Incline Bench Press** | 3 × 8–12 | Chest | **dumbbell ⇄ barbell, weekly** |
-| 3 | **Seated Cable Row or Machine Row** | 3 × 8–12 | Mid back | **cable ⇄ machine, weekly** |
-| 4 | Leg Curl | 2 × 10–15 | Hamstrings | — |
-| 5 | Shoulder Press | 2 × 8–12 | Front delts | — |
-| 6 | **Pec Fly** | 3 × 10–15 | Chest | new |
-| 7 | **Cable Lateral Raise** | 3 × 12–15 | Side delts | new |
-| 8 | **Face Pull** | 3 × 12–15 | Rear delts | new · alternates with Reverse Pec Deck |
-| 9 | **Calf Raise** | 3 × 10–15 | Calves | new |
-| 10 | Biceps Curls | 2 × 12–15 | Biceps | can merge with #11 as a superset |
-| 11 | Triceps Pushdowns | 2 × 12–15 | Triceps | can merge with #10 as a superset |
+**Deadlift and overhead press focus.**
 
-**29 sets · 75–85 min as a pair**
+| # | Exercise | Sets | Reps | Rest |
+|---:|---|---:|---:|---|
+| 1 | Conventional deadlift | 3 | 3–5 | 3–4 min |
+| 2 | Standing overhead press | 3 | 4–6 | 2–3 min |
+| 3 | Pull-ups or weighted pull-ups | 3 | 5–8 | 2–3 min |
+| 4 | Leg extensions | 2 | 8–12 | 60–120 sec |
+| 5 | Hammer curls | 2 | 8–12 | 60–120 sec |
 
-**Removed:** Goblet Squat, Hip Thrust, Plank, Cable Crunch, Dead Bug — history kept forever.
+**13 working sets.** Rest 3–4 min on deadlifts; 2–3 min on overhead press and pull-ups;
+60–120 sec on leg extensions and hammer curls. The row offers bodyweight pull-ups or weighted
+pull-ups. Bodyweight is tick-only; the weighted variant uses the normal weight-and-reps sheet.
 
-### FRIDAY — *leg press only, plus the new work*
+**Total:** 44 working sets per week.
 
-| # | Exercise | Sets × reps | Muscle | Variant |
-|---|---|---|---|---|
-| 1 | Leg Press | 3 × 10–12 | Quads | squat option dropped |
-| 2 | Chest Press Machine | 3 × 8–12 | Chest | — |
-| 3 | Lat Pulldown or Pull-up Practice | 3 × 8–12 | Lats | **weekly** · practice = your ladder level |
-| 4 | **Romanian Deadlift** | 3 × 10–12 | Hamstrings | **dumbbell ⇄ barbell, weekly** |
-| 5 | **Seated Cable Row or Machine Row** | 2 × 10–12 | Mid back | **cable ⇄ machine, weekly** |
-| 6 | Dumbbell Lateral Raises | 2 × 12–15 | Side delts | dumbbells |
-| 7 | **Calf Raise** | 3 × 10–15 | Calves | new · on the leg press |
-| 8 | Biceps Curls | 2 × 12–15 | Biceps | — |
-| 9 | Triceps Pushdowns | 2 × 12–15 | Triceps | — |
-| 10 | **Reverse Pec Deck** | 2 × 12–15 | Rear delts | new · second weekly dose |
-| 11 | **Farmer's Carry** | 3 × 30–40m | Core · grip · traps | new · 60–90s rest |
+---
 
-**28 sets · 75–85 min as a pair**
+## 4. How to progress
 
-### Weekly volume
+- **Progressive overload:** when you reach the top of the rep range for every set with good
+  technique, increase the weight slightly and build the reps back up.
+- **Effort:** finish most working sets with about 1–3 good reps left in reserve. Avoid failed reps
+  on heavy squats and deadlifts.
 
-| Muscle | Sets/week | From |
-|---|---|---|
-| Chest | **12** | bench, incline, fly, chest press |
-| Quads | 9 | leg press ×2, hack squat |
-| Hamstrings | 8 | RDL ×2, leg curl |
-| Side delts | **8** | raises on all three days |
-| Lats | 6 | pulldown / pull-up practice ×2 |
-| Biceps | 6 | curls ×3 (+2 indirect from rows) |
-| Triceps | 6 | pushdowns ×3 (+2 indirect from presses) |
-| Calves | **6** | new — previously zero |
-| Mid back | 5 | row ×2 |
-| Rear delts | **5** | new — face pull + reverse pec deck |
-| Core · grip · traps | 3 | the carry |
-| Front delts | 2 | shoulder press (+presses indirectly) |
-| Glutes | ~6 | via RDL ×2 and leg press (indirect) |
-| **Total** | **76** | 19 Mon · 29 Wed · 28 Fri |
+These two points are the only progression guidance in the main session, in one collapsed
+**How to progress** panel. The old warm-up, finisher and four generic reference guides were
+removed because they were not part of the supplied plan.
 
-Plan was 61 sets → now 76. The 9 sets of hip thrust / plank / crunch / dead bug went to chest, side delts,
-rear delts and calves. Every muscle sits inside the standard 10–20 sets/week range once indirect work counts.
+---
 
-## 4. The pull-up ladder — no assisted machine needed
+## 5. Logging, PBs and historical data
 
-It lives in a **collapsible panel at the bottom of every session**, closed by default, so it never takes
-screen space. Open it when you want to practise or log a set.
+No stored record is rewritten, renamed or deleted by the plan change.
 
-| # | Level | Target | Why |
-|---|---|---|---|
-| 1 | Dead hang | 3 × 20–30s | Grip, shoulder resilience, comfort in the bottom position |
-| 2 | **Scapular pull-ups** | 3 × 5–8 | **The missing link.** Pull the shoulder blades down without bending the elbows — the first inch of a pull-up, and the part almost nobody trains |
-| 3 | Negatives | 3 × 3 @ 5s | **Where you are now.** The app times the descent so you can't cheat it by dropping |
-| 4 | Negatives | 3 × 5 @ 5s | Same, more volume. Hit it twice and the ladder moves you up |
-| 5 | Bottom-half reps | 3 × 3 | Dead hang → 90° → lower. The exact range you said you're missing |
-| 6 | Band-assisted pull-ups | 3 × 3–5 | **You own bands** — no machine needed. Logged as a **band level** (heavy → medium → light), because bands can't be measured in kg |
-| 7 | Full pull-up | 1 rep | Then 2, then 3, then 5 |
+Movements that already existed reuse their canonical id, so their current PB, last weight and
+last-set reps appear on the new row: back squat, barbell bench press, Romanian deadlift,
+triceps pushdown, leg press, incline dumbbell press, lat pulldown, seated leg curl, dumbbell
+lateral raise, dumbbell biceps curl, standing overhead press and leg extensions.
 
-**Optional accessories, any session:** inverted rows 2 × 8–10 — **you have a Smith machine, so set the bar low
-in it and you're set** (the single best builder of a first pull-up) — and jump-to-top holds 3 × 10s.
+A few older generic records are also read without being changed: `flat-bench` contributes to the
+barbell bench row and `incline-bench` contributes to the incline dumbbell press row. This is a
+read-only alias; new saves use the current canonical id.
 
-**In the app, on the gym floor:** hold your finger on a weight pill for half a second and it logs last time's
-weight and reps instantly, ticks the exercise and gets out of your way — a normal tap still opens the sheet.
-The sheet itself now lists your last three sessions for that lift so you can pick the next weight without
-leaving it. There's a plate calculator (per side, with the bar weight) and a search across everything you've
-ever logged. And if you're short of time, "Short on time?" trims today to 25/35/45/60 minutes — big lifts
-first, one movement per muscle — for **today only**, marking what it left out rather than hiding it.
+New movements get their own id and are logged through the same single write path, with weight,
+last-set reps, ticks, PBs, undo, sync and Progress history:
 
-**In the app:** the ladder is a collapsible panel at the bottom of every session, closed by default so it
-takes no screen space. Tap it when you want to practise or log; the app keeps your level, moves you up
-when you ask it to, and records band levels by name rather than pretending to measure a band in kilos.
+- `chest-supported-row` — Chest-Supported Row
+- `deadlift` — Conventional Deadlift
+- `weighted-pullup` — Weighted Pull-ups
+- `hammer-curl` — Hammer Curls
 
-**Also unlocked by the Smith machine:** on barbell weeks you can bench in it without needing a spotter, which
-matters most on the Flat and Incline Bench. Your choice — free weights first if you prefer, Smith when you're
-training on your own or going heavy.
+Retired movements such as hip thrust, plank, cable crunch, dead bug, calf raise, face pull and
+the old carry remain in Progress, PBs, CSV exports and backups. The pull-up ladder also remains
+on every session, collapsed by default.
 
-**What the app does:** shows your current level and next target · times your hangs and negatives out loud ·
-logs band work as a level · advances you automatically when you hit a target twice · keeps its own history so
-you can see the ladder moving even on weeks when the weights don't.
+---
 
-## 5. Other recommendations
+## 6. Timer and app changes
 
-1. **Isolations always come last** — everything added sits after your big lifts, so nothing can rob your top sets.
-2. **Progress them differently:** add reps first on the 12–15 exercises; add weight when you hit the top of the range on your last set for the compounds. The app will prompt the right one for each.
-3. **Superset the arms on Wednesday when you're short on time** — saves ~6 minutes and costs nothing.
-4. **Barbell bench needs a spotter or safeties.** You train together, so use them. Don't compare dumbbell and barbell numbers to each other — separate records for that reason.
-5. **Glutes are the quiet loser** of these changes: hip thrust was their only direct work. RDL twice a week and the squats cover them decently, so it's a fair trade — just so you know it happened.
-6. **The unglamorous half:** protein high, moderate deficit rather than a crash, 7–9 hours of sleep, 8–10k steps. The plan holds the muscle while that happens.
+The Timer presets follow the PDF's rest periods:
 
-## 6. If sessions run long — the cut list
+| Preset | Duration | Used for |
+|---|---:|---|
+| Heavy | 3:30 | Deadlifts |
+| Strength | 2:30 | Squats, presses, rows, RDL and pull-ups |
+| Pump | 1:30 | Hypertrophy work |
+| Short | 1:15 | Short accessory rests |
 
-Wednesday and Friday are 75–85 minutes as a pair (you alternate, so rest is generous and wall-clock time is
-longer). If that's too long, cut in this order:
+Other changes:
 
-1. **Superset the arms** on Wednesday (free — saves ~6 min).
-2. **Trim the carry to 2 sets** (saves ~4 min).
-3. **Drop the peck fly** (chest already gets 12 sets/week).
-4. **Move Wednesday's arms to Friday** as a superset (saves ~8 min, keeps the work).
-
-I would not cut the calves, the lateral raises or the rear delts — those are the three that change how you look.
-
-## 7. Next
-
-The plan is settled, subject to the three open questions in `STATUS.md §7`. Next step is **Release 1** —
-the reps model and the invented-reps fix, undo, edit/delete, log-for-both — which doesn't depend on any of this.
+- iOS now uses an opaque, reserved status bar (`black`) plus an explicit `env(safe-area-inset-top)`
+  body gap, so the app's top controls no longer sit behind the Dynamic Island on an iPhone 16.
+- The app-like zoom restriction (`maximum-scale=1, user-scalable=no`) is intentionally retained.
+- Top controls and day tabs have 44 px minimum touch targets.
+- Exercise rows now show only the muscle, live variant, exact rest guidance and the weight/PB
+  controls. The `1/3`-style muscle badges, "also works..." labels, repeated footer instructions,
+  long Settings release notes and generic reference essays were removed.
+- One short "Tap a row to log" hint remains. Optional tools, the pull-up ladder, search, plate
+  calculator, short-on-time trimming and rearranging all remain available.
+- The service-worker cache version was bumped so installed phones adopt the new shell on their
+  next launch with signal.

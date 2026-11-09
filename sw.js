@@ -13,7 +13,7 @@
    middle of a session.
    ============================================================ */
 
-const VERSION = 'session-v1';
+const VERSION = 'session-v5-1';
 const CACHE = 'session-shell-' + VERSION;
 
 /* Everything the app needs to draw itself offline. */
